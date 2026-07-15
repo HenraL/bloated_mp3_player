@@ -1,0 +1,226 @@
+(footprint "required_footprints:LED_Matrix_16x16_WS2812B"
+	(version 20240108)
+	(generator "opencode")
+	(layer "F.Cu")
+	(descr "16x16 WS2812B addressable RGB LED matrix panel, 160x160mm, 10mm pitch")
+	(tags "WS2812B LED Matrix 16x16")
+	(attr through_hole)
+	(fp_text reference "REF**"
+		(at 0 -87 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_text value "LED_Matrix_16x16_WS2812B"
+		(at 0 -90 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -80 -80)
+		(end 80 -80)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+	)
+	(fp_line
+		(start 80 -80)
+		(end 80 80)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+	)
+	(fp_line
+		(start 80 80)
+		(end -80 80)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+	)
+	(fp_line
+		(start -80 80)
+		(end -80 -80)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+	)
+	(fp_line
+		(start -78 -78)
+		(end 78 -78)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 78 -78)
+		(end 78 78)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 78 78)
+		(end -78 78)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -78 78)
+		(end -78 -78)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -83 14)
+		(end -83 10)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -80 14)
+		(end -80 10)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 80 14)
+		(end 83 14)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 80 10)
+		(end 83 10)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -13 82)
+		(end -13 79)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -7 82)
+		(end -7 79)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(pad "" np_thru_hole circle
+		(at -77 -77)
+		(size 3.2 3.2)
+		(drill 3.2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at 77 -77)
+		(size 3.2 3.2)
+		(drill 3.2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at -77 77)
+		(size 3.2 3.2)
+		(drill 3.2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at 77 77)
+		(size 3.2 3.2)
+		(drill 3.2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "1" thru_hole rect
+		(at -81.28 12.7)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "2" thru_hole circle
+		(at -81.28 10.16)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "3" thru_hole circle
+		(at -81.28 7.62)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "4" thru_hole rect
+		(at 81.28 12.7)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "5" thru_hole circle
+		(at 81.28 10.16)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "6" thru_hole circle
+		(at 81.28 7.62)
+		(size 1.5 1.5)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "7" thru_hole rect
+		(at -10.16 81.28)
+		(size 2.5 2.5)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "8" thru_hole circle
+		(at -5.08 81.28)
+		(size 2.5 2.5)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+	)
+)

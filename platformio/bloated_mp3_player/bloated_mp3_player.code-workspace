@@ -1,0 +1,99 @@
+{
+	"folders": [
+		{
+			"name": "adressable_led",
+			"path": "."
+		}
+	],
+	"settings": {
+		"asperheader.enableDebug": false,
+		"asperheader.extensionIgnore": [
+			"renovate.json",
+			"*.code-workspace",
+			"python.version",
+			"settings.json",
+			"platformio.ini"
+		],
+		"asperheader.headerLogo": [
+			"......................",
+			"...________________...",
+			"..|.>_.............|..",
+			"..|................|..",
+			"..|................|..",
+			"..|________________|..",
+			"......................"
+		],
+		"asperheader.projectCopyright": "(c) Henry Letellier",
+		"asperheader.promptToCreateIfMissing": true,
+		"asperheader.useWorkspaceNameWhenAvailable": false,
+		"asperheader.projectDescription": "This is code in charge of driving an lcd screen.",
+		"asperheader.extensionName": "LCD Screen",
+		"asperheader.languageAppend": {
+			".hpp": "\n#pragma once"
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"henryletellier.asperheader",
+			"sukumo28.wav-preview",
+			"njpwerner.autodocstring",
+			"shakram02.bash-beautify",
+			"rogalmic.bash-debug",
+			"streetsidesoftware.code-spell-checker-british-english",
+			"ms-vscode.cpptools-extension-pack",
+			"josetr.cmake-language-support-vscode",
+			"streetsidesoftware.code-spell-checker",
+			"streetsidesoftware.code-spell-checker-french",
+			"mikestead.dotenv",
+			"samubarb.vscode-doxyfile",
+			"cschlosser.doxdocgen",
+			"hall.draw",
+			"hediet.vscode-drawio",
+			"janisdd.vscode-edit-csv",
+			"tamasfe.even-better-toml",
+			"mkxml.vscode-filesize",
+			"ctcuff.font-preview",
+			"tombonnike.vscode-status-bar-format-toggle",
+			"waderyan.gitblame",
+			"forevolve.git-extensions-for-vs-code",
+			"mhutchie.git-graph",
+			"donjayamanne.githistory",
+			"bierner.markdown-preview-github-styles",
+			"codezombiech.gitignore",
+			"ms-vscode.hexeditor",
+			"oderwat.indent-rainbow",
+			"ms-python.isort",
+			"github.vscode-pull-request-github",
+			"ritwickdey.liveserver",
+			"yandeu.five-server",
+			"ruiquelhas.vscode-lowercase",
+			"chinchiheather.vscode-margin-colours",
+			"davidanson.vscode-markdownlint",
+			"pkief.material-icon-theme",
+			"christian-kohler.path-intellisense",
+			"jebbs.plantuml",
+			"well-ar.plantuml",
+			"mebrahtom.plantumlpreviewer",
+			"qhoekman.language-plantuml",
+			"giyyapan.pyformat",
+			"ms-python.vscode-pylance",
+			"ms-python.pylint",
+			"ms-python.debugpy",
+			"ms-python.vscode-python-envs",
+			"kevinrose.vsc-python-indent",
+			"jakob101.relativepath",
+			"blunt1337.todo-language",
+			"theumletteam.umlet",
+			"ruiquelhas.vscode-uppercase",
+			"yutengjing.vscode-archive",
+			"adamhartford.vscode-base64",
+			"vscode-icons-team.vscode-icons",
+			"tomoki1207.pdf",
+			"davidhouchin.whitespace-plus",
+			"streetsidesoftware.code-spell-checker-win32",
+			"roeibh.reload-window",
+			"13xforever.language-x86-64-assembly",
+			"slevesque.vscode-zipexplorer"
+		]
+	}
+}

@@ -1,0 +1,52 @@
+/*
+* +==== BEGIN CatFeeder =================+
+* LOGO:
+* ..............(....⁄\
+* ...............)..(.')
+* ..............(../..)
+* ...............\(__)|
+* Inspired by Joan Stark
+* source https://www.asciiart.eu/
+* animals/cats
+* /STOP
+* PROJECT: CatFeeder
+* FILE: pins.hpp
+* CREATION DATE: 07-02-2026
+* LAST Modified: 17:55:27 12-02-2026
+* DESCRIPTION:
+* This is the project in charge of making the connected cat feeder project work.
+* /STOP
+* COPYRIGHT: (c) Cat Feeder
+* PURPOSE: This is the pin mapping on the esp8266 so that software wise we know who we are addressing.
+* // AR
+* +==== END CatFeeder =================+
+*/
+#pragma once
+#include <Arduino.h>
+#include <esp32-hal-gpio.h>
+
+namespace Pins
+{
+    inline constexpr uint8_t LED_PIN = 2;   // onboard LED = D2, GPIO2
+    inline constexpr uint8_t LED_STRIP_PIN = 5;   // D1 = GPIO5
+    inline constexpr uint8_t MOTOR1_PIN = 14;  // D5 = GPIO14
+    inline constexpr uint8_t MOTOR2_PIN = 16;   // Servo 2 (D0, GPIO16) -> software PWM
+    inline constexpr uint8_t BLE_RXD_PIN = 12;  // D6 = GPIO12 (SWAPPED - trying RX on GPIO12)
+    inline constexpr uint8_t BLE_TXD_PIN = 13;  // D7 = GPIO13 (SWAPPED - trying TX on GPIO13)
+    inline constexpr uint8_t BLE_EN_PIN = 4;   // D2 = GPIO4
+    inline constexpr uint8_t BLE_STATE_PIN = A0;  // ADC0
+
+    static inline void init()
+    {
+        // Set pin modes if necessary
+        pinMode(LED_PIN, OUTPUT);
+        digitalWrite(LED_PIN, HIGH); // LED off (active LOW)
+        pinMode(LED_STRIP_PIN, OUTPUT);
+        pinMode(MOTOR1_PIN, OUTPUT);
+        pinMode(MOTOR2_PIN, OUTPUT);
+        pinMode(BLE_EN_PIN, OUTPUT);
+        digitalWrite(BLE_EN_PIN, LOW);   // default off
+        pinMode(BLE_STATE_PIN, INPUT);
+    }
+} // namespace Pins
+

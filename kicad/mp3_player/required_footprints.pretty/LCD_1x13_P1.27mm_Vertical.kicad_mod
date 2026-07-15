@@ -1,0 +1,202 @@
+(footprint "required_footprints:LCD_1x13_P1.27mm_Vertical"
+	(version 20240108)
+	(generator "opencode")
+	(layer "F.Cu")
+	(descr "TFT LCD display module, 13-pin 1.27mm pitch, compatible with common small TFT displays")
+	(tags "LCD TFT display")
+	(attr through_hole)
+	(fp_text reference "REF**"
+		(at 0 -28 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_text value "LCD_1x13_P1.27mm_Vertical"
+		(at 0 -31 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -20 -24)
+		(end 20 -24)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 20 -24)
+		(end 20 24)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start 20 24)
+		(end -20 24)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -20 24)
+		(end -20 -24)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+	)
+	(fp_line
+		(start -15 -18)
+		(end 15 -18)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Cmts.User")
+	)
+	(fp_line
+		(start 15 -18)
+		(end 15 22)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Cmts.User")
+	)
+	(fp_line
+		(start 15 22)
+		(end -15 22)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Cmts.User")
+	)
+	(fp_line
+		(start -15 22)
+		(end -15 -18)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Cmts.User")
+	)
+	(pad "" np_thru_hole circle
+		(at -17 -21)
+		(size 2.6 2.6)
+		(drill 2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at 17 -21)
+		(size 2.6 2.6)
+		(drill 2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at -17 21)
+		(size 2.6 2.6)
+		(drill 2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "" np_thru_hole circle
+		(at 17 21)
+		(size 2.6 2.6)
+		(drill 2)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "1" thru_hole oval
+		(at -7.62 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "2" thru_hole oval
+		(at -6.35 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "3" thru_hole oval
+		(at -5.08 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "4" thru_hole oval
+		(at -3.81 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "5" thru_hole oval
+		(at -2.54 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "6" thru_hole oval
+		(at -1.27 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "7" thru_hole oval
+		(at 0 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "8" thru_hole oval
+		(at 1.27 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "9" thru_hole oval
+		(at 2.54 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "10" thru_hole oval
+		(at 3.81 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "11" thru_hole oval
+		(at 5.08 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "12" thru_hole oval
+		(at 6.35 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+	(pad "13" thru_hole oval
+		(at 7.62 21)
+		(size 1.2 2)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+	)
+)
