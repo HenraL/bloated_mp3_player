@@ -15,19 +15,19 @@
 			"platformio.ini"
 		],
 		"asperheader.headerLogo": [
-			"......................",
-			"...________________...",
-			"..|.>_.............|..",
-			"..|................|..",
-			"..|................|..",
-			"..|________________|..",
-			"......................"
+			".......................",
+			"...><>.............<><.",
+			"..><>.><>.......<><.<><",
+			".><>.<><.><>.<><.<><.<>",
+			"..><>.><>.......<><.<><",
+			"...><>.............<><.",
+			"......................."
 		],
 		"asperheader.projectCopyright": "(c) Henry Letellier",
 		"asperheader.promptToCreateIfMissing": true,
 		"asperheader.useWorkspaceNameWhenAvailable": false,
-		"asperheader.projectDescription": "This is code in charge of driving an lcd screen.",
-		"asperheader.extensionName": "LCD Screen",
+		"asperheader.projectDescription": "This is the code in charge of making the bloated player come to life.",
+		"asperheader.extensionName": "Bloated MP3 Player",
 		"asperheader.languageAppend": {
 			".hpp": "\n#pragma once"
 		}

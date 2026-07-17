@@ -1,20 +1,12 @@
 #include "screen.hpp"
 
-Screen::Screen(uint8_t cs, uint8_t dc, uint8_t rst, uint8_t sclk, uint8_t mosi, uint8_t miso)
-    : _u8g2(U8G2_R0, cs, dc, rst), _cs(cs), _dc(dc), _rst(rst), _sclk(sclk), _mosi(mosi), _miso(miso)
+Screen::Screen(U8G2 &u8g2, uint16_t w, uint16_t h)
+    : _u8g2(u8g2), _width(w), _height(h)
 {
 }
 
 void Screen::begin()
 {
-    SPI.begin(_sclk, _miso, _mosi);
-
-    pinMode(_rst, OUTPUT);
-    digitalWrite(_rst, LOW);
-    delay(10);
-    digitalWrite(_rst, HIGH);
-    delay(10);
-
     _u8g2.begin();
     _u8g2.setContrast(40);
 }
@@ -101,12 +93,23 @@ void Screen::drawVLine(uint16_t x, uint16_t y, uint16_t h)
     _u8g2.drawVLine(x, y, h);
 }
 
-void Screen::setColumnOffset(uint8_t offset)
+static const uint8_t BAYER_4x4[16] = {
+     0,  8,  2, 10,
+    12,  4, 14,  6,
+     3, 11,  1,  9,
+    15,  7, 13,  5
+};
+
+void Screen::drawAscii(const uint8_t *data, uint16_t w, uint16_t h, uint16_t x, uint16_t y)
 {
-    digitalWrite(_dc, LOW);
-    digitalWrite(_cs, LOW);
-    SPI.transfer(0x10 | (offset >> 4));
-    SPI.transfer(0x00 | (offset & 0x0F));
-    digitalWrite(_cs, HIGH);
-    digitalWrite(_dc, HIGH);
+    for (uint16_t iy = 0; iy < h && y + iy < _height; iy++)
+    {
+        for (uint16_t ix = 0; ix < w && x + ix < _width; ix++)
+        {
+            uint8_t v = data[iy * w + ix];
+            uint8_t t = BAYER_4x4[(iy & 3) * 4 + (ix & 3)];
+            if (v > t * 16)
+                _u8g2.drawPixel(x + ix, y + iy);
+        }
+    }
 }
