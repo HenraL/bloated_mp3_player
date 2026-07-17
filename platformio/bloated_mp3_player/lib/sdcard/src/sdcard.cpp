@@ -25,7 +25,9 @@
 #include "internal/sdcard.hpp"
 
 static bool mounted = false;
-static SPIClass sd_spi(FSPI);
+// Use SPI3_HOST (= 2) to keep SD on a separate peripheral from the LCD
+// which uses the default SPI (SPI2_HOST = 1 on S3, 1 on ESP32).
+static SPIClass sd_spi(2);
 static SDCard::TrackInfo track_list[SDCard::MAX_TRACKS];
 static size_t track_count = 0;
 static const char *audio_ext[] = {".wav", ".mp3", ".WAV", ".MP3"};

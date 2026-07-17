@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 0:51:49 17-07-2026
+* LAST Modified: 14:35:30 17-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -67,8 +67,8 @@ MatrixCanvas matrix_cvs;
 Adafruit_NeoPixel onboard(1, ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // ─── Display fonts ────────────────────────────────────────────────────
-static const uint8_t* const FONT_TITLE = u8g2_font_ncenB10_tr;
-static const uint8_t* const FONT_BODY  = u8g2_font_ncenB08_tr;
+static const uint8_t *const FONT_TITLE = u8g2_font_ncenB10_tr;
+static const uint8_t *const FONT_BODY = u8g2_font_ncenB08_tr;
 
 // ─── UI Task ──────────────────────────────────────────────────────────
 void ui_task(void *pvParameters)
@@ -78,6 +78,7 @@ void ui_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(33);
 
     while (true) {
+        Serial.println("[UI] Mostly harmless.");
         display.clear();
         display.setFont(FONT_TITLE);
         display.printAt("Bloated MP3 v1.0", 0, 12);
@@ -114,6 +115,7 @@ void audio_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(20);
 
     while (true) {
+        Serial.println("[Audio] So long, and thanks for all the fish.");
         PROFILE_BLOCK("audio_tick");
         Audio::tick();
         vTaskDelayUntil(&xLastWake, freq);
@@ -128,6 +130,7 @@ void sensor_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(200);
 
     while (true) {
+        Serial.println("[Sensor] Time is an illusion. Lunchtime doubly so.");
         PROFILE_BLOCK("sensor_tick");
         Environmental::Reading env;
         Environmental::read(env);
@@ -162,6 +165,7 @@ void led_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(50);
 
     while (true) {
+        Serial.println("[LED] The light that burns twice as bright...");
         Matrix::tick();
 
         uint32_t wave = (millis() / 500) % 2;
@@ -181,6 +185,7 @@ void input_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(10);
 
     while (true) {
+        Serial.println("[Input] Don't Panic.");
         Rotary::tick();
         Ultrasonic::gesture_tick();
 
@@ -226,6 +231,8 @@ void setup()
     Serial.begin(115200);
     delay(500);
     Serial.println("Bloated MP3 Player — DON'T PANIC");
+    Serial.println("The ships hung in the sky in much the same way that bricks don't.");
+    delay(1000);
     onboard.begin();
     onboard.show();
     onboard.setPixelColor(0, onboard.Color(8, 0, 0));
@@ -263,22 +270,22 @@ void setup()
 
     // Environmental
     if (!Environmental::begin(I2C_SDA_PIN, I2C_SCL_PIN)) {
-        Serial.println("WARNING: AHT20+BMP280 not found");
+        Serial.println("WARN: AHT20+BMP280 — the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
     }
 
     // IMU
     if (!IMU::begin(I2C_SDA_PIN, I2C_SCL_PIN)) {
-        Serial.println("WARNING: MPU6050 not found");
+        Serial.println("WARN: MPU6050 — we apologize for the inconvenience.");
     }
 
     // SD card
     if (!SDCard::begin(SD_CS_PIN, SD_MOSI_PIN, SD_MISO_PIN, SD_SCLK_PIN)) {
-        Serial.println("WARNING: SD card not mounted — check format (FAT32), wiring, or try another card");
+        Serial.println("WARN: SD card — a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
     }
 
     // Audio
     if (!Audio::begin(I2S_BCLK_PIN, I2S_LRC_PIN, I2S_DOUT_PIN)) {
-        Serial.println("WARNING: I2S init failed");
+        Serial.println("WARN: I2S — in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
     }
 
     // Input devices
@@ -308,5 +315,6 @@ void setup()
 
 void loop()
 {
+    // Kill the arduino loop.
     vTaskDelete(NULL);
 }
