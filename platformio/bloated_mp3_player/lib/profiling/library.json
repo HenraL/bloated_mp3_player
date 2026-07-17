@@ -1,0 +1,10 @@
+{
+    "name": "profiling",
+    "version": "1.0.0",
+    "description": "FreeRTOS + manual trace profiler for flamegraph export",
+    "keywords": "profiling, flamegraph, freertos, performance",
+    "authors": { "name": "Henry Letellier" },
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "images",
+  "version": "1.0.0",
+  "description": "Auto-generated image and font data for Bloated MP3 Player",
+  "keywords": [
+    "fonts",
+    "images",
+    "embedded",
+    "bloated-mp3"
+  ],
+  "build": {
+    "includeDir": "include",
+    "srcDir": "src"
+  }
+}

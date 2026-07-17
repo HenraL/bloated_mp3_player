@@ -273,7 +273,7 @@ void setup()
 
     // SD card
     if (!SDCard::begin(SD_CS_PIN, SD_MOSI_PIN, SD_MISO_PIN, SD_SCLK_PIN)) {
-        Serial.println("WARNING: SD card not mounted");
+        Serial.println("WARNING: SD card not mounted — check format (FAT32), wiring, or try another card");
     }
 
     // Audio

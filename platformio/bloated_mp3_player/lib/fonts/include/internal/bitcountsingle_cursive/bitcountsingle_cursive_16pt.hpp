@@ -1,0 +1,40 @@
+#ifndef BAKEDFONTS_BITCOUNTSINGLE_CURSIVE_16PT_H_
+#define BAKEDFONTS_BITCOUNTSINGLE_CURSIVE_16PT_H_
+
+#include <stdint.h>
+#include <Arduino.h>
+#include "font_structs.hpp"
+
+namespace BakedFonts {
+
+#define BITCOUNTSINGLE_CURSIVE_16PT_WIDTH  19
+#define BITCOUNTSINGLE_CURSIVE_16PT_HEIGHT 17
+#define BITCOUNTSINGLE_CURSIVE_16PT_FIRST  32
+#define BITCOUNTSINGLE_CURSIVE_16PT_LAST   64258
+#define BITCOUNTSINGLE_CURSIVE_16PT_COUNT  396
+
+extern const uint16_t bitcountsingle_cursive_16pt_codes[];
+
+extern const uint8_t bitcountsingle_cursive_16pt_black_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_black_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_bold_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_bold_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_extrabold_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_extrabold_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_extralight_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_extralight_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_light_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_light_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_medium_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_medium_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_regular_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_regular_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_semibold_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_semibold_widths[];
+extern const uint8_t bitcountsingle_cursive_16pt_thin_bits[] PROGMEM;
+extern const uint8_t bitcountsingle_cursive_16pt_thin_widths[];
+extern const FontStyleMap bitcountsingle_cursive_16pt_style_map[];
+
+}  // namespace BakedFonts
+
+#endif /* BAKEDFONTS_BITCOUNTSINGLE_CURSIVE_16PT_H_ */
