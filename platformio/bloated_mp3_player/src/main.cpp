@@ -58,6 +58,32 @@ TaskHandle_t audio_task_handle = nullptr;
 TaskHandle_t sensor_task_handle = nullptr;
 TaskHandle_t led_task_handle = nullptr;
 TaskHandle_t input_task_handle = nullptr;
+TaskHandle_t serial_task_handle = nullptr;
+
+// ─── Serial message queue ─────────────────────────────────────────────
+#define SERIAL_MSG_LEN 128
+#define SERIAL_QUEUE_LEN 16
+static QueueHandle_t serial_queue = nullptr;
+
+static void serial_print(const char *fmt, ...)
+{
+    char buf[SERIAL_MSG_LEN];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, args);
+    va_end(args);
+    xQueueSend(serial_queue, buf, portMAX_DELAY);
+}
+
+static void serial_output_task(void *pvParameters)
+{
+    (void)pvParameters;
+    char msg[SERIAL_MSG_LEN];
+    while (true) {
+        xQueueReceive(serial_queue, msg, portMAX_DELAY);
+        Serial.println(msg);
+    }
+}
 
 // ─── Shared state ─────────────────────────────────────────────────────
 U8G2_ST7565_ERC12864_ALT_F_4W_HW_SPI u8g2_lcd(U8G2_R0, LCD_CS, LCD_DC, LCD_RST);
@@ -78,7 +104,7 @@ void ui_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(33);
 
     while (true) {
-        Serial.println("[UI] Mostly harmless.");
+        serial_print("[UI] Mostly harmless.");
         display.clear();
         display.setFont(FONT_TITLE);
         display.printAt("Bloated MP3 v1.0", 0, 12);
@@ -115,7 +141,7 @@ void audio_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(20);
 
     while (true) {
-        Serial.println("[Audio] So long, and thanks for all the fish.");
+        serial_print("[Audio] So long, and thanks for all the fish.");
         PROFILE_BLOCK("audio_tick");
         Audio::tick();
         vTaskDelayUntil(&xLastWake, freq);
@@ -130,7 +156,7 @@ void sensor_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(200);
 
     while (true) {
-        Serial.println("[Sensor] Time is an illusion. Lunchtime doubly so.");
+        serial_print("[Sensor] Time is an illusion. Lunchtime doubly so.");
         PROFILE_BLOCK("sensor_tick");
         Environmental::Reading env;
         Environmental::read(env);
@@ -165,7 +191,7 @@ void led_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(50);
 
     while (true) {
-        Serial.println("[LED] The light that burns twice as bright...");
+        serial_print("[LED] The light that burns twice as bright...");
         Matrix::tick();
 
         uint32_t wave = (millis() / 500) % 2;
@@ -185,7 +211,7 @@ void input_task(void *pvParameters)
     const TickType_t freq = pdMS_TO_TICKS(10);
 
     while (true) {
-        Serial.println("[Input] Don't Panic.");
+        serial_print("[Input] Don't Panic.");
         Rotary::tick();
         Ultrasonic::gesture_tick();
 
@@ -229,10 +255,18 @@ void input_task(void *pvParameters)
 void setup()
 {
     Serial.begin(115200);
+    serial_queue = xQueueCreate(SERIAL_QUEUE_LEN, SERIAL_MSG_LEN);
+    xTaskCreatePinnedToCore(serial_output_task, "SerialOut", 2048, NULL, 1,
+        &serial_task_handle, 1);
     delay(500);
-    Serial.println("Bloated MP3 Player — DON'T PANIC");
-    Serial.println("The ships hung in the sky in much the same way that bricks don't.");
-    delay(1000);
+
+    // From now on all output goes through the serial queue, so there is
+    // no contention: each task sends its message in one atomic
+    // xQueueSend call, and the single serial_output_task drains in
+    // order.  It also means tasks never block waiting for UART DMA.
+
+    serial_print("Bloated MP3 Player -- DON'T PANIC");
+    serial_print("The ships hung in the sky in much the same way that bricks don't.");
     onboard.begin();
     onboard.show();
     onboard.setPixelColor(0, onboard.Color(8, 0, 0));
@@ -270,22 +304,22 @@ void setup()
 
     // Environmental
     if (!Environmental::begin(I2C_SDA_PIN, I2C_SCL_PIN)) {
-        Serial.println("WARN: AHT20+BMP280 — the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
+        serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
     }
 
     // IMU
     if (!IMU::begin(I2C_SDA_PIN, I2C_SCL_PIN)) {
-        Serial.println("WARN: MPU6050 — we apologize for the inconvenience.");
+        serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
     }
 
     // SD card
     if (!SDCard::begin(SD_CS_PIN, SD_MOSI_PIN, SD_MISO_PIN, SD_SCLK_PIN)) {
-        Serial.println("WARN: SD card — a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
+        serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
     }
 
     // Audio
     if (!Audio::begin(I2S_BCLK_PIN, I2S_LRC_PIN, I2S_DOUT_PIN)) {
-        Serial.println("WARN: I2S — in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
+        serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
     }
 
     // Input devices
@@ -307,9 +341,7 @@ void setup()
     xTaskCreatePinnedToCore(input_task, "Input", 2048, NULL, 2,
         &input_task_handle, 0);
 
-    Serial.println("All tasks spawned. Entering the infinite improbability loop.");
-
-    // Dump profiling data on boot (call this interactively in loop() too)
+    serial_print("All tasks spawned. Entering the infinite improbability loop.");
     Profiler::dump_task_stats();
 }
 
