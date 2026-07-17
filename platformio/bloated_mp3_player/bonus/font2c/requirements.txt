@@ -1,6 +1,29 @@
+# 
+# +==== BEGIN Bloated MP3 Player =================+
+# LOGO:
+# .......................
+# ...><>.............<><.
+# ..><>.><>.......<><.<><
+# .><>.<><.><>.<><.<><.<>
+# ..><>.><>.......<><.<><
+# ...><>.............<><.
+# .......................
+# /STOP
+# PROJECT: Bloated MP3 Player
+# FILE: requirements.txt
+# CREATION DATE: 17-07-2026
+# LAST Modified: 18:22:34 17-07-2026
+# DESCRIPTION:
+# This is the code in charge of making the bloated player come to life.
+# /STOP
+# COPYRIGHT: (c) Henry Letellier
+# PURPOSE: This is the requirements file that contains the dependencies for the front to C file converter.
+# // AR
+# +==== END Bloated MP3 Player =================+
+# 
 # font2c dependencies
 # Uses Pillow to render TTF/OTF fonts and extract glyph bitmaps.
 # Uses fonttools to query the font's character map (cmap) so we
 # only render code points the font actually supports.
-Pillow==10.4.0
+pillow==12.3.0
 fonttools[unicode,pathops]==4.63.0
