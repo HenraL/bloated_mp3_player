@@ -66,7 +66,10 @@ namespace MY_LED
             }
         }
 
-        void update() { tick(); }
+        void update()
+        {
+            tick();
+        }
 
         // Returns true if ticked since last check, then clears the flag
         bool ticked()

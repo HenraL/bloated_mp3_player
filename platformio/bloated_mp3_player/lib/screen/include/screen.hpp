@@ -3,7 +3,7 @@
 
 class Screen
 {
-public:
+    public:
     Screen(U8G2 &u8g2, uint16_t w = 128, uint16_t h = 64);
     void begin();
     void clear();
@@ -26,7 +26,7 @@ public:
     uint16_t width() const { return _width; }
     uint16_t height() const { return _height; }
     U8G2 &u8g2() { return _u8g2; }
-private:
+    private:
     U8G2 &_u8g2;
     uint16_t _width;
     uint16_t _height;
