@@ -27,140 +27,251 @@
 #include "internal/config.hpp"
 #include "internal/my_utils.hpp"
 
-Adafruit_NeoPixel MY_LED::LedStrip(LED_NUMBER, LED_STRIP_PIN, LED_TYPE + LED_COLOUR_ORDER);
-bool MY_LED::LedStripInitialized = false;
+const MY::LED::Colour MY::LED::white_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::White);
+const MY::LED::Colour MY::LED::black_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Black);
+const MY::LED::Colour MY::LED::red_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Red);
+const MY::LED::Colour MY::LED::yellow_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Yellow);
+const MY::LED::Colour MY::LED::green_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Green);
+const MY::LED::Colour MY::LED::blue_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Blue);
+const MY::LED::Colour MY::LED::dark_blue = MY::LED::get_colour_from_pointer(&MY::LED::Colours::DarkCyan);
 
-// External variables for forced color management
-bool MY_LED::forcedColor = false;
-
-// External variables for time in the force colour management
-uint32_t MY_LED::forcedColorEndTime = 0; // Time (millis) when forced color should expire
-
-bool MY_LED::ledsEnabled = true;
-
-MY_LED::Colour MY_LED::forcedColourValue;
-
-const MY_LED::Colour MY_LED::white_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::White);
-const MY_LED::Colour MY_LED::black_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Black);
-const MY_LED::Colour MY_LED::default_foreground = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::White);
-const MY_LED::Colour MY_LED::default_background = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Black);
-const MY_LED::Colour MY_LED::red_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Red);
-const MY_LED::Colour MY_LED::yellow_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Yellow);
-const MY_LED::Colour MY_LED::green_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Green);
-const MY_LED::Colour MY_LED::blue_colour = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::Blue);
-const MY_LED::Colour MY_LED::dark_blue = MY_LED::led_get_colour_from_pointer(&MY_LED::Colours::DarkCyan);
-
-void MY_LED::led_init()
+MY::LED::LED::LED(const uint32_t led_number, const uint8_t led_pin, const neoPixelType led_type, const MY::LED::Colour default_foreground, const MY::LED::Colour default_background, const MY::LED::Colour forced_colour, const uint32_t forced_colour_end_time, const uint8_t led_brightness)
+    : _led_number(led_number), _led_pin(led_pin), _led_type(led_type), _led_strip(led_number, _led_pin, led_type), _default_foreground(default_foreground), _default_background(default_background), _forced_colour_value(forced_colour), _forced_colour_end_time(forced_colour_end_time), _led_brightness(led_brightness)
 {
-    if (LedStripInitialized) {
+    _led_strip_initialized = false;
+    _leds_enabled = true;
+    _forced_colour = false;
+}
+
+MY::LED::LED::~LED() {}
+
+/**
+ * @brief Clear (set) pixels after `count` to a background colour and return the effective count.
+ *
+ * The function clamps `count` to a valid range and writes `colour` to
+ * pixels in the range [count .. LED_NUMBER-1]. Returns the clamped value.
+ *
+ * @param count Number of LEDs to keep active (defaults to `LED_NUMBER`).
+ * @param colour Background `Colour` to write to remaining pixels.
+ * @return int16_t Effective (clamped) count.
+ */
+int16_t MY::LED::LED::_clear_remaining_count(int16_t count = LED_NUMBER, const Colour &colour)
+{
+    if (count < 0 || count > LED_NUMBER) {
+        count = LED_NUMBER;
+    }
+    const uint32_t col = _led_strip.Color(colour.r, colour.g, colour.b, colour.w);
+    for (uint16_t i = count; i < LED_NUMBER; i++) {
+        _led_strip.setPixelColor(i, col); // turn off remaining LEDs
+    }
+    return count;
+}
+
+/**
+ * @brief Write `colour` to the first `count` pixels and fill the remainder with `background`.
+ *
+ * `count` is clamped to a valid range. Pixels [0..count-1] are set to
+ * `colour` (using the strip's `Color()` helper). Remaining pixels are
+ * written with `background` and the strip is updated with `LedStrip.show()`.
+ *
+ * @param colour Foreground `Colour` to display (defaults to `default_foreground`).
+ * @param count Number of pixels to set (default: all pixels).
+ * @param background Background `Colour` to write to remaining pixels.
+ */
+void MY::LED::LED::_fill_colour(const MY::LED::Colour &colour, int16_t count = -1, const MY::LED::Colour &background)
+{
+    count = _clamp_count(count);
+    const uint32_t FgCol = _led_strip.Color(colour.r, colour.g, colour.b, colour.w);
+    for (uint16_t i = 0; i < count; i++) {
+        _led_strip.setPixelColor(i, FgCol);
+    }
+    _clear_remaining_count(count, background);
+    _led_strip.show();
+}
+
+void MY::LED::LED::_process_timer(const uint32_t duration)
+{
+    if (duration > 0) {
+        _forced_colour_end_time = millis() + duration;
+    } else {
+        _forced_colour_end_time = 0; // infinite
+    }
+}
+
+/**
+ * @brief Move a node's position according to its step and timing settings.
+ *
+ * This helper advances `item.pos` by `item.pos_step` when the node's
+ * internal tick timer indicates it is time to update. Positions are
+ * clamped within `[0 .. LED_NUMBER-1]`. Node wrapping/disabling is triggered
+ * only when the computed new position would exceed bounds, avoiding off-by-one
+ * issues where nodes wrap prematurely when simply reaching the edge.
+ *
+ * Fixed in recent updates:
+ * - Uses int32_t arithmetic to prevent unsigned underflow
+ * - Wrap condition based on computed position, not current position
+ * - Proper bounds checking for both directions
+ *
+ * @param item `ColourPos` node to move.
+ * @param pos Current reference position (unused but kept for compatibility).
+ */
+void MY::LED::LED::_move_pixel(ColourPos &item, const uint16_t pos)
+{
+    item.tick_animation.tick();
+    if (!item.tick_animation.ticked()) {
+        return; // not time yet
+    }
+
+    // CRITICAL: Use int32_t to safely handle uint16_t + int16_t arithmetic
+    // This prevents unsigned underflow when pos_step is negative
+    int32_t new_pos = (int32_t)item.pos + (int32_t)item.pos_step;
+
+    // Clamp position within bounds
+    int16_t new_pos_clamped = _clamp_index_inclusif((int16_t)new_pos);
+
+    item.pos = (uint16_t)new_pos_clamped;
+
+    // Optional: auto-disable after hitting the end.
+    // Only trigger wrap/disable when the computed `new_pos` goes beyond bounds.
+    // This prevents wrapping when the node simply reaches the last index
+    // but hasn't attempted to move past it (avoids off-by-one).
+    if ((item.pos_step >= 0 && new_pos > (int32_t)_led_number - 1) ||
+        (item.pos_step < 0 && new_pos < 0)) {
+        if (item.disable_on_complete) {
+            item.node_enabled = false;
+        } else {
+            if (item.pos_step >= 0) {
+                item.pos = 0; // wrap to start
+            } else {
+                item.pos = _led_number - 1; // wrap to end
+            }
+        }
+    }
+}
+
+
+void MY::LED::LED::init()
+{
+    if (_led_strip_initialized) {
         return;
     }
-    LedStrip.begin();             // initialize GPIO / strip
-    LedStrip.setBrightness(LED_BRIGHTNESS);
-    LedStrip.show();              // clear LEDs
-    LedStripInitialized = true;
+    _led_strip.begin();             // initialize GPIO / strip
+    _led_strip.setBrightness(_led_brightness);
+    _led_strip.show();              // clear LEDs
+    _led_strip_initialized = true;
 }
 
-void MY_LED::led_off()
+void MY::LED::LED::off()
 {
-    ledsEnabled = false;
-    LedStrip.clear();
-    LedStrip.show();
+    _leds_enabled = false;
+    _led_strip.clear();
+    _led_strip.show();
 }
 
-void MY_LED::led_on()
+void MY::LED::LED::on()
 {
-    ledsEnabled = true;
-    forcedColor = false;
-    LedStrip.begin();
-    LedStrip.setBrightness(LED_BRIGHTNESS);
-    LedStrip.show();
+    _leds_enabled = true;
+    _forced_colour = false;
+    _led_strip.begin();
+    _led_strip.setBrightness(_led_brightness);
+    _led_strip.show();
 }
 
-void MY_LED::led_clear()
+void MY::LED::LED::clear()
 {
-    forcedColor = false;
-    LedStrip.clear();
-    LedStrip.show();
+    _forced_colour = false;
+    _led_strip.clear();
+    _led_strip.show();
 }
 
-void MY_LED::led_step(int16_t count)
+void MY::LED::LED::step(int16_t count)
 {
-    _led_update_forced_color_duration();
+    _update_forced_color_duration();
     count = _clamp_count(count);
 
     // If still forced, maintain the forced color
-    if (forcedColor) {
-        _led_fill_colour(forcedColourValue, count);
+    if (_forced_colour) {
+        _fill_colour(_forced_colour_value, count);
         return;
     }
 
-    if (!ledsEnabled) {
+    if (!_leds_enabled) {
         return;
     }
 
     // Pick a new random color
-    Colour currentColour = led_read_colour_from_list(-1);
+    Colour current_colour = read_colour_from_list(-1);
 
-    _led_fill_colour(currentColour, count);
+    _fill_colour(current_colour, count);
     return;
 }
 
-void MY_LED::led_set_colour(const MY_LED::Colour &colour, const uint32_t duration, const int16_t count, const MY_LED::Colour &background)
+void MY::LED::LED::set_colour(const MY::LED::Colour &colour, const uint32_t duration, const int16_t count, const MY::LED::Colour &background)
 {
     int16_t count_clamped = _clamp_count(count);
-    forcedColor = true;
-    forcedColourValue = colour;
+    _forced_colour = true;
+    _forced_colour_value = colour;
 
-    _led_fill_colour(colour, count_clamped, background);
+    _fill_colour(colour, count_clamped, background);
 
-    _led_process_timer(duration);
+    _process_timer(duration);
 }
 
-void MY_LED::led_set_led_position(const uint16_t led_index, const Colour &colour, const uint32_t duration, const bool refresh)
+void MY::LED::LED::set_colour_from_list(const int16_t index = 0, const uint32_t duration = 0, const int16_t count = -1)
 {
+    Colour colour = read_colour_from_list(index);
+    set_colour(colour, duration, count);
+}
 
+void MY::LED::LED::set_led_position(const uint16_t led_index, const Colour &colour, const uint32_t duration, const bool refresh)
+{
     // Clamp indices to valid range
     uint16_t led_index_cleaned = _clamp_index_inclusif(led_index);
 
-    const uint32_t fgPacked = LedStrip.Color(
+    const uint32_t fgPacked = _led_strip.Color(
         colour.r,
         colour.g,
         colour.b,
         colour.w
     );
     // Fill background first
-    LedStrip.setPixelColor(led_index_cleaned, fgPacked);
+    _led_strip.setPixelColor(led_index_cleaned, fgPacked);
     if (refresh) {
-        LedStrip.show();
+        _led_strip.show();
     }
-    _led_process_timer(duration);
+    _process_timer(duration);
 }
 
-void MY_LED::led_set_colour_from_offset(const uint16_t start_index, const uint16_t end_index, const Colour &foreground, const Colour &background, const uint32_t duration)
+void MY::LED::LED::set_led_position_from_list(const uint16_t led_index, const int16_t colour_index, const uint32_t duration, const bool refresh)
 {
-    forcedColor = true;
-    forcedColourValue = foreground;
+    const Colour foreground = read_colour_from_list(colour_index);
+    set_led_position(led_index, foreground, duration, refresh);
+}
+
+void MY::LED::LED::set_colour_from_offset(const uint16_t start_index, const uint16_t end_index, const Colour &foreground, const Colour &background, const uint32_t duration)
+{
+    _forced_colour = true;
+    _forced_colour_value = foreground;
 
     // Ensure start_index <= end_index
     uint16_t start_index_cleaned = start_index;
     uint16_t end_index_cleaned = end_index;
     if (start_index_cleaned > end_index_cleaned) {
-        MyUtils::swap(start_index_cleaned, end_index_cleaned);
+        My::Utils::swap(start_index_cleaned, end_index_cleaned);
     }
 
     // Clamp indices to valid range
     start_index_cleaned = _clamp_index_inclusif(start_index_cleaned);
     end_index_cleaned = _clamp_index_inclusif(end_index_cleaned);
 
-    const uint32_t fgPacked = LedStrip.Color(
+    const uint32_t fgPacked = _led_strip.Color(
         foreground.r,
         foreground.g,
         foreground.b,
         foreground.w
     );
 
-    const uint32_t bgPacked = LedStrip.Color(
+    const uint32_t bgPacked = _led_strip.Color(
         background.r,
         background.g,
         background.b,
@@ -171,20 +282,21 @@ void MY_LED::led_set_colour_from_offset(const uint16_t start_index, const uint16
     // Fill background first
     for (uint16_t i = 0; i < LED_NUMBER; i++) {
         if (i >= start_index_cleaned && i <= end_index_cleaned) {
-            LedStrip.setPixelColor(i, fgPacked);
+            _led_strip.setPixelColor(i, fgPacked);
         } else {
-            LedStrip.setPixelColor(i, bgPacked);
+            _led_strip.setPixelColor(i, bgPacked);
         }
     }
-    LedStrip.show();
-    _led_process_timer(duration);
+    _led_strip.show();
+    _process_timer(duration);
 }
 
-void MY_LED::led_fancy(MY_LED::ColourPos *items, const size_t length, const MY_LED::Colour &background, const uint32_t duration)
-{
-    forcedColor = true;
 
-    const uint32_t bgPacked = LedStrip.Color(
+void MY::LED::LED::fancy(MY::LED::ColourPos *items, const size_t length, const MY::LED::Colour &background, const uint32_t duration)
+{
+    _forced_colour = true;
+
+    const uint32_t bgPacked = _led_strip.Color(
         background.r,
         background.g,
         background.b,
@@ -193,7 +305,7 @@ void MY_LED::led_fancy(MY_LED::ColourPos *items, const size_t length, const MY_L
 
     // 1. Fill background
     for (uint16_t i = 0; i < LED_NUMBER; i++) {
-        LedStrip.setPixelColor(i, bgPacked);
+        _led_strip.setPixelColor(i, bgPacked);
     }
 
     // 2. Apply overlays
@@ -209,9 +321,9 @@ void MY_LED::led_fancy(MY_LED::ColourPos *items, const size_t length, const MY_L
         if (pos < LED_NUMBER) {
             // Set pixel color
             const Colour &c = items[i].colour;
-            LedStrip.setPixelColor(
+            _led_strip.setPixelColor(
                 pos,
-                LedStrip.Color(c.r, c.g, c.b, c.w)
+                _led_strip.Color(c.r, c.g, c.b, c.w)
             );
         }
 
@@ -219,8 +331,8 @@ void MY_LED::led_fancy(MY_LED::ColourPos *items, const size_t length, const MY_L
         _move_pixel(items[i], pos);
     }
 
-    LedStrip.show();
+    _led_strip.show();
 
-    _led_process_timer(duration);
+    _process_timer(duration);
 }
 
