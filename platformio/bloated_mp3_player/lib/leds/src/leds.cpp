@@ -27,15 +27,15 @@
 #include "internal/config.hpp"
 #include "internal/my_utils.hpp"
 
-const MY::LED::Colour MY::LED::white_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::White);
-const MY::LED::Colour MY::LED::black_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Black);
-const MY::LED::Colour MY::LED::red_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Red);
-const MY::LED::Colour MY::LED::yellow_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Yellow);
-const MY::LED::Colour MY::LED::green_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Green);
-const MY::LED::Colour MY::LED::blue_colour = MY::LED::get_colour_from_pointer(&MY::LED::Colours::Blue);
-const MY::LED::Colour MY::LED::dark_blue = MY::LED::get_colour_from_pointer(&MY::LED::Colours::DarkCyan);
+const My::LED::Colour My::LED::white_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::White);
+const My::LED::Colour My::LED::black_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::Black);
+const My::LED::Colour My::LED::red_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::Red);
+const My::LED::Colour My::LED::yellow_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::Yellow);
+const My::LED::Colour My::LED::green_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::Green);
+const My::LED::Colour My::LED::blue_colour = My::LED::get_colour_from_pointer(&My::LED::Colours::Blue);
+const My::LED::Colour My::LED::dark_blue = My::LED::get_colour_from_pointer(&My::LED::Colours::DarkCyan);
 
-MY::LED::LED::LED(const uint32_t led_number, const uint8_t led_pin, const neoPixelType led_type, const MY::LED::Colour default_foreground, const MY::LED::Colour default_background, const MY::LED::Colour forced_colour, const uint32_t forced_colour_end_time, const uint8_t led_brightness)
+My::LED::LED::LED(const uint32_t led_number, const uint8_t led_pin, const neoPixelType led_type, const My::LED::Colour default_foreground, const My::LED::Colour default_background, const My::LED::Colour forced_colour, const uint32_t forced_colour_end_time, const uint8_t led_brightness)
     : _led_number(led_number), _led_pin(led_pin), _led_type(led_type), _led_strip(led_number, _led_pin, led_type), _default_foreground(default_foreground), _default_background(default_background), _forced_colour_value(forced_colour), _forced_colour_end_time(forced_colour_end_time), _led_brightness(led_brightness)
 {
     _led_strip_initialized = false;
@@ -43,7 +43,7 @@ MY::LED::LED::LED(const uint32_t led_number, const uint8_t led_pin, const neoPix
     _forced_colour = false;
 }
 
-MY::LED::LED::~LED() {}
+My::LED::LED::~LED() {}
 
 /**
  * @brief Clear (set) pixels after `count` to a background colour and return the effective count.
@@ -55,7 +55,7 @@ MY::LED::LED::~LED() {}
  * @param colour Background `Colour` to write to remaining pixels.
  * @return int16_t Effective (clamped) count.
  */
-int16_t MY::LED::LED::_clear_remaining_count(int16_t count = LED_NUMBER, const Colour &colour)
+int16_t My::LED::LED::_clear_remaining_count(int16_t count = LED_NUMBER, const Colour &colour)
 {
     if (count < 0 || count > LED_NUMBER) {
         count = LED_NUMBER;
@@ -78,7 +78,7 @@ int16_t MY::LED::LED::_clear_remaining_count(int16_t count = LED_NUMBER, const C
  * @param count Number of pixels to set (default: all pixels).
  * @param background Background `Colour` to write to remaining pixels.
  */
-void MY::LED::LED::_fill_colour(const MY::LED::Colour &colour, int16_t count = -1, const MY::LED::Colour &background)
+void My::LED::LED::_fill_colour(const My::LED::Colour &colour, int16_t count = -1, const My::LED::Colour &background)
 {
     count = _clamp_count(count);
     const uint32_t FgCol = _led_strip.Color(colour.r, colour.g, colour.b, colour.w);
@@ -89,7 +89,7 @@ void MY::LED::LED::_fill_colour(const MY::LED::Colour &colour, int16_t count = -
     _led_strip.show();
 }
 
-void MY::LED::LED::_process_timer(const uint32_t duration)
+void My::LED::LED::_process_timer(const uint32_t duration)
 {
     if (duration > 0) {
         _forced_colour_end_time = millis() + duration;
@@ -115,7 +115,7 @@ void MY::LED::LED::_process_timer(const uint32_t duration)
  * @param item `ColourPos` node to move.
  * @param pos Current reference position (unused but kept for compatibility).
  */
-void MY::LED::LED::_move_pixel(ColourPos &item, const uint16_t pos)
+void My::LED::LED::_move_pixel(ColourPos &item, const uint16_t pos)
 {
     item.tick_animation.tick();
     if (!item.tick_animation.ticked()) {
@@ -150,7 +150,7 @@ void MY::LED::LED::_move_pixel(ColourPos &item, const uint16_t pos)
 }
 
 
-void MY::LED::LED::init()
+void My::LED::LED::init()
 {
     if (_led_strip_initialized) {
         return;
@@ -161,14 +161,14 @@ void MY::LED::LED::init()
     _led_strip_initialized = true;
 }
 
-void MY::LED::LED::off()
+void My::LED::LED::off()
 {
     _leds_enabled = false;
     _led_strip.clear();
     _led_strip.show();
 }
 
-void MY::LED::LED::on()
+void My::LED::LED::on()
 {
     _leds_enabled = true;
     _forced_colour = false;
@@ -177,14 +177,14 @@ void MY::LED::LED::on()
     _led_strip.show();
 }
 
-void MY::LED::LED::clear()
+void My::LED::LED::clear()
 {
     _forced_colour = false;
     _led_strip.clear();
     _led_strip.show();
 }
 
-void MY::LED::LED::step(int16_t count)
+void My::LED::LED::step(int16_t count)
 {
     _update_forced_color_duration();
     count = _clamp_count(count);
@@ -206,7 +206,7 @@ void MY::LED::LED::step(int16_t count)
     return;
 }
 
-void MY::LED::LED::set_colour(const MY::LED::Colour &colour, const uint32_t duration, const int16_t count, const MY::LED::Colour &background)
+void My::LED::LED::set_colour(const My::LED::Colour &colour, const uint32_t duration, const int16_t count, const My::LED::Colour &background)
 {
     int16_t count_clamped = _clamp_count(count);
     _forced_colour = true;
@@ -217,13 +217,13 @@ void MY::LED::LED::set_colour(const MY::LED::Colour &colour, const uint32_t dura
     _process_timer(duration);
 }
 
-void MY::LED::LED::set_colour_from_list(const int16_t index = 0, const uint32_t duration = 0, const int16_t count = -1)
+void My::LED::LED::set_colour_from_list(const int16_t index = 0, const uint32_t duration = 0, const int16_t count = -1)
 {
     Colour colour = read_colour_from_list(index);
     set_colour(colour, duration, count);
 }
 
-void MY::LED::LED::set_led_position(const uint16_t led_index, const Colour &colour, const uint32_t duration, const bool refresh)
+void My::LED::LED::set_led_position(const uint16_t led_index, const Colour &colour, const uint32_t duration, const bool refresh)
 {
     // Clamp indices to valid range
     uint16_t led_index_cleaned = _clamp_index_inclusif(led_index);
@@ -242,13 +242,13 @@ void MY::LED::LED::set_led_position(const uint16_t led_index, const Colour &colo
     _process_timer(duration);
 }
 
-void MY::LED::LED::set_led_position_from_list(const uint16_t led_index, const int16_t colour_index, const uint32_t duration, const bool refresh)
+void My::LED::LED::set_led_position_from_list(const uint16_t led_index, const int16_t colour_index, const uint32_t duration, const bool refresh)
 {
     const Colour foreground = read_colour_from_list(colour_index);
     set_led_position(led_index, foreground, duration, refresh);
 }
 
-void MY::LED::LED::set_colour_from_offset(const uint16_t start_index, const uint16_t end_index, const Colour &foreground, const Colour &background, const uint32_t duration)
+void My::LED::LED::set_colour_from_offset(const uint16_t start_index, const uint16_t end_index, const Colour &foreground, const Colour &background, const uint32_t duration)
 {
     _forced_colour = true;
     _forced_colour_value = foreground;
@@ -292,7 +292,7 @@ void MY::LED::LED::set_colour_from_offset(const uint16_t start_index, const uint
 }
 
 
-void MY::LED::LED::fancy(MY::LED::ColourPos *items, const size_t length, const MY::LED::Colour &background, const uint32_t duration)
+void My::LED::LED::fancy(My::LED::ColourPos *items, const size_t length, const My::LED::Colour &background, const uint32_t duration)
 {
     _forced_colour = true;
 

@@ -25,7 +25,7 @@
 #include "config.hpp"
 #include "leds_structs.hpp"
 
-namespace MY
+namespace My
 {
     namespace LED
     {
@@ -553,4 +553,4 @@ namespace MY
             extern const Colour YellowGreen PROGMEM;
         } // namespace Colours
     } //namespace LED
-} // namespace MY
+} // namespace My

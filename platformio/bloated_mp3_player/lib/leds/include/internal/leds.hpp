@@ -41,7 +41,7 @@
  * usage. Helper functions are provided to read colours from program memory
  * into RAM-safe `Colour` instances.
  */
-namespace MY
+namespace My
 {
     namespace LED
     {
@@ -188,7 +188,7 @@ namespace MY
 
         class LED {
             public:
-            LED(const uint32_t led_number, const uint8_t led_pin, const neoPixelType led_type, const MY::LED::Colour default_foreground = white_colour, const MY::LED::Colour default_background = black_colour, const MY::LED::Colour forced_colour = white_colour, const uint32_t forced_colour_end_time = 0, const uint8_t led_brightness = 200);
+            LED(const uint32_t led_number, const uint8_t led_pin, const neoPixelType led_type, const My::LED::Colour default_foreground = white_colour, const My::LED::Colour default_background = black_colour, const My::LED::Colour forced_colour = white_colour, const uint32_t forced_colour_end_time = 0, const uint8_t led_brightness = 200);
             ~LED();
 
             /** Initialize the LED subsystem (idempotent). */
@@ -243,7 +243,7 @@ namespace MY
              * @param count Number of LEDs to set (defaults to all).
              * @param background Optional background `Colour` for remaining pixels.
              */
-            void set_colour(const Colour &colour, const uint32_t duration = 0, const int16_t count = -1, const MY::LED::Colour &background);
+            void set_colour(const Colour &colour, const uint32_t duration = 0, const int16_t count = -1, const My::LED::Colour &background = black_colour);
 
             /**
              * @brief Convenience: select a colour from `colorList` and force it.
@@ -287,7 +287,7 @@ namespace MY
              * @param background Background `Colour` for the rest of the strip.
              * @param duration Duration in milliseconds to display (0 = infinite).
              */
-            void set_colour_from_offset(const uint16_t start_index = 0, const uint16_t end_index = 25 - 1, const Colour &foreground, const Colour &background, const uint32_t duration);
+            void set_colour_from_offset(const uint16_t start_index = 0, const uint16_t end_index = 25 - 1, const Colour &foreground = white_colour, const Colour &background = black_colour, const uint32_t duration = 0);
 
             /**
              * @brief Variant of `led_set_colour_from_offset` that selects colours from `colorList`.
@@ -327,7 +327,7 @@ namespace MY
             void fancy(ColourPos *items, const size_t length, const Colour &background, const uint32_t duration = 0);
 
 
-            inline void display_percentage(const MY::LED::Colour &fg, const MY::LED::Colour &bg, const int16_t current, const int16_t max_steps)
+            inline void display_percentage(const My::LED::Colour &fg, const My::LED::Colour &bg, const int16_t current, const int16_t max_steps)
             {
                 int16_t progress = My::Utils::leds_for_progress<int16_t>(
                     current,
@@ -398,7 +398,7 @@ namespace MY
              * @param colour Background `Colour` to write to remaining pixels.
              * @return int16_t Effective (clamped) count.
              */
-            inline int16_t _clear_remaining_count(int16_t count = LED_NUMBER, const Colour &colour);
+            inline int16_t _clear_remaining_count(int16_t count = 25, const Colour &colour = black_colour);
             /**
              * @brief Write `colour` to the first `count` pixels and fill the remainder with `background`.
              *
@@ -410,7 +410,7 @@ namespace MY
              * @param count Number of pixels to set (default: all pixels).
              * @param background Background `Colour` to write to remaining pixels.
              */
-            void _fill_colour(const Colour &colour, int16_t count = -1, const Colour &background);
+            void _fill_colour(const Colour &colour, int16_t count = -1, const Colour &background = black_colour);
 
             void _process_timer(const uint32_t duration);
 

@@ -26,7 +26,7 @@
 #include <Arduino.h>
 #include "sentinels.hpp"
 
-namespace MY
+namespace My
 {
     namespace LED
     {
