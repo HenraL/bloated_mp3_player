@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: config.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 21:12:56 17-07-2026
+* LAST Modified: 23:40:14 20-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -26,7 +26,9 @@
 #include <stdint.h>
 #include <U8g2lib.h>
 #include "config/pins.hpp"
+#include "config/delays.hpp"
 #include "config/priorities.hpp"
+#include "config/onboard_led.hpp"
 
 
 namespace My
@@ -52,5 +54,6 @@ namespace My
         // ─── Matrix Setup ───────────────────────────────────────────────────────
         static const uint16_t MATRIX_LED_COUNT_HORIZONTAL = 16;
         static const uint16_t MATRIX_LED_COUNT_VERTICAL = 16;
-    } // namespace Config        
+
+    } // namespace Config
 } // namespace My
