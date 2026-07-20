@@ -441,6 +441,7 @@ const My::LED::Colour My::LED::Colours::Purple2 PROGMEM = My::LED::Colour(145, 4
 const My::LED::Colour My::LED::Colours::Purple3 PROGMEM = My::LED::Colour(125, 38, 205, My::LED::WHITE_LEVEL);
 const My::LED::Colour My::LED::Colours::Purple4 PROGMEM = My::LED::Colour(85, 26, 139, My::LED::WHITE_LEVEL);
 const My::LED::Colour My::LED::Colours::Purple5 PROGMEM = My::LED::Colour(160, 32, 240, My::LED::WHITE_LEVEL);
+const My::LED::Colour My::LED::Colours::RebeccaPurple PROGMEM = My::LED::Colour(102, 51, 153, My::LED::WHITE_LEVEL);
 const My::LED::Colour My::LED::Colours::Red PROGMEM = My::LED::Colour(255, 0, 0, My::LED::WHITE_LEVEL);
 const My::LED::Colour My::LED::Colours::Red2 PROGMEM = My::LED::Colour(238, 0, 0, My::LED::WHITE_LEVEL);
 const My::LED::Colour My::LED::Colours::Red3 PROGMEM = My::LED::Colour(205, 0, 0, My::LED::WHITE_LEVEL);

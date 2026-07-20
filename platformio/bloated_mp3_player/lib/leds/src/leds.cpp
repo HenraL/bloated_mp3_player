@@ -242,6 +242,11 @@ void My::LED::LED::set_led_position(const uint16_t led_index, const Colour &colo
     _process_timer(duration);
 }
 
+void My::LED::LED::set_led_colour(const uint16_t led_index, const Colour &colour, const uint32_t duration, const bool refresh)
+{
+    set_led_position(led_index, colour, duration, refresh);
+}
+
 void My::LED::LED::set_led_position_from_list(const uint16_t led_index, const int16_t colour_index, const uint32_t duration, const bool refresh)
 {
     const Colour foreground = read_colour_from_list(colour_index);

@@ -265,6 +265,18 @@ namespace My
             void set_led_position(const uint16_t led_index, const Colour &colour, const uint32_t duration = 0, const bool refresh = true);
 
             /**
+             * @brief Set a single LED pixel to a colour for a duration.
+             *
+             * @param led_index Index of LED to set.
+             * @param colour Colour to write to the LED (defaults to `default_foreground`).
+             * @param duration Duration in milliseconds to keep the colour (0 = infinite).
+             * @param refresh If true the strip is refreshed immediately (`LedStrip.show()`).
+             *
+             * @note This is a passthrough function for set led position provided for convenience of intuition.
+             */
+            void set_led_colour(const uint16_t led_index, const Colour &colour, const uint32_t duration = 0, const bool refresh = true);
+
+            /**
              * @brief Convenience wrapper for `led_set_led_position` that selects the colour from `colorList`.
              *
              * @param led_index Index of LED to set.
