@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: animations.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 12:26:8 21-07-2026
+* LAST Modified: 12:28:51 21-07-2026
 * DESCRIPTION:
 * Implementation of the RGB matrix animations. Each frame is computed
 * with the kind of brute-force enthusiasm that would make a Vogon proud.
@@ -184,8 +184,7 @@ void Matrix::tick_babel_fish()
     }
 }
 
-void Matrix::drawAscii(const uint8_t *data, uint16_t w, uint16_t h,
-    uint16_t x, uint16_t y)
+void Matrix::drawAscii(const uint8_t *data, uint16_t w, uint16_t h, uint16_t x, uint16_t y)
 {
     uint16_t rw = state.row_width;
     for (uint16_t iy = 0; iy < h && (y + iy) * rw + x < s_led_count; iy++) {
