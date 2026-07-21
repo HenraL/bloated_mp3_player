@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_audio.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 21:20:59 17-07-2026
+* LAST Modified: 16:10:21 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -34,12 +34,12 @@ namespace My
         // ─── Audio Task ───────────────────────────────────────────────────────
         void audio(void *pvParameters)
         {
+            SharedInstances::serial.serial_print("[Audio] So long, and thanks for all the fish.");
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(20);
 
             while (true) {
-                SharedInstances::serial.serial_print("[Audio] So long, and thanks for all the fish.");
                 PROFILE_BLOCK("audio_tick");
                 Audio::tick();
                 vTaskDelayUntil(&xLastWake, freq);

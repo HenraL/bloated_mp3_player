@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 12:3:38 21-07-2026
+* LAST Modified: 16:18:23 21-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -33,7 +33,6 @@
 
 // onboard libraries (compiled alongside the program)
 #include <leds.hpp>
-#include <screen.hpp>
 #include <matrix.hpp>
 #include <ultrasonic.hpp>
 #include <rotary.hpp>
@@ -46,7 +45,7 @@
 #include <fonts.hpp>
 #include <images.hpp>
 #include <uicommon.hpp>
-#include <uilcd.hpp>
+
 #include <uimatrix.hpp>
 #include <filexplorer.hpp>
 #include <turtle.hpp>
@@ -54,6 +53,23 @@
 // program level includes
 #include "my.hpp"
 #include "shared_instances.hpp"
+
+void boot_screen()
+{
+    // Screen
+    SharedInstances::lcd.begin();
+    SharedInstances::lcd.clear();
+    // Demo: draw a play icon from the generated assets
+    SharedInstances::lcd.drawAscii(baseline_play_circle_filled_black_48dp_bits,
+        baseline_play_circle_filled_black_48dp_WIDTH,
+        baseline_play_circle_filled_black_48dp_HEIGHT, 1, 1);
+    SharedInstances::lcd.display();
+    delay(500);
+    SharedInstances::lcd.clear();
+    SharedInstances::lcd.setFont(u8g2_font_ncenB08_tr);
+    SharedInstances::lcd.printAt("Booting...", 0, 30);
+    SharedInstances::lcd.display();
+}
 
 // ─── Setup ────────────────────────────────────────────────────────────
 void setup()
@@ -75,30 +91,14 @@ void setup()
     SharedInstances::onboard.set_colour(My::LED::blue_colour, 0, -1, My::LED::black_colour);
     SharedInstances::onboard.refresh();
 
-    // SPI bus for LCD
-    SPI.begin(My::Config::Pins::LCD_SCLK, My::Config::Pins::IC_SO, My::Config::Pins::LCD_MOSI);
-    pinMode(My::Config::Pins::LCD_RST, OUTPUT);
-    digitalWrite(My::Config::Pins::LCD_RST, LOW);
-    delay(10);
-    digitalWrite(My::Config::Pins::LCD_RST, HIGH);
-    delay(10);
+    // LCD Screen
+    SharedInstances::lcd.initialise();
+    boot_screen();
 
-    // Screen
-    SharedInstances::display.begin();
-    SharedInstances::display.clear();
-    // Demo: draw a play icon from the generated assets
-    SharedInstances::display.drawAscii(baseline_play_circle_filled_black_48dp_bits,
-        baseline_play_circle_filled_black_48dp_WIDTH,
-        baseline_play_circle_filled_black_48dp_HEIGHT, 1, 1);
-    SharedInstances::display.display();
-    delay(500);
-    SharedInstances::display.clear();
-    SharedInstances::display.setFont(u8g2_font_ncenB08_tr);
-    SharedInstances::display.printAt("Booting...", 0, 30);
-    SharedInstances::display.display();
+    // Depressed LED
+    SharedInstances::onboard.init();
 
     // LED matrix
-    SharedInstances::onboard.init();
     Matrix::begin(
         (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL),
         My::Config::MATRIX_LED_COUNT_HORIZONTAL,

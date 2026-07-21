@@ -225,6 +225,80 @@ namespace My
             }
 
             /**
+             * @brief Return the total number of LEDs in the strip.
+             * @return uint32_t LED count (set at construction).
+             */
+            inline uint32_t get_led_count() const { return _led_number; }
+
+            /**
+             * @brief Return the GPIO pin used for the LED strip.
+             * @return uint8_t Pin number (set at construction).
+             */
+            inline uint8_t get_pin() const { return _led_pin; }
+
+            /**
+             * @brief Return the current brightness level.
+             * @return uint8_t Brightness value 0–255 (set at construction).
+             */
+            inline uint8_t get_brightness() const { return _led_brightness; }
+
+            /**
+             * @brief Return the NeoPixel type (colour order / speed) flag.
+             * @return neoPixelType e.g. NEO_GRB + NEO_KHZ800.
+             */
+            inline neoPixelType get_pixel_type() const { return _led_type; }
+
+            /**
+             * @brief Check whether the strip has been initialised via `init()`.
+             * @return true if `init()` has been called; false otherwise.
+             */
+            inline bool get_led_strip_initialized() const { return _led_strip_initialized; }
+
+            /**
+             * @brief Return the default foreground colour.
+             * @return Colour Currently configured foreground.
+             */
+            inline Colour get_default_foreground() const { return _default_foreground; }
+
+            /**
+             * @brief Return the default background colour.
+             * @return Colour Currently configured background.
+             */
+            inline Colour get_default_background() const { return _default_background; }
+
+            /**
+             * @brief Return the colour being used during a forced-colour period.
+             * @return Colour Active forced colour value.
+             */
+            inline Colour get_forced_colour_value() const { return _forced_colour_value; }
+
+            /**
+             * @brief Check whether a forced colour is currently active.
+             * @return true if the strip is locked to a forced colour; false otherwise.
+             */
+            inline bool get_forced_colour() const { return _forced_colour; }
+
+            /**
+             * @brief Return the timestamp (ms) when the forced-colour period ends.
+             * @return uint32_t End time in milliseconds (0 = infinite).
+             */
+            inline uint32_t get_forced_colour_end_time() const { return _forced_colour_end_time; }
+
+            // ─── Setters ────────────────────────────────────────────────────
+
+            /**
+             * @brief Override the default foreground colour.
+             * @param c New foreground colour to use.
+             */
+            inline void set_default_foreground(const Colour &c) { _default_foreground = c; }
+
+            /**
+             * @brief Override the default background colour.
+             * @param c New background colour to use.
+             */
+            inline void set_default_background(const Colour &c) { _default_background = c; }
+
+            /**
              * @brief Periodic LED subsystem update; call from the application's main loop.
              *
              * @param count Optional number of LEDs to update (defaults to all).

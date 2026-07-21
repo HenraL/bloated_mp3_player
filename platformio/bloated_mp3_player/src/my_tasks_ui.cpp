@@ -23,7 +23,6 @@
 */
 
 #include <audio.hpp>
-#include <screen.hpp>
 #include <environmental.hpp>
 #include "my/tasks.hpp"
 #include "my/config.hpp"
@@ -42,30 +41,30 @@ namespace My
 
             while (true) {
                 SharedInstances::serial.serial_print("[UI] Mostly harmless.");
-                SharedInstances::display.clear();
-                SharedInstances::display.setFont(My::Config::FONT_TITLE);
-                SharedInstances::display.printAt("Bloated MP3 v1.0", 0, 12);
-                SharedInstances::display.setFont(My::Config::FONT_BODY);
+                SharedInstances::lcd.clear();
+                SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
+                SharedInstances::lcd.printAt("Bloated MP3 v1.0", 0, 12);
+                SharedInstances::lcd.setFont(My::Config::FONT_BODY);
 
                 Environmental::Reading env;
                 if (Environmental::read(env)) {
-                    SharedInstances::display.printAt(0, 24, "Temp: %.1f C", env.temperature);
-                    SharedInstances::display.printAt(0, 32, "Hum:  %.0f %%", env.humidity);
-                    SharedInstances::display.printAt(0, 40, "Pres: %.0f hPa", env.pressure);
+                    SharedInstances::lcd.printAt(0, 24, "Temp: %.1f C", env.temperature);
+                    SharedInstances::lcd.printAt(0, 32, "Hum:  %.0f %%", env.humidity);
+                    SharedInstances::lcd.printAt(0, 40, "Pres: %.0f hPa", env.pressure);
                 }
 
-                SharedInstances::display.printAt(0, 50, "Uptime: %lus", millis() / 1000);
+                SharedInstances::lcd.printAt(0, 50, "Uptime: %lus", millis() / 1000);
 
                 if (Audio::is_playing()) {
-                    SharedInstances::display.printAt(76, 24, ">> PLAY");
+                    SharedInstances::lcd.printAt(76, 24, ">> PLAY");
                 } else {
-                    SharedInstances::display.printAt(76, 24, "|| STOP");
+                    SharedInstances::lcd.printAt(76, 24, "|| STOP");
                 }
 
-                SharedInstances::display.drawRect(0, 54, 128, 8);
-                SharedInstances::display.fillRect(2, 56, ((millis() / 100) % 100) * 124 / 100, 4);
+                SharedInstances::lcd.drawRect(0, 54, 128, 8);
+                SharedInstances::lcd.fillRect(2, 56, ((millis() / 100) % 100) * 124 / 100, 4);
 
-                SharedInstances::display.display();
+                SharedInstances::lcd.display();
                 vTaskDelayUntil(&xLastWake, freq);
             }
         }

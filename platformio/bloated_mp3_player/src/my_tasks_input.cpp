@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_input.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:4:28 21-07-2026
+* LAST Modified: 16:10:36 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -35,12 +35,12 @@ namespace My
         // ─── Input Task ───────────────────────────────────────────────────────
         void input(void *pvParameters)
         {
+            SharedInstances::serial.serial_print("[Input] Don't Panic.");
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(10);
 
             while (true) {
-                SharedInstances::serial.serial_print("[Input] Don't Panic.");
                 Rotary::tick();
                 Ultrasonic::gesture_tick();
 
