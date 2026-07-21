@@ -15,21 +15,19 @@ void MatrixCanvas::pixel(int16_t x, int16_t y, My::LED::Colour c)
     if (x < 0 || x >= (int16_t)Matrix::width() ||
         y < 0 || y >= (int16_t)Matrix::height())
         return;
-    My::LED::LedStrip.setPixelColor(_idx(x, y),
-        My::LED::LedStrip.Color(c.r, c.g, c.b, c.w));
+    Matrix::set_pixel(_idx(x, y), c);
 }
 
 void MatrixCanvas::clear(My::LED::Colour c)
 {
     for (uint16_t i = 0; i < Matrix::led_count(); i++) {
-        My::LED::LedStrip.setPixelColor(i,
-            My::LED::LedStrip.Color(c.r, c.g, c.b, c.w));
+        Matrix::set_pixel(i, c);
     }
 }
 
 void MatrixCanvas::show()
 {
-    My::LED::led_refresh();
+    Matrix::show();
 }
 
 void MatrixCanvas::draw_image(int16_t x, int16_t y, const uint8_t *data,

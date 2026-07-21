@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: animations.hpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 12:25:38 21-07-2026
 * DESCRIPTION:
 * Pre-canned animation sequences for the RGB matrix. Includes the
 * obligatory Babel Fish easter egg, because no self-respecting
@@ -54,7 +54,7 @@ namespace Matrix
         uint16_t row_width = 8;
     };
 
-    void begin(uint16_t led_count = 64, uint16_t row_width = 8);
+    void begin(uint16_t led_count = 64, uint16_t row_width = 8, uint8_t pin = 3);
     void set_animation(Animation anim);
     Animation get_animation();
     void tick();
@@ -73,4 +73,7 @@ namespace Matrix
 
     void drawAscii(const uint8_t *data, uint16_t w, uint16_t h,
                    uint16_t x, uint16_t y);
+
+    void set_pixel(uint16_t index, My::LED::Colour c);
+    void show();
 }

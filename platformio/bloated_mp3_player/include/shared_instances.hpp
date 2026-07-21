@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: shared_instances.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 23:1:1 20-07-2026
+* LAST Modified: 12:12:5 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -29,7 +29,8 @@
 #include <uilcd.hpp>
 #include <matrix.hpp>
 #include <uimatrix.hpp>
-#include "my.hpp"
+#include "my/serial.hpp"
+#include "my/threads.hpp"
 
 namespace SharedInstances
 {
@@ -39,5 +40,5 @@ namespace SharedInstances
     extern MatrixCanvas matrix_cvs;
     extern My::LED::LED onboard;
     extern My::Serial serial;
-    extern My::Threads threads;
+    extern My::Threads my_threads;
 }

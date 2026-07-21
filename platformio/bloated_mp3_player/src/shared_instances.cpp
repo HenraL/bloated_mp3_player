@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: shared_instances.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 23:1:18 20-07-2026
+* LAST Modified: 12:1:41 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -33,5 +33,5 @@ namespace SharedInstances
     MatrixCanvas matrix_cvs;
     My::LED::LED onboard(1, My::Config::Pins::ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800);
     My::Serial serial(SERIAL_MSG_LEN, SERIAL_QUEUE_LEN, My::Config::UART_BAUD);
-    My::Threads threads;
+    My::Threads my_threads;
 }

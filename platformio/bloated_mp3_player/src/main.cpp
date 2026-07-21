@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 11:17:1 21-07-2026
+* LAST Modified: 12:3:38 21-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -60,7 +60,7 @@ void setup()
 {
     // Initialise serial
     SharedInstances::serial.initialise();
-    SharedInstances::threads.initialise_serial();
+    SharedInstances::my_threads.initialise_serial();
     delay(My::Config::Delays::SERIAL_INITIALISATION_DELAY);
 
     // From now on all output goes through the serial queue, so there is
@@ -99,7 +99,11 @@ void setup()
 
     // LED matrix
     SharedInstances::onboard.init();
-    Matrix::begin((My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL));
+    Matrix::begin(
+        (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL),
+        My::Config::MATRIX_LED_COUNT_HORIZONTAL,
+        My::Config::Pins::MATRIX_PIN
+    );
     Matrix::set_animation(Matrix::Animation::Rainbow);
 
     // I2C sensors 
@@ -133,24 +137,14 @@ void setup()
     Bluetooth::begin("BloatedMP3");
 
     // ─── Spawn FreeRTOS tasks ─────────────────────────────────────────
-    My::Threads::initialise_ui();
-    My::Threads::initialise_audio();
-    My::Threads::initialise_sensors();
-    My::Threads::initialise_led();
-    My::Threads::initialise_matrix();
-    My::Threads::initialise_input();
-    // xTaskCreatePinnedToCore(ui_task, "UI", 4096, NULL, 1,
-    //     &ui_task_handle, 1);
-    // xTaskCreatePinnedToCore(audio_task, "Audio", 2048, NULL, 3,
-    //     &audio_task_handle, 0);
-    // xTaskCreatePinnedToCore(sensor_task, "Sensors", 2048, NULL, 1,
-    //     &sensor_task_handle, 0);
-    // xTaskCreatePinnedToCore(led_task, "LEDs", 2048, NULL, 1,
-    //     &led_task_handle, 1);
-    // xTaskCreatePinnedToCore(input_task, "Input", 2048, NULL, 2,
-    //     &input_task_handle, 0);
+    SharedInstances::my_threads.initialise_ui();
+    SharedInstances::my_threads.initialise_audio();
+    SharedInstances::my_threads.initialise_sensors();
+    SharedInstances::my_threads.initialise_led();
+    SharedInstances::my_threads.initialise_matrix();
+    SharedInstances::my_threads.initialise_input();
 
-    My::Serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
+    SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
     Profiler::dump_task_stats();
 }
 
