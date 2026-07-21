@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: structures.hpp
 * CREATION DATE: 20-07-2026
-* LAST Modified: 0:49:57 21-07-2026
+* LAST Modified: 11:10:57 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -46,7 +46,5 @@ namespace My
             // Type used for the duration of an led colour
             typedef uint16_t duration_ms_t;
         } // namespace Structures
-
     } // namespace Config
-
 } // namespace My

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: animations.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 22:54:44 20-07-2026
 * DESCRIPTION:
 * Implementation of the RGB matrix animations. Each frame is computed
 * with the kind of brute-force enthusiasm that would make a Vogon proud.
@@ -46,7 +46,8 @@ static const uint8_t sin8_lut[256] PROGMEM = {
     79,82,85,88,90,93,97,100,103,106,109,112,115,118,121,124
 };
 
-static inline uint8_t sin8(uint8_t input) {
+static inline uint8_t sin8(uint8_t input)
+{
     return pgm_read_byte(&sin8_lut[input]);
 }
 
@@ -57,13 +58,13 @@ void Matrix::begin(uint16_t count, uint16_t row_width)
 {
     if (count > 0 && count <= MATRIX_MAX_LEDS) { s_led_count = count; } else { s_led_count = MATRIX_MAX_LEDS; }
     if (row_width > 0) { state.row_width = row_width; } else { state.row_width = 8; }
-    MY_LED::LedStrip.setBrightness(MATRIX_BRIGHTNESS);
+    My::LED::LedStrip.setBrightness(MATRIX_BRIGHTNESS);
     state.last_tick = millis();
 }
 
 uint16_t Matrix::led_count() { return s_led_count; }
-uint16_t Matrix::width()     { return state.row_width; }
-uint16_t Matrix::height()    { return s_led_count / state.row_width; }
+uint16_t Matrix::width() { return state.row_width; }
+uint16_t Matrix::height() { return s_led_count / state.row_width; }
 
 void Matrix::set_animation(Animation anim)
 {
@@ -86,35 +87,30 @@ void Matrix::tick()
     state.frame++;
     state.hue_offset++;
 
-    switch (state.current)
-    {
-    case Animation::Snake:      tick_snake();      break;
-    case Animation::Circle:     tick_circle();     break;
-    case Animation::Pulse:      tick_pulse();      break;
-    case Animation::Rainbow:    tick_rainbow();    break;
-    case Animation::BabelFish:  tick_babel_fish(); break;
-    case Animation::SoundBars:
-    case Animation::Off:
-    default:                                         break;
+    switch (state.current) {
+        case Animation::Snake:      tick_snake();      break;
+        case Animation::Circle:     tick_circle();     break;
+        case Animation::Pulse:      tick_pulse();      break;
+        case Animation::Rainbow:    tick_rainbow();    break;
+        case Animation::BabelFish:  tick_babel_fish(); break;
+        case Animation::SoundBars:
+        case Animation::Off:
+        default:                                         break;
     }
-    MY_LED::led_refresh();
+    My::LED::led_refresh();
 }
 
 void Matrix::tick_snake()
 {
-    for (uint16_t i = 0; i < s_led_count; i++)
-    {
+    for (uint16_t i = 0; i < s_led_count; i++) {
         int16_t pos = (i + state.frame * MATRIX_SNAKE_SPEED) % s_led_count;
-        if (pos < 4)
-        {
+        if (pos < 4) {
             uint8_t bright;
             if (pos == 0) { bright = 255; } else { bright = (4 - pos) * 64; }
-            uint32_t col = MY_LED::LedStrip.Color(0, bright, 0, 0);
-            MY_LED::LedStrip.setPixelColor(i, col);
-        }
-        else
-        {
-            MY_LED::LedStrip.setPixelColor(i, 0);
+            uint32_t col = My::LED::LedStrip.Color(0, bright, 0, 0);
+            My::LED::LedStrip.setPixelColor(i, col);
+        } else {
+            My::LED::LedStrip.setPixelColor(i, 0);
         }
     }
 }
@@ -122,17 +118,13 @@ void Matrix::tick_snake()
 void Matrix::tick_circle()
 {
     uint8_t wave = (sin8(state.frame * MATRIX_CIRCLE_SPEED) >> 4) + 1;
-    for (uint16_t i = 0; i < s_led_count; i++)
-    {
+    for (uint16_t i = 0; i < s_led_count; i++) {
         uint8_t dist = abs((int)(i - s_led_count / 2));
-        if (dist < wave)
-        {
-            MY_LED::LedStrip.setPixelColor(i,
-                MY_LED::LedStrip.Color(0, 64, 128, 0));
-        }
-        else
-        {
-            MY_LED::LedStrip.setPixelColor(i, 0);
+        if (dist < wave) {
+            My::LED::LedStrip.setPixelColor(i,
+                My::LED::LedStrip.Color(0, 64, 128, 0));
+        } else {
+            My::LED::LedStrip.setPixelColor(i, 0);
         }
     }
 }
@@ -140,84 +132,75 @@ void Matrix::tick_circle()
 void Matrix::tick_pulse()
 {
     uint8_t brightness = sin8(state.frame * MATRIX_PULSE_SPEED);
-    uint32_t col = MY_LED::LedStrip.Color(
+    uint32_t col = My::LED::LedStrip.Color(
         brightness, brightness / 2, brightness / 4, 0);
-    MY_LED::LedStrip.fill(col);
+    My::LED::LedStrip.fill(col);
 }
 
 void Matrix::tick_rainbow()
 {
-    for (uint16_t i = 0; i < s_led_count; i++)
-    {
+    for (uint16_t i = 0; i < s_led_count; i++) {
         uint8_t hue = (i * 256 / s_led_count) + state.frame * MATRIX_RAINBOW_SPEED;
-        uint32_t col = MY_LED::LedStrip.ColorHSV(hue * 256, 255, 128);
-        MY_LED::LedStrip.setPixelColor(i, col);
+        uint32_t col = My::LED::LedStrip.ColorHSV(hue * 256, 255, 128);
+        My::LED::LedStrip.setPixelColor(i, col);
     }
 }
 
 void Matrix::tick_sound_bars(uint8_t *audio_data, size_t len)
 {
-    if (!audio_data || len == 0)
-    {
+    if (!audio_data || len == 0) {
         for (uint16_t i = 0; i < s_led_count; i++)
-            MY_LED::LedStrip.setPixelColor(i, 0);
+            My::LED::LedStrip.setPixelColor(i, 0);
         return;
     }
     uint16_t bins;
     if (s_led_count < len) { bins = s_led_count; } else { bins = len; }
-    for (uint16_t i = 0; i < bins; i++)
-    {
+    for (uint16_t i = 0; i < bins; i++) {
         uint8_t level = audio_data[i * len / bins] >> 4;
         if (level > 15) level = 15;
-        uint32_t col = MY_LED::LedStrip.ColorHSV(
+        uint32_t col = My::LED::LedStrip.ColorHSV(
             level * 256 / 16, 255, level * 16);
-        MY_LED::LedStrip.setPixelColor(i, col);
+        My::LED::LedStrip.setPixelColor(i, col);
     }
     for (uint16_t i = bins; i < s_led_count; i++)
-        MY_LED::LedStrip.setPixelColor(i, 0);
+        My::LED::LedStrip.setPixelColor(i, 0);
 }
 
 void Matrix::tick_babel_fish()
 {
     uint16_t fish_len = 6;
     int16_t fish_pos = (state.frame * MATRIX_BABELFISH_SPEED) % (s_led_count + fish_len) - fish_len;
-    for (uint16_t i = 0; i < s_led_count; i++)
-    {
+    for (uint16_t i = 0; i < s_led_count; i++) {
         int16_t offset = (int16_t)i - fish_pos;
-        if (offset >= 0 && offset < fish_len)
-        {
+        if (offset >= 0 && offset < fish_len) {
             uint8_t phase;
             if (offset == 0 || offset == fish_len - 1) { phase = 80; } else { phase = 255; }
-            MY_LED::LedStrip.setPixelColor(i,
-                MY_LED::LedStrip.Color(0, phase, phase / 2, 0));
-        }
-        else
-        {
+            My::LED::LedStrip.setPixelColor(i,
+                My::LED::LedStrip.Color(0, phase, phase / 2, 0));
+        } else {
             uint8_t dim;
             if (i % 3 == 0) { dim = 8; } else { dim = 0; }
-            MY_LED::LedStrip.setPixelColor(i,
-                MY_LED::LedStrip.Color(0, 0, dim, 0));
+            My::LED::LedStrip.setPixelColor(i,
+                My::LED::LedStrip.Color(0, 0, dim, 0));
         }
     }
 }
 
 void Matrix::drawAscii(const uint8_t *data, uint16_t w, uint16_t h,
-                       uint16_t x, uint16_t y)
+    uint16_t x, uint16_t y)
 {
     uint16_t rw = state.row_width;
-    for (uint16_t iy = 0; iy < h && (y + iy) * rw + x < s_led_count; iy++)
-    {
-        for (uint16_t ix = 0; ix < w; ix++)
-        {
+    for (uint16_t iy = 0; iy < h && (y + iy) * rw + x < s_led_count; iy++) {
+        for (uint16_t ix = 0; ix < w; ix++) {
             uint16_t idx = (y + iy) * rw + x + ix;
             if (idx >= s_led_count) break;
             uint8_t v = data[iy * w + ix];
-            MY_LED::Colour c(v, v, v, MY_LED::WHITE_LEVEL);
-            uint32_t col = MY_LED::LedStrip.Color(c.r, c.g, c.b, c.w);
-            MY_LED::LedStrip.setPixelColor(idx, col);
+            My::LED::Colour c(v, v, v, My::LED::WHITE_LEVEL);
+            uint32_t col = My::LED::LedStrip.Color(c.r, c.g, c.b, c.w);
+            My::LED::LedStrip.setPixelColor(idx, col);
         }
     }
-    MY_LED::led_refresh();
+    My::LED::led_refresh();
 }
 
 void Matrix::babel_fish_splash(Screen &display)

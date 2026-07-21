@@ -8,29 +8,28 @@
  * terms of pixel() so backends only need to supply that one function.
  */
 
-// ── Primitives ─────────────────────────────────────────────────────────
+ // ── Primitives ─────────────────────────────────────────────────────────
 
-void Canvas::hline(int16_t x, int16_t y, uint16_t w, MY_LED::Colour c)
+void Canvas::hline(int16_t x, int16_t y, uint16_t w, My::LED::Colour c)
 {
     for (uint16_t i = 0; i < w; i++)
         pixel(x + i, y, c);
 }
 
-void Canvas::vline(int16_t x, int16_t y, uint16_t h, MY_LED::Colour c)
+void Canvas::vline(int16_t x, int16_t y, uint16_t h, My::LED::Colour c)
 {
     for (uint16_t i = 0; i < h; i++)
         pixel(x, y + i, c);
 }
 
-void Canvas::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, MY_LED::Colour c)
+void Canvas::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, My::LED::Colour c)
 {
     int16_t dx = abs(x2 - x1), dy = -abs(y2 - y1);
     int16_t sx, sy;
     if (x1 < x2) { sx = 1; } else { sx = -1; }
     if (y1 < y2) { sy = 1; } else { sy = -1; }
     int16_t err = dx + dy, e2;
-    while (true)
-    {
+    while (true) {
         pixel(x1, y1, c);
         if (x1 == x2 && y1 == y2) break;
         e2 = 2 * err;
@@ -39,7 +38,7 @@ void Canvas::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, MY_LED::Colour
     }
 }
 
-void Canvas::rect(int16_t x, int16_t y, uint16_t w, uint16_t h, MY_LED::Colour c)
+void Canvas::rect(int16_t x, int16_t y, uint16_t w, uint16_t h, My::LED::Colour c)
 {
     hline(x, y, w, c);
     hline(x, y + h - 1, w, c);
@@ -47,19 +46,18 @@ void Canvas::rect(int16_t x, int16_t y, uint16_t w, uint16_t h, MY_LED::Colour c
     vline(x + w - 1, y, h, c);
 }
 
-void Canvas::fill_rect(int16_t x, int16_t y, uint16_t w, uint16_t h, MY_LED::Colour c)
+void Canvas::fill_rect(int16_t x, int16_t y, uint16_t w, uint16_t h, My::LED::Colour c)
 {
     for (uint16_t iy = 0; iy < h; iy++)
         hline(x, y + iy, w, c);
 }
 
-void Canvas::circle(int16_t x0, int16_t y0, uint16_t r, MY_LED::Colour c)
+void Canvas::circle(int16_t x0, int16_t y0, uint16_t r, My::LED::Colour c)
 {
     int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
     pixel(x0, y0 + r, c); pixel(x0, y0 - r, c);
     pixel(x0 + r, y0, c); pixel(x0 - r, y0, c);
-    while (x < y)
-    {
+    while (x < y) {
         if (f >= 0) { y--; ddF_y += 2; f += ddF_y; }
         x++; ddF_x += 2; f += ddF_x;
         pixel(x0 + x, y0 + y, c); pixel(x0 - x, y0 + y, c);
@@ -69,12 +67,11 @@ void Canvas::circle(int16_t x0, int16_t y0, uint16_t r, MY_LED::Colour c)
     }
 }
 
-void Canvas::fill_circle(int16_t x0, int16_t y0, uint16_t r, MY_LED::Colour c)
+void Canvas::fill_circle(int16_t x0, int16_t y0, uint16_t r, My::LED::Colour c)
 {
     int16_t f = 1 - r, ddF_x = 1, ddF_y = -2 * r, x = 0, y = r;
     for (int16_t i = y0 - r; i <= y0 + r; i++) pixel(x0, i, c);
-    while (x < y)
-    {
+    while (x < y) {
         if (f >= 0) { y--; ddF_y += 2; f += ddF_y; }
         x++; ddF_x += 2; f += ddF_x;
         for (int16_t i = y0 - y; i <= y0 + y; i++) { pixel(x0 + x, i, c); pixel(x0 - x, i, c); }
@@ -118,19 +115,17 @@ static uint16_t find_glyph(
     return 0xFFFF;
 }
 
-void Canvas::text(int16_t x, int16_t y, const char *str, MY_LED::Colour c)
+void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
 {
     const BakedFonts::FontHandle *fh =
         _baked_font ? _baked_font : &_default_font;
     uint16_t count = fh->count;
     uint8_t cell_h = fh->glyph_height;
 
-    while (*str)
-    {
+    while (*str) {
         uint32_t cp = (uint8_t)*str;
         uint16_t idx = find_glyph(fh->codes, count, cp);
-        if (idx != 0xFFFF)
-        {
+        if (idx != 0xFFFF) {
             uint8_t gw = fh->widths[idx];
             if (gw == 0) { str++; continue; }
 
@@ -140,11 +135,9 @@ void Canvas::text(int16_t x, int16_t y, const char *str, MY_LED::Colour c)
             for (uint16_t i = 0; i < idx; i++)
                 bit_off += ((fh->widths[i] + 7) / 8) * cell_h;
 
-            for (uint8_t row = 0; row < cell_h; row++)
-            {
+            for (uint8_t row = 0; row < cell_h; row++) {
                 uint32_t ro = bit_off + row * row_bytes;
-                for (uint8_t col = 0; col < gw; col++)
-                {
+                for (uint8_t col = 0; col < gw; col++) {
                     uint8_t b = pgm_read_byte(&fh->bits[ro + col / 8]);
                     if (b & (0x80 >> (col & 7)))
                         pixel(x + col, y + row, c);
@@ -157,7 +150,7 @@ void Canvas::text(int16_t x, int16_t y, const char *str, MY_LED::Colour c)
 }
 
 void Canvas::text(int16_t x, int16_t y, const uint8_t *font,
-                  const char *str, MY_LED::Colour c)
+    const char *str, My::LED::Colour c)
 {
     set_font(font);
     text(x, y, str, c);
@@ -173,12 +166,10 @@ static const uint8_t BAYER_4x4[16] = {
 };
 
 void Canvas::draw_image(int16_t x, int16_t y, const uint8_t *data,
-                        uint16_t w, uint16_t h, MY_LED::Colour fg)
+    uint16_t w, uint16_t h, My::LED::Colour fg)
 {
-    for (uint16_t iy = 0; iy < h; iy++)
-    {
-        for (uint16_t ix = 0; ix < w; ix++)
-        {
+    for (uint16_t iy = 0; iy < h; iy++) {
+        for (uint16_t ix = 0; ix < w; ix++) {
             uint8_t v = data[iy * w + ix];
             uint8_t t = BAYER_4x4[(iy & 3) * 4 + (ix & 3)];
             if (v > t * 16)
@@ -188,12 +179,10 @@ void Canvas::draw_image(int16_t x, int16_t y, const uint8_t *data,
 }
 
 void Canvas::draw_xbm(int16_t x, int16_t y, uint16_t w, uint16_t h,
-                      const uint8_t *bits, MY_LED::Colour fg)
+    const uint8_t *bits, My::LED::Colour fg)
 {
-    for (uint16_t iy = 0; iy < h; iy++)
-    {
-        for (uint16_t ix = 0; ix < w; ix++)
-        {
+    for (uint16_t iy = 0; iy < h; iy++) {
+        for (uint16_t ix = 0; ix < w; ix++) {
             uint16_t byte_idx = iy * ((w + 7) / 8) + ix / 8;
             uint8_t bit = bits[byte_idx] & (1 << (7 - (ix % 8)));
             if (bit)
@@ -205,11 +194,10 @@ void Canvas::draw_xbm(int16_t x, int16_t y, uint16_t w, uint16_t h,
 // ── Typewrite ──────────────────────────────────────────────────────────
 
 void typewrite(Canvas &cvs, int16_t x, int16_t y, const char *str,
-               MY_LED::Colour col, uint16_t delay_ms)
+    My::LED::Colour col, uint16_t delay_ms)
 {
-    while (*str)
-    {
-        char buf[2] = {*str, '\0'};
+    while (*str) {
+        char buf[2] = { *str, '\0' };
         cvs.text(x, y, buf, col);
         cvs.show();
         delay(delay_ms);

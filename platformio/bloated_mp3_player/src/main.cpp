@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 21:18:37 17-07-2026
+* LAST Modified: 11:17:1 21-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -58,22 +58,22 @@
 // ─── Setup ────────────────────────────────────────────────────────────
 void setup()
 {
-    Serial.begin(My::Config::UART_BAUD);
-    My::Serial::initialise();
-    My::Threads.serial();
-    delay(500);
+    // Initialise serial
+    SharedInstances::serial.initialise();
+    SharedInstances::threads.initialise_serial();
+    delay(My::Config::Delays::SERIAL_INITIALISATION_DELAY);
 
     // From now on all output goes through the serial queue, so there is
     // no contention: each task sends its message in one atomic
     // xQueueSend call, and the single serial_output_task drains in
     // order.  It also means tasks never block waiting for UART DMA.
 
-    My::Serial::serial_print("Bloated MP3 Player -- DON'T PANIC");
-    My::Serial::serial_print("The ships hung in the sky in much the same way that bricks don't.");
-    SharedInstances::onboard.begin();
-    SharedInstances::onboard.show();
-    SharedInstances::onboard.setPixelColor(0, SharedInstances::onboard.Color(8, 0, 0));
-    SharedInstances::onboard.show();
+    // Display boot message
+    SharedInstances::serial.serial_print("Bloated MP3 Player -- DON'T PANIC");
+    SharedInstances::serial.serial_print("The ships hung in the sky in much the same way that bricks don't.");
+
+    SharedInstances::onboard.set_colour(My::LED::blue_colour, 0, -1, My::LED::black_colour);
+    SharedInstances::onboard.refresh();
 
     // SPI bus for LCD
     SPI.begin(My::Config::Pins::LCD_SCLK, My::Config::Pins::IC_SO, My::Config::Pins::LCD_MOSI);
@@ -98,7 +98,7 @@ void setup()
     SharedInstances::display.display();
 
     // LED matrix
-    MY_LED::led_init();
+    SharedInstances::onboard.init();
     Matrix::begin((My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL));
     Matrix::set_animation(Matrix::Animation::Rainbow);
 
@@ -107,22 +107,22 @@ void setup()
 
     // Environmental
     if (!Environmental::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
-        My::Serial::serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
+        SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
     }
 
     // IMU
     if (!IMU::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
-        My::Serial::serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
+        SharedInstances::serial.serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
     }
 
     // SD card
     if (!SDCard::begin(My::Config::Pins::SD_CS_PIN, My::Config::Pins::SD_MOSI_PIN, My::Config::Pins::SD_MISO_PIN, My::Config::Pins::SD_SCLK_PIN)) {
-        My::Serial::serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
+        SharedInstances::serial.serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
     }
 
     // Audio
     if (!Audio::begin(My::Config::Pins::I2S_BCLK_PIN, My::Config::Pins::I2S_LRC_PIN, My::Config::Pins::I2S_DOUT_PIN)) {
-        My::Serial::serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
+        SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
     }
 
     // Input devices

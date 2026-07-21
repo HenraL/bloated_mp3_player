@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_serial.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 21:26:26 17-07-2026
+* LAST Modified: 11:9:43 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -27,8 +27,8 @@
 namespace My
 {
 
-    Serial::Serial(const uint32_t serial_msg_len, const uint32_t serial_queue_len)
-        : _serial_msg_len(serial_msg_len), _serial_queue_len(serial_queue_len)
+    Serial::Serial(const uint32_t serial_msg_len, const uint32_t serial_queue_len, const unsigned long uart_baud)
+        : _uart_baud(uart_baud), _serial_msg_len(serial_msg_len), _serial_queue_len(serial_queue_len), _raw_serial(uart_baud)
     {
         _serial_queue = nullptr;
     }
@@ -38,6 +38,7 @@ namespace My
     void Serial::initialise()
     {
         _serial_queue = xQueueCreate(_serial_queue_len, _serial_msg_len);
+        _raw_serial.begin(_uart_baud);
     }
 
     void Serial::serial_print(const char *fmt, ...)
@@ -53,5 +54,10 @@ namespace My
     void Serial::get_queue(char *msg)
     {
         xQueueReceive(_serial_queue, msg, portMAX_DELAY);
+    }
+
+    void Serial::dump_to_uart(char *msg)
+    {
+        _raw_serial.println(msg);
     }
 }

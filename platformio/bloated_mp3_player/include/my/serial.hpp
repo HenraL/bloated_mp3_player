@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: serial.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 21:29:31 17-07-2026
+* LAST Modified: 12:2:25 20-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -30,14 +30,17 @@ namespace My
 {
     class Serial {
         public:
-        Serial(const uint32_t serial_msg_len = SERIAL_MSG_LEN, const uint32_t serial_queue_len = SERIAL_QUEUE_LEN);
+        Serial(const uint32_t serial_msg_len = SERIAL_MSG_LEN, const uint32_t serial_queue_len = SERIAL_QUEUE_LEN, const unsigned long uart_baud = My::Config::UART_BAUD);
         ~Serial();
         void initialise();
         void serial_print(const char *fmt, ...);
         void get_queue(char *msg);
+        void dump_to_uart(char *msg);
         private:
+        const unsigned long _uart_baud;
         uint32_t _serial_msg_len;
         uint32_t _serial_queue_len;
         QueueHandle_t _serial_queue = nullptr;
+        HardwareSerial _raw_serial;
     };
 }

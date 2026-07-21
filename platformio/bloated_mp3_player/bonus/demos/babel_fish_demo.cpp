@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: babel_fish_demo.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 19:42:37 20-07-2026
+* LAST Modified: 22:54:19 20-07-2026
 * DESCRIPTION:
 * Demonstrates the Babel Fish easter egg on both the screen and the
 * LED matrix. The fish swims across the LEDs while the screen shows
@@ -39,7 +39,7 @@ void setup()
     Serial.begin(115200);
     delay(500);
     Serial.println("Babel Fish — Don't Panic");
-    MY::LED::LED led;
+    My::LED::LED led;
     led.led_init();
     Matrix::begin(64);
     Matrix::set_animation(Matrix::Animation::BabelFish);

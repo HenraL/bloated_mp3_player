@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: onboard_led.hpp
 * CREATION DATE: 20-07-2026
-* LAST Modified: 1:44:40 21-07-2026
+* LAST Modified: 11:11:51 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -29,10 +29,7 @@ namespace My
 {
     namespace Config
     {
-
         // ─── Onboard LED ───────────────────────────────────────────────────────
-        // Initial seed
-        static const uint16_t onboard_led_seed = 42;
 
         // Morse
         // Duration for the off period, when the led is not emiting any light (morse), this is also the baseline for scaling the rest of the morse logic
@@ -84,5 +81,4 @@ namespace My
         extern const My::Config::Structures::LEDMessage onboard_eom[] PROGMEM;
 
     } // namespace Config
-
 } // namespace My

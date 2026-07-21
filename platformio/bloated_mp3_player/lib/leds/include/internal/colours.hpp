@@ -451,6 +451,7 @@ namespace My
             extern const Colour Purple3 PROGMEM;
             extern const Colour Purple4 PROGMEM;
             extern const Colour Purple5 PROGMEM;
+            extern const Colour RebeccaPurple PROGMEM;
             extern const Colour Red PROGMEM;
             extern const Colour Red2 PROGMEM;
             extern const Colour Red3 PROGMEM;

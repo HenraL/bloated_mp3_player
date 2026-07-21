@@ -12,14 +12,14 @@
  * matrix backends.
  */
 
-/**
- * @brief  Turtle cursor that draws on a Canvas.
- *
- * State: position (x,y), heading (degrees), pen state, colour.
- */
+ /**
+  * @brief  Turtle cursor that draws on a Canvas.
+  *
+  * State: position (x,y), heading (degrees), pen state, colour.
+  */
 class Turtle
 {
-public:
+    public:
     /** @param canvas The Canvas to draw on. */
     Turtle(Canvas &canvas);
 
@@ -60,7 +60,7 @@ public:
     Point pos() const;
 
     /** @brief Set drawing colour. */
-    void set_colour(MY_LED::Colour c);
+    void set_colour(My::LED::Colour c);
 
     /** @brief Set line width in pixels (best-effort; not all backends support >1). */
     void set_width(uint8_t w);
@@ -77,12 +77,12 @@ public:
     /** @brief Close and fill the recorded shape (simple bounding-box fill). */
     void end_fill();
 
-private:
+    private:
     Canvas &_canvas;
     int16_t _x = 0, _y = 0;
     int16_t _angle = 90;
     bool _pen_down = true;
-    MY_LED::Colour _colour = MY_LED::Colour(255,255,255,0);
+    My::LED::Colour _colour = My::LED::Colour(255, 255, 255, 0);
     uint8_t _width = 1;
     bool _filling = false;
     int16_t _fill_start_x = 0, _fill_start_y = 0;

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: pins.hpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:44:51 17-07-2026
+* LAST Modified: 11:11:34 21-07-2026
 * DESCRIPTION:
 * Central pin assignment header. If the universe ever decides to rearrange
 * its wiring, you only need to change things here. The rest of the code will
@@ -103,7 +103,6 @@ namespace My
             // It's also useful for demonstrating that buttons still work in the
             // 21st century.
             static const uint8_t BOOT_BTN_PIN = 0;
-
         } // namespace Pins
     } // namespace Config
 } // namespace My

@@ -14,8 +14,7 @@ bool FileExplorer::scan(const char *path)
 
     _count = 0;
     File file;
-    while ((file = dir.openNextFile()) && _count < MAX_ENTRIES)
-    {
+    while ((file = dir.openNextFile()) && _count < MAX_ENTRIES) {
         Entry &e = _entries[_count];
         strncpy(e.name, file.name(), MAX_NAME - 1);
         e.name[MAX_NAME - 1] = '\0';
@@ -46,16 +45,13 @@ bool FileExplorer::enter_selected()
     if (len + 1 + strlen(e.name) + 1 > sizeof(_current_dir))
         return false;
 
-    if (strcmp(e.name, "..") == 0)
-    {
+    if (strcmp(e.name, "..") == 0) {
         char *slash = strrchr(_current_dir, '/');
         if (slash && slash != _current_dir)
             *slash = '\0';
         else if (slash)
             *(slash + 1) = '\0';
-    }
-    else
-    {
+    } else {
         if (_current_dir[len - 1] != '/')
             strcat(_current_dir, "/");
         strcat(_current_dir, e.name);
@@ -99,28 +95,24 @@ const char *FileExplorer::selected_path() const
 }
 
 void FileExplorer::draw(Canvas &canvas, int16_t x, int16_t y,
-                        uint16_t w, uint16_t h) const
+    uint16_t w, uint16_t h) const
 {
     (void)w;
     int16_t line_h = 10;
     int16_t max_vis = h / line_h;
     int16_t cy = y;
 
-    MY_LED::Colour white(255,255,255,0);
-    MY_LED::Colour black(0,0,0,0);
-    MY_LED::Colour cyan(0,255,255,0);
+    My::LED::Colour white(255, 255, 255, 0);
+    My::LED::Colour black(0, 0, 0, 0);
+    My::LED::Colour cyan(0, 255, 255, 0);
 
-    for (size_t i = _scroll; i < _count && (i - _scroll) < (size_t)max_vis; i++)
-    {
+    for (size_t i = _scroll; i < _count && (i - _scroll) < (size_t)max_vis; i++) {
         const Entry &e = _entries[i];
-        if (i == _index)
-        {
+        if (i == _index) {
             canvas.fill_rect(x, cy, canvas.width(), line_h, white);
             canvas.text(x + 2, cy + 1, e.name, black);
-        }
-        else
-        {
-            MY_LED::Colour col;
+        } else {
+            My::LED::Colour col;
             if (e.is_dir) { col = cyan; } else { col = white; }
             canvas.text(x + 2, cy + 1, e.name, col);
         }

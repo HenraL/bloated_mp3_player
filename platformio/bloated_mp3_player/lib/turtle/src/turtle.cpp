@@ -11,8 +11,7 @@ void Turtle::forward(int16_t distance)
     int16_t ny = _y + (int16_t)(sin(_angle * M_PI / 180.0f) * distance);
     if (_pen_down)
         _canvas.line(_x, _y, nx, ny, _colour);
-    if (_filling)
-    {
+    if (_filling) {
         if (nx < _fill_min_x) _fill_min_x = nx;
         if (nx > _fill_max_x) _fill_max_x = nx;
         if (ny < _fill_min_y) _fill_min_y = ny;
@@ -46,7 +45,7 @@ void Turtle::setheading(int16_t angle)
 
 int16_t Turtle::heading() const { return _angle; }
 
-void Turtle::penup()   { _pen_down = false; }
+void Turtle::penup() { _pen_down = false; }
 void Turtle::pendown() { _pen_down = true; }
 bool Turtle::isdown() const { return _pen_down; }
 
@@ -54,8 +53,7 @@ void Turtle::goto_point(int16_t x, int16_t y)
 {
     if (_pen_down)
         _canvas.line(_x, _y, x, y, _colour);
-    if (_filling)
-    {
+    if (_filling) {
         if (x < _fill_min_x) _fill_min_x = x;
         if (x > _fill_max_x) _fill_max_x = x;
         if (y < _fill_min_y) _fill_min_y = y;
@@ -72,9 +70,9 @@ void Turtle::home()
     _angle = 90;
 }
 
-Point Turtle::pos() const { return {_x, _y}; }
+Point Turtle::pos() const { return { _x, _y }; }
 
-void Turtle::set_colour(MY_LED::Colour c) { _colour = c; }
+void Turtle::set_colour(My::LED::Colour c) { _colour = c; }
 void Turtle::set_width(uint8_t w) { _width = w; (void)_width; }
 
 void Turtle::circle(int16_t radius)
@@ -89,8 +87,7 @@ void Turtle::circle(int16_t radius)
     float cy = _y;
     float a = 0;
     int16_t px = _x, py = _y;
-    for (int16_t i = 1; i <= steps; i++)
-    {
+    for (int16_t i = 1; i <= steps; i++) {
         a += step_angle * dir;
         int16_t nx = (int16_t)(cx + radius * cos(a * M_PI / 180.0f));
         int16_t ny = (int16_t)(cy + radius * sin(a * M_PI / 180.0f));

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: diagnostic.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 22:54:20 20-07-2026
 * DESCRIPTION:
 * Quick sanity check for all subsystems. Run this standalone to see
 * which components are alive, dead, or merely pretending.
@@ -66,7 +66,8 @@ void setup()
     diag_led.show();
     diag_print("Onboard LED", true);
 
-    MY_LED::led_init();
+    My::LED::LED led;
+    led.led_init();
     Matrix::begin(8);
     Matrix::set_animation(Matrix::Animation::Rainbow);
     diag_print("LED Matrix init", true);
@@ -77,8 +78,7 @@ void setup()
     diag_print("AHT20+BMP280", env_ok);
 
     Environmental::Reading r;
-    if (Environmental::read(r))
-    {
+    if (Environmental::read(r)) {
         Serial.printf("  Temp: %.1f C  Hum: %.0f%%  Press: %.0f hPa\n",
             r.temperature, r.humidity, r.pressure);
     }
@@ -86,15 +86,14 @@ void setup()
     bool imu_ok = IMU::begin(I2C_SDA_PIN, I2C_SCL_PIN);
     diag_print("MPU6050", imu_ok);
 
-    if (imu_ok)
-    {
+    if (imu_ok) {
         IMU::Vec3 a;
         IMU::read_accel(a);
         Serial.printf("  Accel: %.2f, %.2f, %.2f\n", a.x, a.y, a.z);
     }
 
     bool sd_ok = SDCard::begin(SD_CS_PIN, SD_MOSI_PIN,
-                               SD_MISO_PIN, SD_SCLK_PIN);
+        SD_MISO_PIN, SD_SCLK_PIN);
     diag_print("SD Card", sd_ok);
 
     bool i2s_ok = Audio::begin(I2S_BCLK_PIN, I2S_LRC_PIN, I2S_DOUT_PIN);

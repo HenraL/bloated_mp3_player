@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: delays.hpp
 * CREATION DATE: 20-07-2026
-* LAST Modified: 12:12:21 20-07-2026
+* LAST Modified: 11:12:1 21-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -33,8 +33,6 @@ namespace My
             // Initialisation delay for the serial instance
             static const uint32_t SERIAL_INITIALISATION_DELAY = 500; //ms
         } // namespace Delays
-
     } // namespace Config
-
 } // namespace My
 
