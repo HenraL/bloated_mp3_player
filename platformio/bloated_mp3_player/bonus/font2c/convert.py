@@ -12,6 +12,7 @@
 # PROJECT: Bloated MP3 Player
 # FILE: convert.py
 # CREATION DATE: 16-07-2026
+# LAST Modified: 20:0:57 22-07-2026
 # DESCRIPTION:
 # Convert TTF / OTF font files to C byte arrays for embedded displays.
 #
@@ -41,7 +42,7 @@
 # PURPOSE: Generate C headers and source files for TTF/OTF fonts.
 # // AR
 # +==== END Bloated MP3 Player =================+
-""" 
+"""
 
 import os
 import sys
@@ -548,6 +549,15 @@ def write_library_metadata(
     structs += "    uint16_t strikethrough;\n"
     structs += "};\n"
     structs += "\n"
+    structs += "struct FontHandle {\n"
+    structs += "    const uint16_t *codes;\n"
+    structs += "    const uint8_t *bits;\n"
+    structs += "    const uint8_t *widths;\n"
+    structs += "    uint16_t count;\n"
+    structs += "    uint8_t glyph_width;\n"
+    structs += "    uint8_t glyph_height;\n"
+    structs += "};\n"
+    structs += "\n"
     structs += "}\n"
     with open(os.path.join(include_dir, "font_structs.hpp"), "w", encoding=FILE_ENCODING) as f:
         f.write(structs)
@@ -607,7 +617,7 @@ def write_library_metadata(
     fams += "\n"
     fams += "#include <stdint.h>\n"
     fams += "\n"
-    fams += "namespace BakedFonts { namespace Family {\n"
+    fams += "namespace BakedFonts {\nnamespace Family {\n"
     fams += "\n"
     fams += "struct Entry {\n"
     fams += "    const char* name;\n"
@@ -621,7 +631,7 @@ def write_library_metadata(
     fams += "\n"
     fams += f"static constexpr uint8_t COUNT = {len(families)};\n"
     fams += "\n"
-    fams += "} }\n"
+    fams += "}\n}\n"
     with open(os.path.join(include_dir, "font_families.hpp"), "w", encoding=FILE_ENCODING) as f:
         f.write(fams)
     print("[ OK ] include/font_families.hpp")
@@ -694,6 +704,10 @@ def write_library_metadata(
 
     # ── fonts.hpp (master aggregator) ──
     includes: typing.List[str] = []
+    includes.append('#include "font_structs.hpp"')
+    includes.append('#include "font_constants.hpp"')
+    includes.append('#include "font_families.hpp"')
+    includes.append('#include "font_helpers.hpp"')
     for name, _ in sorted(families, key=lambda x: x[0]):
         includes.append(f'#include "internal/{name}.hpp"')
     master: str = "#pragma once\n\n" + "\n".join(includes) + "\n"
