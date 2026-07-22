@@ -1940,6 +1940,7 @@ const FontHandle bitcountsingle_20pt_handle = {
     BITCOUNTSINGLE_20PT_COUNT,
     BITCOUNTSINGLE_20PT_WIDTH,
     BITCOUNTSINGLE_20PT_HEIGHT,
+    BITCOUNTSINGLE_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

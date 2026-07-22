@@ -3111,6 +3111,7 @@ const FontHandle datatype_ultracondensed_6pt_handle = {
     DATATYPE_ULTRACONDENSED_6PT_COUNT,
     DATATYPE_ULTRACONDENSED_6PT_WIDTH,
     DATATYPE_ULTRACONDENSED_6PT_HEIGHT,
+    DATATYPE_ULTRACONDENSED_6PT_ASCENT,
 };
 
 }  // namespace BakedFonts

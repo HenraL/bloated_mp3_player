@@ -4533,6 +4533,7 @@ const FontHandle datatype_expanded_10pt_handle = {
     DATATYPE_EXPANDED_10PT_COUNT,
     DATATYPE_EXPANDED_10PT_WIDTH,
     DATATYPE_EXPANDED_10PT_HEIGHT,
+    DATATYPE_EXPANDED_10PT_ASCENT,
 };
 
 }  // namespace BakedFonts

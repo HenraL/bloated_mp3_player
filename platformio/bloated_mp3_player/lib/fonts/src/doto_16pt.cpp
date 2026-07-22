@@ -1229,6 +1229,7 @@ const FontHandle doto_16pt_handle = {
     DOTO_16PT_COUNT,
     DOTO_16PT_WIDTH,
     DOTO_16PT_HEIGHT,
+    DOTO_16PT_ASCENT,
 };
 
 }  // namespace BakedFonts

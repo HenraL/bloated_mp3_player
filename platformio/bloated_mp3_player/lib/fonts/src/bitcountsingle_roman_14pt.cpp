@@ -10246,6 +10246,7 @@ const FontHandle bitcountsingle_roman_14pt_handle = {
     BITCOUNTSINGLE_ROMAN_14PT_COUNT,
     BITCOUNTSINGLE_ROMAN_14PT_WIDTH,
     BITCOUNTSINGLE_ROMAN_14PT_HEIGHT,
+    BITCOUNTSINGLE_ROMAN_14PT_ASCENT,
 };
 
 }  // namespace BakedFonts

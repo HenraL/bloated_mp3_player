@@ -4804,6 +4804,7 @@ const FontHandle bitcountsingle_cursive_8pt_handle = {
     BITCOUNTSINGLE_CURSIVE_8PT_COUNT,
     BITCOUNTSINGLE_CURSIVE_8PT_WIDTH,
     BITCOUNTSINGLE_CURSIVE_8PT_HEIGHT,
+    BITCOUNTSINGLE_CURSIVE_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t NOTOEMOJI_12PT_WIDTH  = 17;
 static const uint8_t NOTOEMOJI_12PT_HEIGHT = 21;
+static const uint8_t NOTOEMOJI_12PT_ASCENT = 6;
 static const uint32_t NOTOEMOJI_12PT_FIRST  = 32;
 static const uint32_t NOTOEMOJI_12PT_LAST   = 1042487;
 static const uint16_t NOTOEMOJI_12PT_COUNT  = 1501;

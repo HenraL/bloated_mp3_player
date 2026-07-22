@@ -123,6 +123,7 @@ class RenderedSize:
     point_size: int
     cell_height: int
     cell_width: int
+    ascent: int
     glyphs: typing.Dict[int, RenderedGlyph]
 
 
@@ -256,6 +257,7 @@ def render_size(
         point_size=point_size,
         cell_height=cell_h,
         cell_width=max_w,
+        ascent=max_top,
         glyphs=glyphs,
     )
 
@@ -365,6 +367,7 @@ class SizeOutputInfo:
     pt: int
     cell_width: int
     cell_height: int
+    ascent: int
     codes: typing.List[int]
     variant_data: typing.Dict[str, typing.Tuple[typing.List[int], typing.List[int]]]
     style_map: typing.List[typing.List[int]]
@@ -427,6 +430,7 @@ def _write_family_size_header_and_source(
     hdr += "\n"
     hdr += f"static const uint8_t {name_tag.upper()}_WIDTH  = {info.cell_width};\n"
     hdr += f"static const uint8_t {name_tag.upper()}_HEIGHT = {info.cell_height};\n"
+    hdr += f"static const uint8_t {name_tag.upper()}_ASCENT = {info.ascent};\n"
     hdr += f"static const uint32_t {name_tag.upper()}_FIRST  = {first_code};\n"
     hdr += f"static const uint32_t {name_tag.upper()}_LAST   = {last_code};\n"
     hdr += f"static const uint16_t {name_tag.upper()}_COUNT  = {code_count};\n"
@@ -481,6 +485,7 @@ def _write_family_size_header_and_source(
         hdr += f"    {name_tag.upper()}_COUNT,\n"
         hdr += f"    {name_tag.upper()}_WIDTH,\n"
         hdr += f"    {name_tag.upper()}_HEIGHT,\n"
+        hdr += f"    {name_tag.upper()}_ASCENT,\n"
         hdr += "};\n"
 
     hdr += "\n"
@@ -533,6 +538,7 @@ def _write_family_size_header_and_source(
         src += f"    {name_tag.upper()}_COUNT,\n"
         src += f"    {name_tag.upper()}_WIDTH,\n"
         src += f"    {name_tag.upper()}_HEIGHT,\n"
+        src += f"    {name_tag.upper()}_ASCENT,\n"
         src += "};\n"
         src += "\n"
         src += "}  // namespace BakedFonts\n"
@@ -596,6 +602,7 @@ def write_library_metadata(
     structs += "    uint16_t count;\n"
     structs += "    uint8_t glyph_width;\n"
     structs += "    uint8_t glyph_height;\n"
+    structs += "    uint8_t ascent;\n"
     structs += "};\n"
     structs += "\n"
     structs += "}\n"
@@ -820,6 +827,7 @@ def process_family(
         variants_rendered: typing.Dict[str, RenderedSize] = {}
         overall_max_w: int = 0
         overall_max_h: int = 0
+        overall_ascent: int = 0
 
         for vname in variant_names:
             fpath: str = variant_paths[vname]
@@ -852,6 +860,8 @@ def process_family(
                 overall_max_w = size_data.cell_width
             if size_data.cell_height > overall_max_h:
                 overall_max_h = size_data.cell_height
+            if size_data.ascent > overall_ascent:
+                overall_ascent = size_data.ascent
 
             bits: typing.List[int]
             widths: typing.List[int]
@@ -870,6 +880,7 @@ def process_family(
             pt=pt,
             cell_width=overall_max_w,
             cell_height=overall_max_h,
+            ascent=overall_ascent,
             codes=supported_codes,
             variant_data=variant_data,
             style_map=style_map,

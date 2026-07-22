@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t BITCOUNTSINGLE_ROMAN_6PT_WIDTH  = 7;
 static const uint8_t BITCOUNTSINGLE_ROMAN_6PT_HEIGHT = 17;
+static const uint8_t BITCOUNTSINGLE_ROMAN_6PT_ASCENT = 6;
 static const uint32_t BITCOUNTSINGLE_ROMAN_6PT_FIRST  = 32;
 static const uint32_t BITCOUNTSINGLE_ROMAN_6PT_LAST   = 64258;
 static const uint16_t BITCOUNTSINGLE_ROMAN_6PT_COUNT  = 396;

@@ -396,6 +396,7 @@ const FontHandle doto_8pt_handle = {
     DOTO_8PT_COUNT,
     DOTO_8PT_WIDTH,
     DOTO_8PT_HEIGHT,
+    DOTO_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

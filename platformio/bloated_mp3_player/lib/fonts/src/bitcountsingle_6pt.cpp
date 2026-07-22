@@ -439,6 +439,7 @@ const FontHandle bitcountsingle_6pt_handle = {
     BITCOUNTSINGLE_6PT_COUNT,
     BITCOUNTSINGLE_6PT_WIDTH,
     BITCOUNTSINGLE_6PT_HEIGHT,
+    BITCOUNTSINGLE_6PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -4893,6 +4893,7 @@ const FontHandle datatype_condensed_12pt_handle = {
     DATATYPE_CONDENSED_12PT_COUNT,
     DATATYPE_CONDENSED_12PT_WIDTH,
     DATATYPE_CONDENSED_12PT_HEIGHT,
+    DATATYPE_CONDENSED_12PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -287,6 +287,7 @@ const FontHandle workbench_8pt_handle = {
     WORKBENCH_8PT_COUNT,
     WORKBENCH_8PT_WIDTH,
     WORKBENCH_8PT_HEIGHT,
+    WORKBENCH_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

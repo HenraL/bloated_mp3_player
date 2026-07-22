@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t WORKBENCH_20PT_WIDTH  = 12;
 static const uint8_t WORKBENCH_20PT_HEIGHT = 38;
+static const uint8_t WORKBENCH_20PT_ASCENT = 18;
 static const uint32_t WORKBENCH_20PT_FIRST  = 32;
 static const uint32_t WORKBENCH_20PT_LAST   = 8725;
 static const uint16_t WORKBENCH_20PT_COUNT  = 215;

@@ -3562,6 +3562,7 @@ const FontHandle doto_rounded_8pt_handle = {
     DOTO_ROUNDED_8PT_COUNT,
     DOTO_ROUNDED_8PT_WIDTH,
     DOTO_ROUNDED_8PT_HEIGHT,
+    DOTO_ROUNDED_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

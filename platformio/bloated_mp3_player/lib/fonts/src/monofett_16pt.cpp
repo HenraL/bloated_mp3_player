@@ -1706,6 +1706,7 @@ const FontHandle monofett_16pt_handle = {
     MONOFETT_16PT_COUNT,
     MONOFETT_16PT_WIDTH,
     MONOFETT_16PT_HEIGHT,
+    MONOFETT_16PT_ASCENT,
 };
 
 }  // namespace BakedFonts

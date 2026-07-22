@@ -19,6 +19,7 @@ struct FontHandle {
     uint16_t count;
     uint8_t glyph_width;
     uint8_t glyph_height;
+    uint8_t ascent;
 };
 
 }

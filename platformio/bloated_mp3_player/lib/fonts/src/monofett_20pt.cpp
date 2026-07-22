@@ -2242,6 +2242,7 @@ const FontHandle monofett_20pt_handle = {
     MONOFETT_20PT_COUNT,
     MONOFETT_20PT_WIDTH,
     MONOFETT_20PT_HEIGHT,
+    MONOFETT_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

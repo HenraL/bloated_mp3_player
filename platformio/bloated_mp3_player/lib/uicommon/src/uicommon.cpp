@@ -81,15 +81,8 @@ void Canvas::fill_circle(int16_t x0, int16_t y0, uint16_t r, My::LED::Colour c)
 
 // ── Font / text ────────────────────────────────────────────────────────
 
-// Default fallback: baked doto 8pt
-static const BakedFonts::FontHandle _default_font = {
-    BakedFonts::doto_8pt_codes,
-    BakedFonts::doto_8pt_bits,
-    BakedFonts::doto_8pt_widths,
-    BakedFonts::DOTO_8PT_COUNT,
-    BakedFonts::DOTO_8PT_WIDTH,
-    BakedFonts::DOTO_8PT_HEIGHT,
-};
+// Default fallback: baked tiny5 8pt
+static const BakedFonts::FontHandle *_default_font = &BakedFonts::tiny5_8pt_handle;
 
 void Canvas::set_baked_font(const BakedFonts::FontHandle *font)
 {
@@ -145,9 +138,10 @@ static uint16_t find_glyph(
 void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
 {
     const BakedFonts::FontHandle *fh =
-        _baked_font ? _baked_font : &_default_font;
+        _baked_font ? _baked_font : _default_font;
     uint16_t count = fh->count;
     uint8_t cell_h = fh->glyph_height;
+    int16_t cell_top = y - fh->ascent;
 
     while (*str) {
         uint32_t cp = utf8_decode(str);
@@ -181,7 +175,7 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
                 for (uint8_t col = 0; col < gw; col++) {
                     uint8_t b = pgm_read_byte(&fh->bits[ro + col / 8]);
                     if (b & (0x80 >> (col & 7)))
-                        pixel(x + col, y + row, c);
+                        pixel(x + col, cell_top + row, c);
                 }
             }
             x += gw + 1;

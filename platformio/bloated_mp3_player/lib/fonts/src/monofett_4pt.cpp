@@ -345,6 +345,7 @@ const FontHandle monofett_4pt_handle = {
     MONOFETT_4PT_COUNT,
     MONOFETT_4PT_WIDTH,
     MONOFETT_4PT_HEIGHT,
+    MONOFETT_4PT_ASCENT,
 };
 
 }  // namespace BakedFonts

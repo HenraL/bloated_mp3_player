@@ -3822,6 +3822,7 @@ const FontHandle datatype_semicondensed_8pt_handle = {
     DATATYPE_SEMICONDENSED_8PT_COUNT,
     DATATYPE_SEMICONDENSED_8PT_WIDTH,
     DATATYPE_SEMICONDENSED_8PT_HEIGHT,
+    DATATYPE_SEMICONDENSED_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

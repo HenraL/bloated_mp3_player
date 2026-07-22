@@ -6531,6 +6531,7 @@ const FontHandle datatype_semiexpanded_14pt_handle = {
     DATATYPE_SEMIEXPANDED_14PT_COUNT,
     DATATYPE_SEMIEXPANDED_14PT_WIDTH,
     DATATYPE_SEMIEXPANDED_14PT_HEIGHT,
+    DATATYPE_SEMIEXPANDED_14PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -436,6 +436,7 @@ const FontHandle datatype_8pt_handle = {
     DATATYPE_8PT_COUNT,
     DATATYPE_8PT_WIDTH,
     DATATYPE_8PT_HEIGHT,
+    DATATYPE_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

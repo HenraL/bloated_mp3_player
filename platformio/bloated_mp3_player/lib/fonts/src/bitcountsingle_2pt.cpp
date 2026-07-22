@@ -291,6 +291,7 @@ const FontHandle bitcountsingle_2pt_handle = {
     BITCOUNTSINGLE_2PT_COUNT,
     BITCOUNTSINGLE_2PT_WIDTH,
     BITCOUNTSINGLE_2PT_HEIGHT,
+    BITCOUNTSINGLE_2PT_ASCENT,
 };
 
 }  // namespace BakedFonts

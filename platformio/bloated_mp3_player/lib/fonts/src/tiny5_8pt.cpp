@@ -1831,6 +1831,7 @@ const FontHandle tiny5_8pt_handle = {
     TINY5_8PT_COUNT,
     TINY5_8PT_WIDTH,
     TINY5_8PT_HEIGHT,
+    TINY5_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

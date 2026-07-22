@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t BITCOUNTSINGLE_CURSIVE_8PT_WIDTH  = 10;
 static const uint8_t BITCOUNTSINGLE_CURSIVE_8PT_HEIGHT = 21;
+static const uint8_t BITCOUNTSINGLE_CURSIVE_8PT_ASCENT = 7;
 static const uint32_t BITCOUNTSINGLE_CURSIVE_8PT_FIRST  = 32;
 static const uint32_t BITCOUNTSINGLE_CURSIVE_8PT_LAST   = 64258;
 static const uint16_t BITCOUNTSINGLE_CURSIVE_8PT_COUNT  = 396;

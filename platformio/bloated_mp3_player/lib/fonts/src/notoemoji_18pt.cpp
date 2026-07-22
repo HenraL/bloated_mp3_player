@@ -8514,6 +8514,7 @@ const FontHandle notoemoji_18pt_handle = {
     NOTOEMOJI_18PT_COUNT,
     NOTOEMOJI_18PT_WIDTH,
     NOTOEMOJI_18PT_HEIGHT,
+    NOTOEMOJI_18PT_ASCENT,
 };
 
 }  // namespace BakedFonts

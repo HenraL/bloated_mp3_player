@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t MONOFETT_4PT_WIDTH  = 4;
 static const uint8_t MONOFETT_4PT_HEIGHT = 9;
+static const uint8_t MONOFETT_4PT_ASCENT = 4;
 static const uint32_t MONOFETT_4PT_FIRST  = 32;
 static const uint32_t MONOFETT_4PT_LAST   = 1048575;
 static const uint16_t MONOFETT_4PT_COUNT  = 434;

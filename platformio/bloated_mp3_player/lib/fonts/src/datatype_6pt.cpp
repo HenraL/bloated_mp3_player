@@ -357,6 +357,7 @@ const FontHandle datatype_6pt_handle = {
     DATATYPE_6PT_COUNT,
     DATATYPE_6PT_WIDTH,
     DATATYPE_6PT_HEIGHT,
+    DATATYPE_6PT_ASCENT,
 };
 
 }  // namespace BakedFonts

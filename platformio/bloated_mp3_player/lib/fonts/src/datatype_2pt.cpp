@@ -198,6 +198,7 @@ const FontHandle datatype_2pt_handle = {
     DATATYPE_2PT_COUNT,
     DATATYPE_2PT_WIDTH,
     DATATYPE_2PT_HEIGHT,
+    DATATYPE_2PT_ASCENT,
 };
 
 }  // namespace BakedFonts

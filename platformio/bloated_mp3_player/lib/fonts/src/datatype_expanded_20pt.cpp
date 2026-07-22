@@ -15594,6 +15594,7 @@ const FontHandle datatype_expanded_20pt_handle = {
     DATATYPE_EXPANDED_20PT_COUNT,
     DATATYPE_EXPANDED_20PT_WIDTH,
     DATATYPE_EXPANDED_20PT_HEIGHT,
+    DATATYPE_EXPANDED_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

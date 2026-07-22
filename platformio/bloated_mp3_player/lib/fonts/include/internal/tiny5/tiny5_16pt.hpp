@@ -9,6 +9,7 @@ namespace BakedFonts {
 
 static const uint8_t TINY5_16PT_WIDTH  = 22;
 static const uint8_t TINY5_16PT_HEIGHT = 44;
+static const uint8_t TINY5_16PT_ASCENT = 14;
 static const uint32_t TINY5_16PT_FIRST  = 32;
 static const uint32_t TINY5_16PT_LAST   = 43859;
 static const uint16_t TINY5_16PT_COUNT  = 1154;

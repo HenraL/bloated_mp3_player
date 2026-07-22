@@ -1744,6 +1744,7 @@ const FontHandle datatype_20pt_handle = {
     DATATYPE_20PT_COUNT,
     DATATYPE_20PT_WIDTH,
     DATATYPE_20PT_HEIGHT,
+    DATATYPE_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -737,6 +737,7 @@ const FontHandle datatype_14pt_handle = {
     DATATYPE_14PT_COUNT,
     DATATYPE_14PT_WIDTH,
     DATATYPE_14PT_HEIGHT,
+    DATATYPE_14PT_ASCENT,
 };
 
 }  // namespace BakedFonts

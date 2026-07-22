@@ -3822,6 +3822,7 @@ const FontHandle datatype_extraexpanded_8pt_handle = {
     DATATYPE_EXTRAEXPANDED_8PT_COUNT,
     DATATYPE_EXTRAEXPANDED_8PT_WIDTH,
     DATATYPE_EXTRAEXPANDED_8PT_HEIGHT,
+    DATATYPE_EXTRAEXPANDED_8PT_ASCENT,
 };
 
 }  // namespace BakedFonts

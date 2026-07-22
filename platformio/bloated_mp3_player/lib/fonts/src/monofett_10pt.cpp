@@ -642,6 +642,7 @@ const FontHandle monofett_10pt_handle = {
     MONOFETT_10PT_COUNT,
     MONOFETT_10PT_WIDTH,
     MONOFETT_10PT_HEIGHT,
+    MONOFETT_10PT_ASCENT,
 };
 
 }  // namespace BakedFonts

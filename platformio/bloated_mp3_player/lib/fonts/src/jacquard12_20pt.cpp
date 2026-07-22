@@ -1226,6 +1226,7 @@ const FontHandle jacquard12_20pt_handle = {
     JACQUARD12_20PT_COUNT,
     JACQUARD12_20PT_WIDTH,
     JACQUARD12_20PT_HEIGHT,
+    JACQUARD12_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -940,6 +940,7 @@ const FontHandle notoemoji_2pt_handle = {
     NOTOEMOJI_2PT_COUNT,
     NOTOEMOJI_2PT_WIDTH,
     NOTOEMOJI_2PT_HEIGHT,
+    NOTOEMOJI_2PT_ASCENT,
 };
 
 }  // namespace BakedFonts

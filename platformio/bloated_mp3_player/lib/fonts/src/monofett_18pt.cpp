@@ -2013,6 +2013,7 @@ const FontHandle monofett_18pt_handle = {
     MONOFETT_18PT_COUNT,
     MONOFETT_18PT_WIDTH,
     MONOFETT_18PT_HEIGHT,
+    MONOFETT_18PT_ASCENT,
 };
 
 }  // namespace BakedFonts

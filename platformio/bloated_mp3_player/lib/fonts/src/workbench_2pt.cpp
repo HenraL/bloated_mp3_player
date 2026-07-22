@@ -140,6 +140,7 @@ const FontHandle workbench_2pt_handle = {
     WORKBENCH_2PT_COUNT,
     WORKBENCH_2PT_WIDTH,
     WORKBENCH_2PT_HEIGHT,
+    WORKBENCH_2PT_ASCENT,
 };
 
 }  // namespace BakedFonts

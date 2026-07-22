@@ -1072,6 +1072,7 @@ const FontHandle workbench_20pt_handle = {
     WORKBENCH_20PT_COUNT,
     WORKBENCH_20PT_WIDTH,
     WORKBENCH_20PT_HEIGHT,
+    WORKBENCH_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

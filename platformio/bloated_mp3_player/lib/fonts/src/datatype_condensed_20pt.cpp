@@ -15594,6 +15594,7 @@ const FontHandle datatype_condensed_20pt_handle = {
     DATATYPE_CONDENSED_20PT_COUNT,
     DATATYPE_CONDENSED_20PT_WIDTH,
     DATATYPE_CONDENSED_20PT_HEIGHT,
+    DATATYPE_CONDENSED_20PT_ASCENT,
 };
 
 }  // namespace BakedFonts

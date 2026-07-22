@@ -480,6 +480,7 @@ const FontHandle monofett_6pt_handle = {
     MONOFETT_6PT_COUNT,
     MONOFETT_6PT_WIDTH,
     MONOFETT_6PT_HEIGHT,
+    MONOFETT_6PT_ASCENT,
 };
 
 }  // namespace BakedFonts

@@ -555,6 +555,7 @@ const FontHandle datatype_12pt_handle = {
     DATATYPE_12PT_COUNT,
     DATATYPE_12PT_WIDTH,
     DATATYPE_12PT_HEIGHT,
+    DATATYPE_12PT_ASCENT,
 };
 
 }  // namespace BakedFonts

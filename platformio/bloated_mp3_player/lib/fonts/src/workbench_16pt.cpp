@@ -576,6 +576,7 @@ const FontHandle workbench_16pt_handle = {
     WORKBENCH_16PT_COUNT,
     WORKBENCH_16PT_WIDTH,
     WORKBENCH_16PT_HEIGHT,
+    WORKBENCH_16PT_ASCENT,
 };
 
 }  // namespace BakedFonts
