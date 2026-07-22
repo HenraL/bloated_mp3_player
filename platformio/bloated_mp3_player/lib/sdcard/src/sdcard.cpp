@@ -25,24 +25,20 @@
 #include "internal/sdcard.hpp"
 
 static bool mounted = false;
-// Use SPI3_HOST (= 2) to keep SD on a separate peripheral from the LCD
-// which uses the default SPI (SPI2_HOST = 1 on S3, 1 on ESP32).
-static SPIClass sd_spi(2);
 static SDCard::TrackInfo track_list[SDCard::MAX_TRACKS];
 static size_t track_count = 0;
 static const char *audio_ext[] = {".wav", ".mp3", ".WAV", ".MP3"};
 
-bool SDCard::begin(uint8_t cs_pin, uint8_t mosi_pin,
-                   uint8_t miso_pin, uint8_t sclk_pin)
+bool SDCard::begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail)
 {
-    pinMode(cs_pin, OUTPUT);
-    digitalWrite(cs_pin, HIGH);
-    delay(10);
-    sd_spi.begin(sclk_pin, miso_pin, mosi_pin, cs_pin);
-    if (!SD.begin(cs_pin, sd_spi, 1000000))
+    // The generic esp32s3 variant doesn't define BOARD_HAS_SDMMC,
+    // so the SD_MMC constructor leaves _pin_* = -1 and begin()
+    // fails.  We must set the pins explicitly.
+    SD_MMC.setPins(clk, cmd, d0);
+
+    if (!SD_MMC.begin("", 1, format_if_fail))  // 1-bit SDMMC
     {
         mounted = false;
-        digitalWrite(cs_pin, HIGH);
         return false;
     }
     mounted = true;
@@ -57,7 +53,7 @@ bool SDCard::is_mounted()
 File SDCard::open(const char *path)
 {
     if (!mounted) return File();
-    return SD.open(path, FILE_READ);
+    return SD_MMC.open(path, FILE_READ);
 }
 
 void SDCard::close(File &f)
@@ -104,7 +100,7 @@ bool SDCard::scan_tracks(const char *dir)
 {
     if (!mounted) return false;
     track_count = 0;
-    File root = SD.open(dir);
+    File root = SD_MMC.open(dir);
     if (!root) return false;
 
     File file;

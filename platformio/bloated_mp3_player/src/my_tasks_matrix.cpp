@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_matrix.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:6:9 21-07-2026
+* LAST Modified: 15:41:59 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -24,6 +24,7 @@
 
 #include "my/tasks.hpp"
 #include "shared_instances.hpp"
+#include <matrix.hpp>
 
 namespace My
 {
@@ -35,9 +36,9 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(50);
+            SharedInstances::serial.serial_print("[MATRIX] The light that burns twice as bright...");
 
             while (true) {
-                SharedInstances::serial.serial_print("[MATRIX] The light that burns twice as bright...");
                 Matrix::tick();
                 vTaskDelayUntil(&xLastWake, freq);
             }

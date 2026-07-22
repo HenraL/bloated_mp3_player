@@ -63,25 +63,31 @@ namespace My
             static const uint8_t I2C_SDA_PIN = 2;//old: 5; 
             static const uint8_t I2C_SCL_PIN = 1;//old: 15;
 
-            // ─── SD Card (SPI mode) ────────────────────────────────────────────────
-            // Because nothing says "bloated" like loading MP3 metadata from a
-            // microSD card that's smaller than a fingernail.
-            static const uint8_t SD_CS_PIN = 13;
-            static const uint8_t SD_MOSI_PIN = 11;
-            static const uint8_t SD_MISO_PIN = 12;
-            static const uint8_t SD_SCLK_PIN = 14;
+            // ─── SD Card (SDMMC 1-bit mode on Freenove hardware pins) ──────────────
+            // The card sits on the ESP32‑S3 dedicated SDMMC pins:
+            //   IO38 = CMD
+            //   IO39 = CLK
+            //   IO40 = DAT0
+            // No CS pin is needed in SDMMC mode.
+            static const uint8_t SDMMC_CLK = 39;
+            static const uint8_t SDMMC_CMD = 38;
+            static const uint8_t SDMMC_D0  = 40;
 
-            // ─── I2S Audio out (to speaker via MAX98357 or similar) ───────────────
-            // The audio quality will be approximately that of a dalek singing through
-            // a rolled-up newspaper. This is a feature, not a bug.
+            // ─── I2S Audio out (stereo, 2 speakers) ────────────────────────────
+            // BCLK (bit clock) and LRC (word select) are shared by both channels.
+            // DOUT1 carries left-channel data, DOUT2 carries right-channel data.
+            // On the Freenove board, LS1 maps to GPIO18, LS2 maps to GPIO21.
+            // The audio quality remains approximately that of a Dalek singing
+            // through a rolled-up newspaper. This is a feature, not a bug.
             static const uint8_t I2S_BCLK_PIN = 16;
             static const uint8_t I2S_LRC_PIN = 17;
             static const uint8_t I2S_DOUT_PIN = 18;
+            static const uint8_t I2S_DOUT2_PIN = 21;
 
             // ─── Rotary encoder (Alps EC11E, Prusa-style) ─────────────────────────
             // Use this to navigate the UI. Turn left to go back, turn right to go
             // forward, press to confirm. It is the least confusing thing on this board.
-            static const uint8_t ROTARY_PIN_A = 16;//old: 1;
+            static const uint8_t ROTARY_PIN_A = 42;//old: 16 (conflicted with I2S BCLK);
             static const uint8_t ROTARY_PIN_B = 15;//old: 2;
             static const uint8_t ROTARY_SW_PIN = 12;//old: 3;
 
@@ -90,13 +96,13 @@ namespace My
             // say "no, really, that's enough." We will copy Apple's AirPod logic,
             // which is to say: if it works, call it magic; if it doesn't, call it
             // a feature for the next revision.
-            static const uint8_t ULTRA_TRIG_PIN = 14;//old: 21;
-            static const uint8_t ULTRA_ECHO_PIN = 13;//old: 47;
+            static const uint8_t ULTRA_TRIG_PIN = 14;
+            static const uint8_t ULTRA_ECHO_PIN = 13;
 
             // ─── LED strip / matrix data pin ──────────────────────────────────────
             // The RGB matrix uses the same data pin. If you plugged it into something
             // else, change this. The LEDs will thank you by not remaining dark.
-            static const uint8_t MATRIX_PIN = 3;
+            static const uint8_t MATRIX_PIN = 41;
 
             // ─── Boot button ───────────────────────────────────────────────────────
             // GPIO0 on ESP32-S3, pulled up. Press at boot to enter download mode.

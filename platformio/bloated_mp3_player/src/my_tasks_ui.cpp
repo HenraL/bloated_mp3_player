@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_ui.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:7:42 21-07-2026
+* LAST Modified: 16:30:51 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -38,9 +38,9 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(33);
+            SharedInstances::serial.serial_print("[UI] Mostly harmless.");
 
             while (true) {
-                SharedInstances::serial.serial_print("[UI] Mostly harmless.");
                 SharedInstances::lcd.clear();
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
                 SharedInstances::lcd.printAt("Bloated MP3 v1.0", 0, 12);
@@ -55,7 +55,7 @@ namespace My
 
                 SharedInstances::lcd.printAt(0, 50, "Uptime: %lus", millis() / 1000);
 
-                if (Audio::is_playing()) {
+                if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     SharedInstances::lcd.printAt(76, 24, ">> PLAY");
                 } else {
                     SharedInstances::lcd.printAt(76, 24, "|| STOP");

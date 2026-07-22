@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_sensor.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:6:48 21-07-2026
+* LAST Modified: 15:43:42 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -40,9 +40,9 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(200);
+            SharedInstances::serial.serial_print("[Sensor] Time is an illusion. Lunchtime doubly so.");
 
             while (true) {
-                SharedInstances::serial.serial_print("[Sensor] Time is an illusion. Lunchtime doubly so.");
                 PROFILE_BLOCK("sensor_tick");
                 Environmental::Reading env;
                 Environmental::read(env);
@@ -53,14 +53,17 @@ namespace My
 
                 switch (g) {
                     case IMU::Gesture::Shake:
-                        Audio::stop();
-                        Audio::play_raw(nullptr, 0);
+                        SharedInstances::serial.serial_print("[Sensor] Shake");
+                        // Audio::stop();
+                        // Audio::play_raw(nullptr, 0);
                         break;
                     case IMU::Gesture::TiltLeft:
-                        Audio::pause();
+                        SharedInstances::serial.serial_print("[Sensor] TiltLeft");
+                        // Audio::pause();
                         break;
                     case IMU::Gesture::TiltRight:
-                        Audio::resume();
+                        SharedInstances::serial.serial_print("[Sensor] TiltRight");
+                        // Audio::resume();
                         break;
                     default: break;
                 }

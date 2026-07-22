@@ -1,134 +1,115 @@
-/*
-* +==== BEGIN Bloated MP3 Player =================+
-* LOGO:
-* .......................
-* ...><>.............<><.
-* ..><>.><>.......<><.<><
-* .><>.<><.><>.<><.<><.<>
-* ..><>.><>.......<><.<><
-* ...><>.............<><.
-* .......................
-* /STOP
-* PROJECT: Bloated MP3 Player
-* FILE: audio.cpp
-* CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
-* DESCRIPTION:
-* Makes the speaker vibrate in ways that technically constitute sound.
-* The bitrate is a suggestion, the fidelity is a memory, and the
-* distortion is a feature.
-* /STOP
-* COPYRIGHT: (c) Henry Letellier
-* PURPOSE: I2S audio output implementation.
-* // AR
-* +==== END Bloated MP3 Player =================+
-*/
 #include "internal/audio.hpp"
-#include <driver/i2s.h>
+#include <rom/gpio.h>
+#include <soc/gpio_sig_map.h>
 
-static Audio::State state = Audio::State::Stopped;
-static uint8_t volume = 128;
-static i2s_port_t i2s_port = I2S_NUM_0;
-
-bool Audio::begin(uint8_t bclk, uint8_t lrc, uint8_t dout)
+namespace Audio
 {
-    i2s_config_t i2s_config = {};
-    i2s_config.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
-    i2s_config.sample_rate = 22050;
-    i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
-    i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
-    i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S;
-    i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
-    i2s_config.dma_buf_count = 8;
-    i2s_config.dma_buf_len = 256;
 
-    i2s_pin_config_t pin_config = {};
-    pin_config.bck_io_num = bclk;
-    pin_config.ws_io_num = lrc;
-    pin_config.data_out_num = dout;
-    pin_config.data_in_num = I2S_PIN_NO_CHANGE;
+    Audio::Audio(
+        uint8_t bclk, uint8_t lrc, uint8_t dout, uint8_t dout2,
+        uint8_t dma_buf_count, uint16_t dma_buf_len)
+        : _bclk(bclk)
+        , _lrc(lrc)
+        , _dout(dout)
+        , _dout2(dout2)
+        , _dma_buf_count(dma_buf_count)
+        , _dma_buf_len(dma_buf_len)
+    {
+    }
 
-    esp_err_t err = i2s_driver_install(i2s_port, &i2s_config, 0, NULL);
-    if (err != ESP_OK) return false;
-    err = i2s_set_pin(i2s_port, &pin_config);
-    if (err != ESP_OK) return false;
-    i2s_zero_dma_buffer(i2s_port);
-    state = State::Stopped;
-    return true;
-}
+    bool Audio::open()
+    {
+        i2s_config_t cfg = {};
+        cfg.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
+        cfg.sample_rate = _sr;
+        cfg.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
+        cfg.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT;
+        cfg.communication_format = I2S_COMM_FORMAT_STAND_I2S;
+        cfg.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+        cfg.dma_buf_count = _dma_buf_count;
+        cfg.dma_buf_len = _dma_buf_len;
 
-void Audio::set_volume(uint8_t vol)
-{
-    volume = vol;
-}
+        i2s_pin_config_t pins = {};
+        pins.bck_io_num = _bclk;
+        pins.ws_io_num = _lrc;
+        pins.data_out_num = _dout;
+        pins.data_in_num = I2S_PIN_NO_CHANGE;
 
-uint8_t Audio::get_volume()
-{
-    return volume;
-}
+        esp_err_t err = i2s_driver_install(_i2s_port, &cfg, 0, NULL);
+        if (err != ESP_OK)
+        {
+            return false;
+        }
+        err = i2s_set_pin(_i2s_port, &pins);
+        if (err != ESP_OK)
+        {
+            return false;
+        }
 
-bool Audio::play(const char *wav_path)
-{
-    (void)wav_path;
-    state = State::Error;
-    return false;
-}
+        gpio_matrix_out(_dout2, I2S0O_SD1_OUT_IDX, false, false);
 
-bool Audio::play_raw(const int16_t *samples, size_t count)
-{
-    if (state == State::Playing) return false;
-    if (!samples || count == 0) return false;
-    state = State::Playing;
-    size_t written = 0;
-    size_t to_write = count * sizeof(int16_t);
-    int16_t *buf = (int16_t *)malloc(to_write);
-    if (!buf) { state = State::Error; return false; }
-    for (size_t i = 0; i < count; i++)
-        buf[i] = (samples[i] * volume) >> 8;
-    i2s_write(i2s_port, buf, to_write, &written, portMAX_DELAY);
-    free(buf);
-    state = State::Stopped;
-    return written == to_write;
-}
+        i2s_zero_dma_buffer(_i2s_port);
+        _status = Stopped;
+        return true;
+    }
 
-void Audio::stop()
-{
-    i2s_zero_dma_buffer(i2s_port);
-    state = State::Stopped;
-}
+    void Audio::play()
+    {
+        _status = Playing;
+    }
 
-void Audio::pause()
-{
-    if (state == State::Playing)
-        state = State::Paused;
-}
+    void Audio::pause()
+    {
+        if (_status == Playing)
+        {
+            _status = Paused;
+        }
+    }
 
-void Audio::resume()
-{
-    if (state == State::Paused)
-        state = State::Playing;
-}
+    void Audio::stop()
+    {
+        i2s_zero_dma_buffer(_i2s_port);
+        _status = Stopped;
+    }
 
-Audio::State Audio::get_state()
-{
-    return state;
-}
+    void Audio::setSampleRate(uint32_t sr)
+    {
+        _sr = sr;
+        i2s_set_clk(_i2s_port, sr, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_STEREO);
+    }
 
-bool Audio::is_playing()
-{
-    return state == State::Playing;
-}
+    size_t Audio::write(const int16_t *samples, size_t count)
+    {
+        size_t todo = count;
+        if (todo > 2048)
+        {
+            todo = 2048;
+        }
 
-void Audio::tick()
-{
-}
+        int16_t scaled[2048];
+        for (size_t i = 0; i < todo; i++)
+        {
+            scaled[i] = (samples[i] * _volume) >> 8;
+        }
 
-uint32_t Audio::get_position_ms()
-{
-    return 0;
-}
+        size_t written = 0;
+        i2s_write(_i2s_port, scaled, todo * sizeof(int16_t), &written, portMAX_DELAY);
+        return written / sizeof(int16_t);
+    }
 
-uint32_t Audio::get_duration_ms()
-{
-    return 0;
-}
+    void Audio::setVolume(uint8_t v)
+    {
+        _volume = v;
+    }
+
+    uint8_t Audio::getVolume() const
+    {
+        return _volume;
+    }
+
+    Status Audio::getStatus() const
+    {
+        return _status;
+    }
+
+} // namespace Audio

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: audio.hpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 16:46:4 22-07-2026
 * DESCRIPTION:
 * Public header for the audio subsystem. Because what's a bloated MP3
 * player without audio? A very confused LED array, that's what.
@@ -25,3 +25,5 @@
 #pragma once
 
 #include "internal/audio.hpp"
+
+#include "internal/player.hpp"

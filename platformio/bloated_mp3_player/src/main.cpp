@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 16:18:23 21-07-2026
+* LAST Modified: 15:26:10 22-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -88,6 +88,8 @@ void setup()
     SharedInstances::serial.serial_print("Bloated MP3 Player -- DON'T PANIC");
     SharedInstances::serial.serial_print("The ships hung in the sky in much the same way that bricks don't.");
 
+    // Onboard LED – init first, then colour
+    SharedInstances::onboard.init();
     SharedInstances::onboard.set_colour(My::LED::blue_colour, 0, -1, My::LED::black_colour);
     SharedInstances::onboard.refresh();
 
@@ -95,15 +97,20 @@ void setup()
     SharedInstances::lcd.initialise();
     boot_screen();
 
-    // Depressed LED
-    SharedInstances::onboard.init();
-
     // LED matrix
     Matrix::begin(
         (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL),
         My::Config::MATRIX_LED_COUNT_HORIZONTAL,
         My::Config::Pins::MATRIX_PIN
     );
+
+    // Quick hardware test: light all LEDs white briefly
+    for (uint16_t i = 0; i < (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL); i++) {
+        Matrix::set_pixel(i, My::LED::blue_colour);
+    }
+    Matrix::show();
+    delay(2050);
+
     Matrix::set_animation(Matrix::Animation::Rainbow);
 
     // I2C sensors 
@@ -119,13 +126,13 @@ void setup()
         SharedInstances::serial.serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
     }
 
-    // SD card
-    if (!SDCard::begin(My::Config::Pins::SD_CS_PIN, My::Config::Pins::SD_MOSI_PIN, My::Config::Pins::SD_MISO_PIN, My::Config::Pins::SD_SCLK_PIN)) {
+    // SD card (SDMMC 1-bit mode on hardware pins 38/39/40)
+    if (!SDCard::begin(My::Config::Pins::SDMMC_CLK, My::Config::Pins::SDMMC_CMD, My::Config::Pins::SDMMC_D0)) {
         SharedInstances::serial.serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
     }
 
     // Audio
-    if (!Audio::begin(My::Config::Pins::I2S_BCLK_PIN, My::Config::Pins::I2S_LRC_PIN, My::Config::Pins::I2S_DOUT_PIN)) {
+    if (!SharedInstances::audio.open()) {
         SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
     }
 

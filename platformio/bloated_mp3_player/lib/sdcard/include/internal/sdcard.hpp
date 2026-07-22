@@ -25,8 +25,8 @@
 */
 #pragma once
 #include <Arduino.h>
+#include <SD_MMC.h>
 #include <SPI.h>
-#include <SD.h>
 
 namespace SDCard
 {
@@ -40,8 +40,7 @@ namespace SDCard
 
     static constexpr size_t MAX_TRACKS = 256;
 
-    bool begin(uint8_t cs_pin, uint8_t mosi_pin,
-               uint8_t miso_pin, uint8_t sclk_pin);
+    bool begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail = false);
     bool is_mounted();
     File open(const char *path);
     void close(File &f);

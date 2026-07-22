@@ -1,27 +1,3 @@
-/*
-* +==== BEGIN Bloated MP3 Player =================+
-* LOGO:
-* .......................
-* ...><>.............<><.
-* ..><>.><>.......<><.<><
-* .><>.<><.><>.<><.<><.<>
-* ..><>.><>.......<><.<><
-* ...><>.............<><.
-* .......................
-* /STOP
-* PROJECT: Bloated MP3 Player
-* FILE: my_tasks_audio.cpp
-* CREATION DATE: 17-07-2026
-* LAST Modified: 16:10:21 21-07-2026
-* DESCRIPTION:
-* This is the code in charge of making the bloated player come to life.
-* /STOP
-* COPYRIGHT: (c) Henry Letellier
-* PURPOSE: This is the file that will define the tasks referenced in the headerfile for the audio section.
-* // AR
-* +==== END Bloated MP3 Player =================+
-*/
-
 #include <audio.hpp>
 #include <profiling.hpp>
 #include "my/tasks.hpp"
@@ -31,7 +7,6 @@ namespace My
 {
     namespace Tasks
     {
-        // ─── Audio Task ───────────────────────────────────────────────────────
         void audio(void *pvParameters)
         {
             SharedInstances::serial.serial_print("[Audio] So long, and thanks for all the fish.");
@@ -41,7 +16,18 @@ namespace My
 
             while (true) {
                 PROFILE_BLOCK("audio_tick");
-                Audio::tick();
+
+                if (SharedInstances::audio.getStatus() == Audio::Playing) {
+                    if (SharedInstances::player.is_loaded()) {
+                        SharedInstances::player.tick();
+                        SharedInstances::serial.serial_print("[Audio] Player is loaded and has ticked.");
+                    } else {
+                        SharedInstances::serial.serial_print("[Audio] No players are loaded.");
+                    }
+                } else {
+                    SharedInstances::serial.serial_print("[Audio] Audio is not playing.");
+                }
+
                 vTaskDelayUntil(&xLastWake, freq);
             }
         }

@@ -8,7 +8,7 @@ bool FileExplorer::begin(const char *path)
 
 bool FileExplorer::scan(const char *path)
 {
-    File dir = SD.open(path);
+    File dir = SD_MMC.open(path);
     if (!dir || !dir.isDirectory())
         return false;
 
