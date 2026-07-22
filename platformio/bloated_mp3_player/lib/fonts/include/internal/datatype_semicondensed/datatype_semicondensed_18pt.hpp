@@ -8,7 +8,7 @@
 namespace BakedFonts {
 
 static const uint8_t DATATYPE_SEMICONDENSED_18PT_WIDTH  = 12;
-static const uint8_t DATATYPE_SEMICONDENSED_18PT_HEIGHT = 19;
+static const uint8_t DATATYPE_SEMICONDENSED_18PT_HEIGHT = 37;
 static const uint32_t DATATYPE_SEMICONDENSED_18PT_FIRST  = 32;
 static const uint32_t DATATYPE_SEMICONDENSED_18PT_LAST   = 8722;
 static const uint16_t DATATYPE_SEMICONDENSED_18PT_COUNT  = 319;

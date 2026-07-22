@@ -8,7 +8,7 @@
 namespace BakedFonts {
 
 static const uint8_t DATATYPE_EXTRACONDENSED_2PT_WIDTH  = 2;
-static const uint8_t DATATYPE_EXTRACONDENSED_2PT_HEIGHT = 3;
+static const uint8_t DATATYPE_EXTRACONDENSED_2PT_HEIGHT = 5;
 static const uint32_t DATATYPE_EXTRACONDENSED_2PT_FIRST  = 32;
 static const uint32_t DATATYPE_EXTRACONDENSED_2PT_LAST   = 8722;
 static const uint16_t DATATYPE_EXTRACONDENSED_2PT_COUNT  = 319;

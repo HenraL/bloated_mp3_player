@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_ui.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 23:53:25 22-07-2026
+* LAST Modified: 0:21:15 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -75,7 +75,7 @@ namespace My
             while (true) {
                 SharedInstances::lcd.clear();
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
-                SharedInstances::lcd.printAt("Bloated                                   MP3 v1.0", My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y);
+                SharedInstances::lcd.printAt("Bloated MP3 v1.0", My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y);
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
 
                 refresh_environemental_values(&env, &read, &last_poll);

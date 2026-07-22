@@ -155,7 +155,7 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
 
         if (cp == 0x20) {
             uint16_t idx = find_glyph(fh->codes, count, cp);
-            if (idx != 0xFFFF) {
+            if (idx != 0xFFFF && fh->widths[idx] > 0) {
                 x += fh->widths[idx];
             }
             else {

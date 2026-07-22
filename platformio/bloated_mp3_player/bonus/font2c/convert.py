@@ -114,6 +114,7 @@ class RenderedGlyph:
     code: int
     width: int
     height: int
+    offset_y: int
     pixels: typing.List[int]
 
 
@@ -218,6 +219,7 @@ def render_ttf_glyph(
         code=code,
         width=mask_w,
         height=mask_h,
+        offset_y=offset[1],
         pixels=pixels,
     )
 
@@ -231,7 +233,8 @@ def render_size(
     font: ImageFont.FreeTypeFont = ImageFont.truetype(font_path, point_size)
     glyphs: typing.Dict[int, RenderedGlyph] = {}
     max_w: int = 0
-    max_h: int = 0
+    max_top: int = 0
+    min_bottom: int = 0
     total: int = len(codes_to_render)
     for idx, code in enumerate(codes_to_render):
         if progress_callback is not None:
@@ -241,13 +244,17 @@ def render_size(
             glyphs[code] = glyph
             if glyph.width > max_w:
                 max_w = glyph.width
-            if glyph.height > max_h:
-                max_h = glyph.height
-    if max_h == 0:
-        max_h = point_size
+            if glyph.offset_y > max_top:
+                max_top = glyph.offset_y
+            glyph_bottom: int = glyph.offset_y - glyph.height
+            if glyph_bottom < min_bottom:
+                min_bottom = glyph_bottom
+    cell_h: int = max_top - min_bottom
+    if cell_h < 1:
+        cell_h = point_size
     return RenderedSize(
         point_size=point_size,
-        cell_height=max_h,
+        cell_height=cell_h,
         cell_width=max_w,
         glyphs=glyphs,
     )
@@ -260,18 +267,28 @@ def build_bits_array(
     codes: typing.List[int],
 ) -> typing.Tuple[typing.List[int], typing.List[int]]:
     cell_h: int = size_data.cell_height
+    max_top: int = 0
+    for code in codes:
+        glyph: typing.Optional[RenderedGlyph] = size_data.glyphs.get(code)
+        if glyph is not None and glyph.offset_y > max_top:
+            max_top = glyph.offset_y
     bits: typing.List[int] = []
     widths: typing.List[int] = []
     for code in codes:
-        glyph: typing.Optional[RenderedGlyph] = size_data.glyphs.get(code)
+        glyph = size_data.glyphs.get(code)
         if glyph is None:
-            widths.append(0)
+            if code == 0x20:
+                widths.append(size_data.cell_width // 2 + 1)
+            else:
+                widths.append(0)
             continue
         widths.append(glyph.width)
         glyph_row_bytes: int = (glyph.width + 7) // 8
+        start_row: int = max_top - glyph.offset_y
         for row in range(cell_h):
-            if row < glyph.height:
-                start: int = row * glyph_row_bytes
+            if start_row <= row < start_row + glyph.height:
+                data_row: int = row - start_row
+                start: int = data_row * glyph_row_bytes
                 end: int = start + glyph_row_bytes
                 bits.extend(glyph.pixels[start:end])
             else:

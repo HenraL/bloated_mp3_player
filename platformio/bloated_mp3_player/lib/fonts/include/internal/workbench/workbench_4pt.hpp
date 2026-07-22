@@ -8,7 +8,7 @@
 namespace BakedFonts {
 
 static const uint8_t WORKBENCH_4PT_WIDTH  = 4;
-static const uint8_t WORKBENCH_4PT_HEIGHT = 4;
+static const uint8_t WORKBENCH_4PT_HEIGHT = 7;
 static const uint32_t WORKBENCH_4PT_FIRST  = 32;
 static const uint32_t WORKBENCH_4PT_LAST   = 8725;
 static const uint16_t WORKBENCH_4PT_COUNT  = 215;

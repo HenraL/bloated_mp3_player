@@ -8,7 +8,7 @@
 namespace BakedFonts {
 
 static const uint8_t JACQUARD12_6PT_WIDTH  = 9;
-static const uint8_t JACQUARD12_6PT_HEIGHT = 7;
+static const uint8_t JACQUARD12_6PT_HEIGHT = 14;
 static const uint32_t JACQUARD12_6PT_FIRST  = 32;
 static const uint32_t JACQUARD12_6PT_LAST   = 8722;
 static const uint16_t JACQUARD12_6PT_COUNT  = 331;
