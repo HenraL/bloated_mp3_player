@@ -22,7 +22,6 @@
 * +==== END Bloated MP3 Player =================+
 */
 
-#include <environmental.hpp>
 #include <imu.hpp>
 #include <audio.hpp>
 #include <profiling.hpp>
@@ -44,8 +43,6 @@ namespace My
 
             while (true) {
                 PROFILE_BLOCK("sensor_tick");
-                Environmental::Reading env;
-                Environmental::read(env);
 
                 IMU::Vec3 accel;
                 IMU::read_accel(accel);

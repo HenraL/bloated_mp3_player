@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: environmental.hpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 15-07-2026
 * DESCRIPTION:
 * AHT20+BMP280 combo sensor driver. Measures temperature, humidity, and
 * atmospheric pressure. Also measures your patience when the I2C bus
@@ -27,40 +27,47 @@
 #include <Arduino.h>
 #include <screen.hpp>
 
+#include "constants.hpp"
+#include "structures.hpp"
+
+
 namespace Environmental
 {
-    struct Reading
+    class Environmental
     {
-        float temperature = 0;
-        float humidity = 0;
-        float pressure = 0;
-        uint32_t timestamp = 0;
+    public:
+        Environmental(uint8_t sda, uint8_t scl, uint32_t poll_interval_ms);
+
+        bool begin();
+        bool read(Reading &out);
+
+        uint32_t get_poll_interval() const;
+
+        History &get_history();
+        void reset_history();
+        void set_log_interval(uint32_t ms);
+
+    private:
+        uint8_t  _sda;
+        uint8_t  _scl;
+        uint32_t _poll_interval;
+
+        BMP280Calibration _bmp_cal;
+        bool    _has_bmp280;
+        uint8_t _bmp_addr;
+        int32_t _t_fine;
+
+        bool read_aht20(float &temp, float &hum);
+        bool read_bmp280(float &pressure);
+
+        History  _history;
+        uint32_t _log_interval;
+        uint32_t _last_log;
     };
-
-    struct History
-    {
-        static constexpr size_t MAX_SAMPLES = 256;
-        Reading samples[MAX_SAMPLES];
-        size_t count = 0;
-        size_t head = 0;
-        float temp_min = 999, temp_max = -999;
-        float hum_min = 999, hum_max = -999;
-        float press_min = 99999, press_max = 0;
-
-        void push(const Reading &r);
-        Reading average() const;
-        void reset();
-    };
-
-    bool begin(uint8_t sda_pin, uint8_t scl_pin);
-    bool read(Reading &out);
-    bool read_async();
-    bool is_data_ready();
-
-    History &get_history();
-    void set_log_interval(uint32_t ms);
 
     void draw_graph(Screen &display, uint16_t x, uint16_t y,
-                    uint16_t w, uint16_t h, bool show_temp = true,
-                    bool show_hum = true, bool show_press = false);
+                    uint16_t w, uint16_t h, const History &hist,
+                    bool show_temp = true,
+                    bool show_hum = true,
+                    bool show_press = false);
 }

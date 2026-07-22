@@ -116,8 +116,8 @@ void setup()
     // I2C sensors 
     Wire.begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN);
 
-    // Environmental
-    if (!Environmental::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
+    // Environmental (AHT20+BMP280)
+    if (!SharedInstances::environmental.begin()) {
         SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
     }
 

@@ -32,6 +32,11 @@ namespace SharedInstances
     My::LED::LED onboard(1, My::Config::Pins::ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800, My::LED::white_colour, My::LED::black_colour, My::LED::white_colour, 0, 50);
     My::Serial serial(SERIAL_MSG_LEN, SERIAL_QUEUE_LEN, My::Config::UART_BAUD);
     My::Threads my_threads;
+    Environmental::Environmental environmental(
+        My::Config::Pins::I2C_SDA_PIN,
+        My::Config::Pins::I2C_SCL_PIN,
+        My::Config::Delays::ENVIRONMENTAL_POLL_INTERVAL_MS
+    );
     Audio::Audio audio(
         My::Config::Pins::I2S_BCLK_PIN,
         My::Config::Pins::I2S_LRC_PIN,

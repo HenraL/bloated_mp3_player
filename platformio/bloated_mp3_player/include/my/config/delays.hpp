@@ -33,6 +33,9 @@ namespace My
             // Initialisation delay for the serial instance (as well as for the dev to connect to the serial output)
             static const uint32_t SERIAL_INITIALISATION_DELAY = 1000; //ms
             static const uint32_t PRE_THREAD_INITIALISATION_DELAY = 1000; //ms
+
+            // How often to poll the AHT20+BMP280 environmental sensor (milliseconds)
+            static const uint32_t ENVIRONMENTAL_POLL_INTERVAL_MS = 1000; //ms
         } // namespace Delays
     } // namespace Config
 } // namespace My
