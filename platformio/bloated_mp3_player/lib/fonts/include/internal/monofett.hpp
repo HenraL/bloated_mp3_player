@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_MONOFETT_H_
 #define BAKEDFONTS_MONOFETT_H_
 
+#include "monofett/monofett_2pt.hpp"
+#include "monofett/monofett_4pt.hpp"
+#include "monofett/monofett_6pt.hpp"
 #include "monofett/monofett_8pt.hpp"
 #include "monofett/monofett_10pt.hpp"
 #include "monofett/monofett_12pt.hpp"

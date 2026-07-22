@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_BITCOUNTSINGLE_CURSIVE_H_
 #define BAKEDFONTS_BITCOUNTSINGLE_CURSIVE_H_
 
+#include "bitcountsingle_cursive/bitcountsingle_cursive_2pt.hpp"
+#include "bitcountsingle_cursive/bitcountsingle_cursive_4pt.hpp"
+#include "bitcountsingle_cursive/bitcountsingle_cursive_6pt.hpp"
 #include "bitcountsingle_cursive/bitcountsingle_cursive_8pt.hpp"
 #include "bitcountsingle_cursive/bitcountsingle_cursive_10pt.hpp"
 #include "bitcountsingle_cursive/bitcountsingle_cursive_12pt.hpp"

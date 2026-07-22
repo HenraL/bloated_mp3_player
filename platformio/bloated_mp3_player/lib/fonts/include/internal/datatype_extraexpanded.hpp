@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_DATATYPE_EXTRAEXPANDED_H_
 #define BAKEDFONTS_DATATYPE_EXTRAEXPANDED_H_
 
+#include "datatype_extraexpanded/datatype_extraexpanded_2pt.hpp"
+#include "datatype_extraexpanded/datatype_extraexpanded_4pt.hpp"
+#include "datatype_extraexpanded/datatype_extraexpanded_6pt.hpp"
 #include "datatype_extraexpanded/datatype_extraexpanded_8pt.hpp"
 #include "datatype_extraexpanded/datatype_extraexpanded_10pt.hpp"
 #include "datatype_extraexpanded/datatype_extraexpanded_12pt.hpp"

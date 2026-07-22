@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_DATATYPE_EXTRACONDENSED_H_
 #define BAKEDFONTS_DATATYPE_EXTRACONDENSED_H_
 
+#include "datatype_extracondensed/datatype_extracondensed_2pt.hpp"
+#include "datatype_extracondensed/datatype_extracondensed_4pt.hpp"
+#include "datatype_extracondensed/datatype_extracondensed_6pt.hpp"
 #include "datatype_extracondensed/datatype_extracondensed_8pt.hpp"
 #include "datatype_extracondensed/datatype_extracondensed_10pt.hpp"
 #include "datatype_extracondensed/datatype_extracondensed_12pt.hpp"

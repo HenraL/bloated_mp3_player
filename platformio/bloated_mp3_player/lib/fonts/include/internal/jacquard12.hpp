@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_JACQUARD12_H_
 #define BAKEDFONTS_JACQUARD12_H_
 
+#include "jacquard12/jacquard12_2pt.hpp"
+#include "jacquard12/jacquard12_4pt.hpp"
+#include "jacquard12/jacquard12_6pt.hpp"
 #include "jacquard12/jacquard12_8pt.hpp"
 #include "jacquard12/jacquard12_10pt.hpp"
 #include "jacquard12/jacquard12_12pt.hpp"

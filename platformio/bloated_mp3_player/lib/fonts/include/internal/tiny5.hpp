@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_TINY5_H_
 #define BAKEDFONTS_TINY5_H_
 
+#include "tiny5/tiny5_2pt.hpp"
+#include "tiny5/tiny5_4pt.hpp"
+#include "tiny5/tiny5_6pt.hpp"
 #include "tiny5/tiny5_8pt.hpp"
 #include "tiny5/tiny5_10pt.hpp"
 #include "tiny5/tiny5_12pt.hpp"

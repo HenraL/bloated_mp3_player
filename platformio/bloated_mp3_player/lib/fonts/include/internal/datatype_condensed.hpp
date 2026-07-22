@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_DATATYPE_CONDENSED_H_
 #define BAKEDFONTS_DATATYPE_CONDENSED_H_
 
+#include "datatype_condensed/datatype_condensed_2pt.hpp"
+#include "datatype_condensed/datatype_condensed_4pt.hpp"
+#include "datatype_condensed/datatype_condensed_6pt.hpp"
 #include "datatype_condensed/datatype_condensed_8pt.hpp"
 #include "datatype_condensed/datatype_condensed_10pt.hpp"
 #include "datatype_condensed/datatype_condensed_12pt.hpp"

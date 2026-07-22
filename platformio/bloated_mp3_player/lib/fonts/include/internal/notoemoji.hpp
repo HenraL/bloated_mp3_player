@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_NOTOEMOJI_H_
 #define BAKEDFONTS_NOTOEMOJI_H_
 
+#include "notoemoji/notoemoji_2pt.hpp"
+#include "notoemoji/notoemoji_4pt.hpp"
+#include "notoemoji/notoemoji_6pt.hpp"
 #include "notoemoji/notoemoji_8pt.hpp"
 #include "notoemoji/notoemoji_10pt.hpp"
 #include "notoemoji/notoemoji_12pt.hpp"

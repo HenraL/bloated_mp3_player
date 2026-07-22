@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_BITCOUNTSINGLE_ROMAN_H_
 #define BAKEDFONTS_BITCOUNTSINGLE_ROMAN_H_
 
+#include "bitcountsingle_roman/bitcountsingle_roman_2pt.hpp"
+#include "bitcountsingle_roman/bitcountsingle_roman_4pt.hpp"
+#include "bitcountsingle_roman/bitcountsingle_roman_6pt.hpp"
 #include "bitcountsingle_roman/bitcountsingle_roman_8pt.hpp"
 #include "bitcountsingle_roman/bitcountsingle_roman_10pt.hpp"
 #include "bitcountsingle_roman/bitcountsingle_roman_12pt.hpp"

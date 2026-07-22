@@ -16,6 +16,9 @@ enum StyleIndex : uint8_t {
 };
 
 namespace Size {
+    static constexpr uint8_t PT_2 = 2;
+    static constexpr uint8_t PT_4 = 4;
+    static constexpr uint8_t PT_6 = 6;
     static constexpr uint8_t PT_8 = 8;
     static constexpr uint8_t PT_10 = 10;
     static constexpr uint8_t PT_12 = 12;

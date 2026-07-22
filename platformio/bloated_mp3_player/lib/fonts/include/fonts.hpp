@@ -1,5 +1,9 @@
 #pragma once
 
+#include "font_structs.hpp"
+#include "font_constants.hpp"
+#include "font_families.hpp"
+#include "font_helpers.hpp"
 #include "internal/bitcountsingle.hpp"
 #include "internal/bitcountsingle_cursive.hpp"
 #include "internal/bitcountsingle_roman.hpp"

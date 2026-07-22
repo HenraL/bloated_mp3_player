@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_WORKBENCH_H_
 #define BAKEDFONTS_WORKBENCH_H_
 
+#include "workbench/workbench_2pt.hpp"
+#include "workbench/workbench_4pt.hpp"
+#include "workbench/workbench_6pt.hpp"
 #include "workbench/workbench_8pt.hpp"
 #include "workbench/workbench_10pt.hpp"
 #include "workbench/workbench_12pt.hpp"

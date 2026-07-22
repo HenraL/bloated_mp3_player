@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_BITCOUNTSINGLE_H_
 #define BAKEDFONTS_BITCOUNTSINGLE_H_
 
+#include "bitcountsingle/bitcountsingle_2pt.hpp"
+#include "bitcountsingle/bitcountsingle_4pt.hpp"
+#include "bitcountsingle/bitcountsingle_6pt.hpp"
 #include "bitcountsingle/bitcountsingle_8pt.hpp"
 #include "bitcountsingle/bitcountsingle_10pt.hpp"
 #include "bitcountsingle/bitcountsingle_12pt.hpp"

@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_DATATYPE_ULTRACONDENSED_H_
 #define BAKEDFONTS_DATATYPE_ULTRACONDENSED_H_
 
+#include "datatype_ultracondensed/datatype_ultracondensed_2pt.hpp"
+#include "datatype_ultracondensed/datatype_ultracondensed_4pt.hpp"
+#include "datatype_ultracondensed/datatype_ultracondensed_6pt.hpp"
 #include "datatype_ultracondensed/datatype_ultracondensed_8pt.hpp"
 #include "datatype_ultracondensed/datatype_ultracondensed_10pt.hpp"
 #include "datatype_ultracondensed/datatype_ultracondensed_12pt.hpp"

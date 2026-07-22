@@ -1,6 +1,9 @@
 #ifndef BAKEDFONTS_DOTO_H_
 #define BAKEDFONTS_DOTO_H_
 
+#include "doto/doto_2pt.hpp"
+#include "doto/doto_4pt.hpp"
+#include "doto/doto_6pt.hpp"
 #include "doto/doto_8pt.hpp"
 #include "doto/doto_10pt.hpp"
 #include "doto/doto_12pt.hpp"
