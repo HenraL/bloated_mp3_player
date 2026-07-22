@@ -7,13 +7,13 @@
 
 namespace BakedFonts {
 
-#define DOTO_ROUNDED_2PT_WIDTH  2
-#define DOTO_ROUNDED_2PT_HEIGHT 3
-#define DOTO_ROUNDED_2PT_FIRST  32
-#define DOTO_ROUNDED_2PT_LAST   8722
-#define DOTO_ROUNDED_2PT_COUNT  319
+static const uint8_t DOTO_ROUNDED_2PT_WIDTH  = 2;
+static const uint8_t DOTO_ROUNDED_2PT_HEIGHT = 3;
+static const uint32_t DOTO_ROUNDED_2PT_FIRST  = 32;
+static const uint32_t DOTO_ROUNDED_2PT_LAST   = 8722;
+static const uint16_t DOTO_ROUNDED_2PT_COUNT  = 319;
 
-extern const uint16_t doto_rounded_2pt_codes[];
+extern const uint32_t doto_rounded_2pt_codes[];
 
 extern const uint8_t doto_rounded_2pt_black_bits[] PROGMEM;
 extern const uint8_t doto_rounded_2pt_black_widths[];
@@ -34,6 +34,7 @@ extern const uint8_t doto_rounded_2pt_semibold_widths[];
 extern const uint8_t doto_rounded_2pt_thin_bits[] PROGMEM;
 extern const uint8_t doto_rounded_2pt_thin_widths[];
 extern const FontStyleMap doto_rounded_2pt_style_map[];
+extern const FontHandle doto_rounded_2pt_handle;
 
 }  // namespace BakedFonts
 

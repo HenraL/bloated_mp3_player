@@ -7,13 +7,13 @@
 
 namespace BakedFonts {
 
-#define BITCOUNTSINGLE_ROMAN_8PT_WIDTH  10
-#define BITCOUNTSINGLE_ROMAN_8PT_HEIGHT 10
-#define BITCOUNTSINGLE_ROMAN_8PT_FIRST  32
-#define BITCOUNTSINGLE_ROMAN_8PT_LAST   64258
-#define BITCOUNTSINGLE_ROMAN_8PT_COUNT  396
+static const uint8_t BITCOUNTSINGLE_ROMAN_8PT_WIDTH  = 10;
+static const uint8_t BITCOUNTSINGLE_ROMAN_8PT_HEIGHT = 10;
+static const uint32_t BITCOUNTSINGLE_ROMAN_8PT_FIRST  = 32;
+static const uint32_t BITCOUNTSINGLE_ROMAN_8PT_LAST   = 64258;
+static const uint16_t BITCOUNTSINGLE_ROMAN_8PT_COUNT  = 396;
 
-extern const uint16_t bitcountsingle_roman_8pt_codes[];
+extern const uint32_t bitcountsingle_roman_8pt_codes[];
 
 extern const uint8_t bitcountsingle_roman_8pt_black_bits[] PROGMEM;
 extern const uint8_t bitcountsingle_roman_8pt_black_widths[];
@@ -34,6 +34,7 @@ extern const uint8_t bitcountsingle_roman_8pt_semibold_widths[];
 extern const uint8_t bitcountsingle_roman_8pt_thin_bits[] PROGMEM;
 extern const uint8_t bitcountsingle_roman_8pt_thin_widths[];
 extern const FontStyleMap bitcountsingle_roman_8pt_style_map[];
+extern const FontHandle bitcountsingle_roman_8pt_handle;
 
 }  // namespace BakedFonts
 

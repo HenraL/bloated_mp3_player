@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define JACQUARD12_20PT_WIDTH  28
-#define JACQUARD12_20PT_HEIGHT 18
-#define JACQUARD12_20PT_FIRST  32
-#define JACQUARD12_20PT_LAST   8722
-#define JACQUARD12_20PT_COUNT  331
+static const uint8_t JACQUARD12_20PT_WIDTH  = 28;
+static const uint8_t JACQUARD12_20PT_HEIGHT = 18;
+static const uint32_t JACQUARD12_20PT_FIRST  = 32;
+static const uint32_t JACQUARD12_20PT_LAST   = 8722;
+static const uint16_t JACQUARD12_20PT_COUNT  = 331;
 
-extern const uint16_t jacquard12_20pt_codes[];
+extern const uint32_t jacquard12_20pt_codes[];
 
 extern const uint8_t jacquard12_20pt_regular_bits[] PROGMEM;
 extern const uint8_t jacquard12_20pt_regular_widths[];
+extern const FontHandle jacquard12_20pt_handle;
 
 }  // namespace BakedFonts
 

@@ -1051,5 +1051,14 @@ const uint8_t monofett_18pt_regular_widths[] = {
     0x0c, 0x0c
 };
 
+const FontHandle monofett_18pt_handle = {
+    monofett_18pt_codes,
+    monofett_18pt_regular_bits,
+    monofett_18pt_regular_widths,
+    MONOFETT_18PT_COUNT,
+    MONOFETT_18PT_WIDTH,
+    MONOFETT_18PT_HEIGHT,
+};
+
 }  // namespace BakedFonts
 

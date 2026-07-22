@@ -13,7 +13,7 @@ struct FontStyleMap {
 };
 
 struct FontHandle {
-    const uint16_t *codes;
+    const uint32_t *codes;
     const uint8_t *bits;
     const uint8_t *widths;
     uint16_t count;

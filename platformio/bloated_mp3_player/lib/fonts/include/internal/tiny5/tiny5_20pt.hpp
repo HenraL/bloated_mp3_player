@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define TINY5_20PT_WIDTH  28
-#define TINY5_20PT_HEIGHT 28
-#define TINY5_20PT_FIRST  32
-#define TINY5_20PT_LAST   43859
-#define TINY5_20PT_COUNT  1154
+static const uint8_t TINY5_20PT_WIDTH  = 28;
+static const uint8_t TINY5_20PT_HEIGHT = 28;
+static const uint32_t TINY5_20PT_FIRST  = 32;
+static const uint32_t TINY5_20PT_LAST   = 43859;
+static const uint16_t TINY5_20PT_COUNT  = 1154;
 
-extern const uint16_t tiny5_20pt_codes[];
+extern const uint32_t tiny5_20pt_codes[];
 
 extern const uint8_t tiny5_20pt_regular_bits[] PROGMEM;
 extern const uint8_t tiny5_20pt_regular_widths[];
+extern const FontHandle tiny5_20pt_handle;
 
 }  // namespace BakedFonts
 

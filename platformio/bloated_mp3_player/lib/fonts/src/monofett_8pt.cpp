@@ -311,5 +311,14 @@ const uint8_t monofett_8pt_regular_widths[] = {
     0x06, 0x06
 };
 
+const FontHandle monofett_8pt_handle = {
+    monofett_8pt_codes,
+    monofett_8pt_regular_bits,
+    monofett_8pt_regular_widths,
+    MONOFETT_8PT_COUNT,
+    MONOFETT_8PT_WIDTH,
+    MONOFETT_8PT_HEIGHT,
+};
+
 }  // namespace BakedFonts
 

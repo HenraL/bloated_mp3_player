@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: delays.hpp
 * CREATION DATE: 20-07-2026
-* LAST Modified: 18:21:38 22-07-2026
+* LAST Modified: 21:14:52 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -31,7 +31,7 @@ namespace My
         namespace Delays
         {
             // Initialisation delay for the serial instance (as well as for the dev to connect to the serial output)
-            static const uint32_t SERIAL_INITIALISATION_DELAY = 1000; //ms
+            static const uint32_t SERIAL_INITIALISATION_DELAY = 500; //ms
             static const uint32_t PRE_THREAD_INITIALISATION_DELAY = 1000; //ms
 
             // How often to poll the AHT20+BMP280 environmental sensor (milliseconds)

@@ -4948,5 +4948,14 @@ const uint8_t notoemoji_14pt_widths[] = {
     0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12
 };
 
+const FontHandle notoemoji_14pt_handle = {
+    notoemoji_14pt_codes,
+    notoemoji_14pt_bits,
+    notoemoji_14pt_widths,
+    NOTOEMOJI_14PT_COUNT,
+    NOTOEMOJI_14PT_WIDTH,
+    NOTOEMOJI_14PT_HEIGHT,
+};
+
 }  // namespace BakedFonts
 

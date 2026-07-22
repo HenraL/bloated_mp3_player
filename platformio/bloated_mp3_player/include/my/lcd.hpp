@@ -1,3 +1,26 @@
+/*
+* +==== BEGIN Bloated MP3 Player =================+
+* LOGO:
+* .......................
+* ...><>.............<><.
+* ..><>.><>.......<><.<><
+* .><>.<><.><>.<><.<><.<>
+* ..><>.><>.......<><.<><
+* ...><>.............<><.
+* .......................
+* /STOP
+* PROJECT: Bloated MP3 Player
+* FILE: lcd.hpp
+* CREATION DATE: 22-07-2026
+* LAST Modified: 21:11:38 22-07-2026
+* DESCRIPTION:
+* This is the code in charge of making the bloated player come to life.
+* /STOP
+* COPYRIGHT: (c) Henry Letellier
+* PURPOSE: This is the overlay in charge of making the interraction with the lcd easier than interracting with the raw library.
+* // AR
+* +==== END Bloated MP3 Player =================+
+*/
 #pragma once
 #include <U8g2lib.h>
 #include <uicommon.hpp>
@@ -34,10 +57,10 @@ namespace My
 
             // ── Font ─────────────────────────────────────────────────────
             void setFont(const uint8_t *font);
+            void setFont(const BakedFonts::FontHandle *font);
             void setContrast(uint8_t value);
 
             // Canvas overrides for U8G2 rendering
-            void set_font(const uint8_t *font) override;
             void text(int16_t x, int16_t y, const char *str,
                 My::LED::Colour c) override;
 

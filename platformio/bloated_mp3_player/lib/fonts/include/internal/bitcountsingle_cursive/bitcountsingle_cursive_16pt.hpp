@@ -7,13 +7,13 @@
 
 namespace BakedFonts {
 
-#define BITCOUNTSINGLE_CURSIVE_16PT_WIDTH  19
-#define BITCOUNTSINGLE_CURSIVE_16PT_HEIGHT 17
-#define BITCOUNTSINGLE_CURSIVE_16PT_FIRST  32
-#define BITCOUNTSINGLE_CURSIVE_16PT_LAST   64258
-#define BITCOUNTSINGLE_CURSIVE_16PT_COUNT  396
+static const uint8_t BITCOUNTSINGLE_CURSIVE_16PT_WIDTH  = 19;
+static const uint8_t BITCOUNTSINGLE_CURSIVE_16PT_HEIGHT = 17;
+static const uint32_t BITCOUNTSINGLE_CURSIVE_16PT_FIRST  = 32;
+static const uint32_t BITCOUNTSINGLE_CURSIVE_16PT_LAST   = 64258;
+static const uint16_t BITCOUNTSINGLE_CURSIVE_16PT_COUNT  = 396;
 
-extern const uint16_t bitcountsingle_cursive_16pt_codes[];
+extern const uint32_t bitcountsingle_cursive_16pt_codes[];
 
 extern const uint8_t bitcountsingle_cursive_16pt_black_bits[] PROGMEM;
 extern const uint8_t bitcountsingle_cursive_16pt_black_widths[];
@@ -34,6 +34,7 @@ extern const uint8_t bitcountsingle_cursive_16pt_semibold_widths[];
 extern const uint8_t bitcountsingle_cursive_16pt_thin_bits[] PROGMEM;
 extern const uint8_t bitcountsingle_cursive_16pt_thin_widths[];
 extern const FontStyleMap bitcountsingle_cursive_16pt_style_map[];
+extern const FontHandle bitcountsingle_cursive_16pt_handle;
 
 }  // namespace BakedFonts
 

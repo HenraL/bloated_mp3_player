@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define DATATYPE_20PT_WIDTH  13
-#define DATATYPE_20PT_HEIGHT 21
-#define DATATYPE_20PT_FIRST  32
-#define DATATYPE_20PT_LAST   8722
-#define DATATYPE_20PT_COUNT  319
+static const uint8_t DATATYPE_20PT_WIDTH  = 13;
+static const uint8_t DATATYPE_20PT_HEIGHT = 21;
+static const uint32_t DATATYPE_20PT_FIRST  = 32;
+static const uint32_t DATATYPE_20PT_LAST   = 8722;
+static const uint16_t DATATYPE_20PT_COUNT  = 319;
 
-extern const uint16_t datatype_20pt_codes[];
+extern const uint32_t datatype_20pt_codes[];
 
 extern const uint8_t datatype_20pt_bits[] PROGMEM;
 extern const uint8_t datatype_20pt_widths[];
+extern const FontHandle datatype_20pt_handle;
 
 }  // namespace BakedFonts
 

@@ -933,5 +933,14 @@ const uint8_t notoemoji_4pt_widths[] = {
     0x05, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06
 };
 
+const FontHandle notoemoji_4pt_handle = {
+    notoemoji_4pt_codes,
+    notoemoji_4pt_bits,
+    notoemoji_4pt_widths,
+    NOTOEMOJI_4PT_COUNT,
+    NOTOEMOJI_4PT_WIDTH,
+    NOTOEMOJI_4PT_HEIGHT,
+};
+
 }  // namespace BakedFonts
 

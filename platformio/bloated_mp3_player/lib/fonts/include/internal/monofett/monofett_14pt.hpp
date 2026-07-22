@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define MONOFETT_14PT_WIDTH  10
-#define MONOFETT_14PT_HEIGHT 14
-#define MONOFETT_14PT_FIRST  32
-#define MONOFETT_14PT_LAST   1048575
-#define MONOFETT_14PT_COUNT  434
+static const uint8_t MONOFETT_14PT_WIDTH  = 10;
+static const uint8_t MONOFETT_14PT_HEIGHT = 14;
+static const uint32_t MONOFETT_14PT_FIRST  = 32;
+static const uint32_t MONOFETT_14PT_LAST   = 1048575;
+static const uint16_t MONOFETT_14PT_COUNT  = 434;
 
 extern const uint32_t monofett_14pt_codes[];
 
 extern const uint8_t monofett_14pt_regular_bits[] PROGMEM;
 extern const uint8_t monofett_14pt_regular_widths[];
+extern const FontHandle monofett_14pt_handle;
 
 }  // namespace BakedFonts
 

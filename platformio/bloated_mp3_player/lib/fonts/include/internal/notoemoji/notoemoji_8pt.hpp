@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define NOTOEMOJI_8PT_WIDTH  12
-#define NOTOEMOJI_8PT_HEIGHT 11
-#define NOTOEMOJI_8PT_FIRST  32
-#define NOTOEMOJI_8PT_LAST   1042487
-#define NOTOEMOJI_8PT_COUNT  1501
+static const uint8_t NOTOEMOJI_8PT_WIDTH  = 12;
+static const uint8_t NOTOEMOJI_8PT_HEIGHT = 11;
+static const uint32_t NOTOEMOJI_8PT_FIRST  = 32;
+static const uint32_t NOTOEMOJI_8PT_LAST   = 1042487;
+static const uint16_t NOTOEMOJI_8PT_COUNT  = 1501;
 
 extern const uint32_t notoemoji_8pt_codes[];
 
 extern const uint8_t notoemoji_8pt_bits[] PROGMEM;
 extern const uint8_t notoemoji_8pt_widths[];
+extern const FontHandle notoemoji_8pt_handle;
 
 }  // namespace BakedFonts
 

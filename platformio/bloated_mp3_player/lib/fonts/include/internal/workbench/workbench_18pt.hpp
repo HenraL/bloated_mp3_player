@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define WORKBENCH_18PT_WIDTH  11
-#define WORKBENCH_18PT_HEIGHT 18
-#define WORKBENCH_18PT_FIRST  32
-#define WORKBENCH_18PT_LAST   8725
-#define WORKBENCH_18PT_COUNT  215
+static const uint8_t WORKBENCH_18PT_WIDTH  = 11;
+static const uint8_t WORKBENCH_18PT_HEIGHT = 18;
+static const uint32_t WORKBENCH_18PT_FIRST  = 32;
+static const uint32_t WORKBENCH_18PT_LAST   = 8725;
+static const uint16_t WORKBENCH_18PT_COUNT  = 215;
 
-extern const uint16_t workbench_18pt_codes[];
+extern const uint32_t workbench_18pt_codes[];
 
 extern const uint8_t workbench_18pt_bits[] PROGMEM;
 extern const uint8_t workbench_18pt_widths[];
+extern const FontHandle workbench_18pt_handle;
 
 }  // namespace BakedFonts
 

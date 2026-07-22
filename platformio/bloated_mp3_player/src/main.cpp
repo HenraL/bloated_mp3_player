@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 18:32:46 22-07-2026
+* LAST Modified: 20:27:38 22-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -119,27 +119,6 @@ void setup()
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
         SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
-        if (SharedInstances::environmental.get_chip_id() != 0) {
-            SharedInstances::serial.serial_print("[ENV] BMP280 chip ID mismatch: got 0x%02X, expected 0x58",
-                SharedInstances::environmental.get_chip_id());
-        }
-    }
-
-    if (SharedInstances::environmental.has_bmp280()) {
-        const auto &cal = SharedInstances::environmental.get_calibration();
-        SharedInstances::serial.serial_print(
-            "[ENV] BMP280 detected at 0x%02X, chip ID=0x%02X",
-            SharedInstances::environmental.get_bmp_addr(),
-            SharedInstances::environmental.get_chip_id());
-        SharedInstances::serial.serial_print(
-            "[ENV] BMP280 cal T1=%u T2=%d T3=%d",
-            cal.dig_T1, cal.dig_T2, cal.dig_T3);
-        SharedInstances::serial.serial_print(
-            "[ENV] BMP280 cal P1=%u P2=%d P3=%d P4=%d P5=%d P6=%d P7=%d P8=%d P9=%d",
-            cal.dig_P1, cal.dig_P2, cal.dig_P3, cal.dig_P4,
-            cal.dig_P5, cal.dig_P6, cal.dig_P7, cal.dig_P8, cal.dig_P9);
-    } else {
-        SharedInstances::serial.serial_print("[ENV] BMP280 not found");
     }
 
     // IMU
@@ -173,7 +152,7 @@ void setup()
     SharedInstances::my_threads.initialise_sensors();
     SharedInstances::my_threads.initialise_led();
     // SharedInstances::my_threads.initialise_matrix();
-    // SharedInstances::my_threads.initialise_input();
+    SharedInstances::my_threads.initialise_input();
 
     SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
     Profiler::dump_task_stats();

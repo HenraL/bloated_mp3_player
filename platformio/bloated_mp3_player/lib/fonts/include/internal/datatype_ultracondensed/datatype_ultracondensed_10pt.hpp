@@ -7,13 +7,13 @@
 
 namespace BakedFonts {
 
-#define DATATYPE_ULTRACONDENSED_10PT_WIDTH  7
-#define DATATYPE_ULTRACONDENSED_10PT_HEIGHT 11
-#define DATATYPE_ULTRACONDENSED_10PT_FIRST  32
-#define DATATYPE_ULTRACONDENSED_10PT_LAST   8722
-#define DATATYPE_ULTRACONDENSED_10PT_COUNT  319
+static const uint8_t DATATYPE_ULTRACONDENSED_10PT_WIDTH  = 7;
+static const uint8_t DATATYPE_ULTRACONDENSED_10PT_HEIGHT = 11;
+static const uint32_t DATATYPE_ULTRACONDENSED_10PT_FIRST  = 32;
+static const uint32_t DATATYPE_ULTRACONDENSED_10PT_LAST   = 8722;
+static const uint16_t DATATYPE_ULTRACONDENSED_10PT_COUNT  = 319;
 
-extern const uint16_t datatype_ultracondensed_10pt_codes[];
+extern const uint32_t datatype_ultracondensed_10pt_codes[];
 
 extern const uint8_t datatype_ultracondensed_10pt_black_bits[] PROGMEM;
 extern const uint8_t datatype_ultracondensed_10pt_black_widths[];
@@ -34,6 +34,7 @@ extern const uint8_t datatype_ultracondensed_10pt_semibold_widths[];
 extern const uint8_t datatype_ultracondensed_10pt_thin_bits[] PROGMEM;
 extern const uint8_t datatype_ultracondensed_10pt_thin_widths[];
 extern const FontStyleMap datatype_ultracondensed_10pt_style_map[];
+extern const FontHandle datatype_ultracondensed_10pt_handle;
 
 }  // namespace BakedFonts
 

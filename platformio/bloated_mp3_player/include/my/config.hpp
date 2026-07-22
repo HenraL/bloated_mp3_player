@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: config.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 23:40:14 20-07-2026
+* LAST Modified: 22:32:17 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -25,10 +25,12 @@
 #pragma once
 #include <stdint.h>
 #include <U8g2lib.h>
+#include <fonts.hpp>
 #include "config/pins.hpp"
 #include "config/delays.hpp"
 #include "config/priorities.hpp"
 #include "config/onboard_led.hpp"
+#include "config/display_layout.hpp"
 
 
 namespace My
@@ -48,8 +50,9 @@ namespace My
 #endif
 
         // ─── Display fonts ───────────────────────────────────────────────────────
-        static const uint8_t *const FONT_TITLE = u8g2_font_ncenB10_tr;
-        static const uint8_t *const FONT_BODY = u8g2_font_ncenB08_tr;
+        static const BakedFonts::FontHandle *const FONT_TITLE = &BakedFonts::tiny5_10pt_handle;
+        static const BakedFonts::FontHandle *const FONT_BODY = &BakedFonts::tiny5_8pt_handle;
+        static const BakedFonts::FontHandle *const FONT_INFO = &BakedFonts::tiny5_8pt_handle;
 
         // ─── Matrix Setup ───────────────────────────────────────────────────────
         static const uint16_t MATRIX_LED_COUNT_HORIZONTAL = 16;

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_ui.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 19:35:9 22-07-2026
+* LAST Modified: 22:41:46 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -44,9 +44,10 @@ namespace My
                 }
             }
             if (*read) {
-                SharedInstances::lcd.printAt(2, 40, "T: %.1f°C", env->temperature);
-                SharedInstances::lcd.printAt(52, 40, "Hum:  %.0f %%", env->humidity);
-                SharedInstances::lcd.printAt(72, 40, "Pres: %.0f hPa", env->pressure);
+                SharedInstances::lcd.setFont(My::Config::FONT_INFO);
+                SharedInstances::lcd.printAt(My::Config::DisplayLayout::TEMPERATURE_X, My::Config::DisplayLayout::HUMIDITY_Y, "T: %.1f C", env->temperature);
+                SharedInstances::lcd.printAt(My::Config::DisplayLayout::HUMIDITY_X, My::Config::DisplayLayout::HUMIDITY_Y, "H: %.0f%%", env->humidity);
+                SharedInstances::lcd.printAt(My::Config::DisplayLayout::PRESSURE_X, My::Config::DisplayLayout::PRESSURE_Y, "P: %.0fhPa", env->pressure);
                 SharedInstances::serial.serial_print("[UI] Temp: %.1f C, Hum:  %.0f %%, Pres: %.0f hPa", env->temperature, env->humidity, env->pressure);
                 if (SharedInstances::environmental.has_bmp280()) {
                     SharedInstances::serial.serial_print(
@@ -56,6 +57,7 @@ namespace My
                         (long long)SharedInstances::environmental.get_last_intermediate_p(),
                         env->pressure);
                 }
+                SharedInstances::lcd.setFont(My::Config::FONT_BODY);
             }
         }
 
@@ -73,21 +75,21 @@ namespace My
             while (true) {
                 SharedInstances::lcd.clear();
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
-                SharedInstances::lcd.printAt("Bloated MP3 v1.0", 0, 12);
+                SharedInstances::lcd.printAt("Bloated MP3 v1.0", My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y);
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
 
                 refresh_environemental_values(&env, &read, &last_poll);
 
-                SharedInstances::lcd.printAt(0, 50, "Uptime: %lus", millis() / 1000);
+                SharedInstances::lcd.printAt(My::Config::DisplayLayout::UPTIME_X, My::Config::DisplayLayout::UPTIME_Y, "Uptime: %lus", millis() / 1000);
 
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
-                    SharedInstances::lcd.printAt(70, 24, "|| PAUSE");
+                    SharedInstances::lcd.printAt(My::Config::DisplayLayout::AUDIO_STATUS_X, My::Config::DisplayLayout::AUDIO_STATUS_Y, "|| PAUSE");
                 } else {
-                    SharedInstances::lcd.printAt(70, 24, ">> PLAY");
+                    SharedInstances::lcd.printAt(My::Config::DisplayLayout::AUDIO_STATUS_X, My::Config::DisplayLayout::AUDIO_STATUS_Y, ">> PLAY");
                 }
 
-                SharedInstances::lcd.drawRect(0, 54, 128, 8);
-                SharedInstances::lcd.fillRect(2, 56, ((millis() / 100) % 100) * 124 / 100, 4);
+                SharedInstances::lcd.drawRect(My::Config::DisplayLayout::RECTANGLE_X, My::Config::DisplayLayout::RECTANGLE_Y, My::Config::DisplayLayout::RECTANGLE_W, My::Config::DisplayLayout::RECTANGLE_H);
+                SharedInstances::lcd.fillRect(My::Config::DisplayLayout::RECTANGLE_FILL_X, My::Config::DisplayLayout::RECTANGLE_FILL_Y, ((millis() / 100) % 100) * 124 / 100, My::Config::DisplayLayout::RECTANGLE_FILL_H);
 
                 SharedInstances::lcd.display();
                 vTaskDelayUntil(&xLastWake, freq);

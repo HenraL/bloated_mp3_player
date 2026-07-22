@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define DOTO_2PT_WIDTH  2
-#define DOTO_2PT_HEIGHT 3
-#define DOTO_2PT_FIRST  32
-#define DOTO_2PT_LAST   8722
-#define DOTO_2PT_COUNT  319
+static const uint8_t DOTO_2PT_WIDTH  = 2;
+static const uint8_t DOTO_2PT_HEIGHT = 3;
+static const uint32_t DOTO_2PT_FIRST  = 32;
+static const uint32_t DOTO_2PT_LAST   = 8722;
+static const uint16_t DOTO_2PT_COUNT  = 319;
 
-extern const uint16_t doto_2pt_codes[];
+extern const uint32_t doto_2pt_codes[];
 
 extern const uint8_t doto_2pt_bits[] PROGMEM;
 extern const uint8_t doto_2pt_widths[];
+extern const FontHandle doto_2pt_handle;
 
 }  // namespace BakedFonts
 

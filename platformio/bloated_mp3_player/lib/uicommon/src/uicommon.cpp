@@ -86,9 +86,9 @@ static const BakedFonts::FontHandle _default_font = {
     BakedFonts::doto_8pt_codes,
     BakedFonts::doto_8pt_bits,
     BakedFonts::doto_8pt_widths,
-    DOTO_8PT_COUNT,
-    DOTO_8PT_WIDTH,
-    DOTO_8PT_HEIGHT,
+    BakedFonts::DOTO_8PT_COUNT,
+    BakedFonts::DOTO_8PT_WIDTH,
+    BakedFonts::DOTO_8PT_HEIGHT,
 };
 
 void Canvas::set_baked_font(const BakedFonts::FontHandle *font)
@@ -102,7 +102,7 @@ void Canvas::set_font(const uint8_t *font)
 }
 
 static uint16_t find_glyph(
-    const uint16_t *codes, uint16_t count, uint32_t cp)
+    const uint32_t *codes, uint16_t count, uint32_t cp)
 {
     int16_t lo = 0;
     int16_t hi = (int16_t)(count - 1);

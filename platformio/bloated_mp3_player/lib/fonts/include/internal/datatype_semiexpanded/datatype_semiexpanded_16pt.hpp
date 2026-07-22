@@ -7,13 +7,13 @@
 
 namespace BakedFonts {
 
-#define DATATYPE_SEMIEXPANDED_16PT_WIDTH  11
-#define DATATYPE_SEMIEXPANDED_16PT_HEIGHT 17
-#define DATATYPE_SEMIEXPANDED_16PT_FIRST  32
-#define DATATYPE_SEMIEXPANDED_16PT_LAST   8722
-#define DATATYPE_SEMIEXPANDED_16PT_COUNT  319
+static const uint8_t DATATYPE_SEMIEXPANDED_16PT_WIDTH  = 11;
+static const uint8_t DATATYPE_SEMIEXPANDED_16PT_HEIGHT = 17;
+static const uint32_t DATATYPE_SEMIEXPANDED_16PT_FIRST  = 32;
+static const uint32_t DATATYPE_SEMIEXPANDED_16PT_LAST   = 8722;
+static const uint16_t DATATYPE_SEMIEXPANDED_16PT_COUNT  = 319;
 
-extern const uint16_t datatype_semiexpanded_16pt_codes[];
+extern const uint32_t datatype_semiexpanded_16pt_codes[];
 
 extern const uint8_t datatype_semiexpanded_16pt_black_bits[] PROGMEM;
 extern const uint8_t datatype_semiexpanded_16pt_black_widths[];
@@ -34,6 +34,7 @@ extern const uint8_t datatype_semiexpanded_16pt_semibold_widths[];
 extern const uint8_t datatype_semiexpanded_16pt_thin_bits[] PROGMEM;
 extern const uint8_t datatype_semiexpanded_16pt_thin_widths[];
 extern const FontStyleMap datatype_semiexpanded_16pt_style_map[];
+extern const FontHandle datatype_semiexpanded_16pt_handle;
 
 }  // namespace BakedFonts
 

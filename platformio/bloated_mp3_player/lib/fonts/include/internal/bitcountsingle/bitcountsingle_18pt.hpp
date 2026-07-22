@@ -7,16 +7,17 @@
 
 namespace BakedFonts {
 
-#define BITCOUNTSINGLE_18PT_WIDTH  22
-#define BITCOUNTSINGLE_18PT_HEIGHT 17
-#define BITCOUNTSINGLE_18PT_FIRST  32
-#define BITCOUNTSINGLE_18PT_LAST   64258
-#define BITCOUNTSINGLE_18PT_COUNT  396
+static const uint8_t BITCOUNTSINGLE_18PT_WIDTH  = 22;
+static const uint8_t BITCOUNTSINGLE_18PT_HEIGHT = 17;
+static const uint32_t BITCOUNTSINGLE_18PT_FIRST  = 32;
+static const uint32_t BITCOUNTSINGLE_18PT_LAST   = 64258;
+static const uint16_t BITCOUNTSINGLE_18PT_COUNT  = 396;
 
-extern const uint16_t bitcountsingle_18pt_codes[];
+extern const uint32_t bitcountsingle_18pt_codes[];
 
 extern const uint8_t bitcountsingle_18pt_bits[] PROGMEM;
 extern const uint8_t bitcountsingle_18pt_widths[];
+extern const FontHandle bitcountsingle_18pt_handle;
 
 }  // namespace BakedFonts
 
