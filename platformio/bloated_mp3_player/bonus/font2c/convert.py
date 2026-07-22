@@ -320,20 +320,17 @@ def format_codes_array(
     indent: str = "    ",
     width: int = 8,
 ) -> typing.Tuple[str, typing.List[str]]:
-    is_wide: bool = any(c > 0xFFFF for c in data)
-    ctype: str = "uint32_t" if is_wide else "uint16_t"
-    fmt: str = "0x{v:08x}" if is_wide else "0x{v:04x}"
     lines: typing.List[str] = []
     for chunk_start in range(0, len(data), width):
         chunk: typing.List[int] = data[chunk_start:chunk_start + width]
-        parts: typing.List[str] = [fmt.format(v=v) for v in chunk]
+        parts: typing.List[str] = [f"0x{v:08x}" for v in chunk]
         line: str = ", ".join(parts)
         is_last: bool = chunk_start + width >= len(data)
         if is_last:
             lines.append(f"{indent}{line}")
         else:
             lines.append(f"{indent}{line},")
-    return ctype, lines
+    return "uint32_t", lines
 
 
 def format_style_map_array(
@@ -384,6 +381,8 @@ def _write_family_size_header_and_source(
     code_count: int = len(info.codes)
 
     array_names: typing.List[typing.Tuple[str, str, typing.List[int], typing.List[int]]] = []
+    primary_bits_name: str = ""
+    primary_widths_name: str = ""
     for vname in info.variant_names:
         bits, widths = info.variant_data[vname]
         if vname == "normal":
@@ -393,6 +392,9 @@ def _write_family_size_header_and_source(
             bits_name = f"{name_tag}_{vname}_bits"
             widths_name = f"{name_tag}_{vname}_widths"
         array_names.append((bits_name, widths_name, bits, widths))
+        if vname == "normal" or (vname != "normal" and not primary_bits_name):
+            primary_bits_name = bits_name
+            primary_widths_name = widths_name
 
     has_style_map: bool = bool(info.style_map) and len(info.variant_names) > 1
     arduino_include: str = '#include <Arduino.h>\n' if use_progmem else ''
@@ -409,11 +411,11 @@ def _write_family_size_header_and_source(
     hdr += "\n"
     hdr += "namespace BakedFonts {\n"
     hdr += "\n"
-    hdr += f"#define {name_tag.upper()}_WIDTH  {info.cell_width}\n"
-    hdr += f"#define {name_tag.upper()}_HEIGHT {info.cell_height}\n"
-    hdr += f"#define {name_tag.upper()}_FIRST  {first_code}\n"
-    hdr += f"#define {name_tag.upper()}_LAST   {last_code}\n"
-    hdr += f"#define {name_tag.upper()}_COUNT  {code_count}\n"
+    hdr += f"static const uint8_t {name_tag.upper()}_WIDTH  = {info.cell_width};\n"
+    hdr += f"static const uint8_t {name_tag.upper()}_HEIGHT = {info.cell_height};\n"
+    hdr += f"static const uint32_t {name_tag.upper()}_FIRST  = {first_code};\n"
+    hdr += f"static const uint32_t {name_tag.upper()}_LAST   = {last_code};\n"
+    hdr += f"static const uint16_t {name_tag.upper()}_COUNT  = {code_count};\n"
     hdr += "\n"
 
     # codes[] array — maps index to Unicode code point
@@ -453,6 +455,19 @@ def _write_family_size_header_and_source(
             for line in format_style_map_array(info.style_map):
                 hdr += line + "\n"
             hdr += "};\n"
+
+    # ── FontHandle ──
+    if use_extern:
+        hdr += f"extern const FontHandle {name_tag}_handle;\n"
+    else:
+        hdr += f"static const FontHandle {name_tag}_handle = {{\n"
+        hdr += f"    {name_tag}_codes,\n"
+        hdr += f"    {primary_bits_name},\n"
+        hdr += f"    {primary_widths_name},\n"
+        hdr += f"    {name_tag.upper()}_COUNT,\n"
+        hdr += f"    {name_tag.upper()}_WIDTH,\n"
+        hdr += f"    {name_tag.upper()}_HEIGHT,\n"
+        hdr += "};\n"
 
     hdr += "\n"
     hdr += "}  // namespace BakedFonts\n"
@@ -495,6 +510,17 @@ def _write_family_size_header_and_source(
                 src += line + "\n"
             src += "};\n"
             src += "\n"
+
+        # ── FontHandle ──
+        src += f"const FontHandle {name_tag}_handle = {{\n"
+        src += f"    {name_tag}_codes,\n"
+        src += f"    {primary_bits_name},\n"
+        src += f"    {primary_widths_name},\n"
+        src += f"    {name_tag.upper()}_COUNT,\n"
+        src += f"    {name_tag.upper()}_WIDTH,\n"
+        src += f"    {name_tag.upper()}_HEIGHT,\n"
+        src += "};\n"
+        src += "\n"
         src += "}  // namespace BakedFonts\n"
         src += "\n"
         source_path: str = os.path.join(source_dir, f"{family_name}_{size_tag}.cpp")
@@ -550,7 +576,7 @@ def write_library_metadata(
     structs += "};\n"
     structs += "\n"
     structs += "struct FontHandle {\n"
-    structs += "    const uint16_t *codes;\n"
+    structs += "    const uint32_t *codes;\n"
     structs += "    const uint8_t *bits;\n"
     structs += "    const uint8_t *widths;\n"
     structs += "    uint16_t count;\n"
