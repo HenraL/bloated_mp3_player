@@ -173,7 +173,8 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
 
             uint32_t bit_off = 0;
             for (uint16_t i = 0; i < idx; i++)
-                bit_off += ((fh->widths[i] + 7) / 8) * cell_h;
+                if (fh->widths[i] != 0)
+                    bit_off += ((fh->widths[i] + 7) / 8) * cell_h;
 
             for (uint8_t row = 0; row < cell_h; row++) {
                 uint32_t ro = bit_off + row * row_bytes;

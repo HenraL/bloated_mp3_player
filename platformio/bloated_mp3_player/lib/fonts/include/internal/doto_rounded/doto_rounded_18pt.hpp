@@ -7,7 +7,7 @@
 
 namespace BakedFonts {
 
-static const uint8_t DOTO_ROUNDED_18PT_WIDTH  = 11;
+static const uint8_t DOTO_ROUNDED_18PT_WIDTH  = 12;
 static const uint8_t DOTO_ROUNDED_18PT_HEIGHT = 34;
 static const uint32_t DOTO_ROUNDED_18PT_FIRST  = 32;
 static const uint32_t DOTO_ROUNDED_18PT_LAST   = 8722;

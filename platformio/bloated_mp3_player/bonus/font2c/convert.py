@@ -277,10 +277,7 @@ def build_bits_array(
     for code in codes:
         glyph = size_data.glyphs.get(code)
         if glyph is None:
-            if code == 0x20:
-                widths.append(size_data.cell_width // 2 + 1)
-            else:
-                widths.append(0)
+            widths.append(0)
             continue
         widths.append(glyph.width)
         glyph_row_bytes: int = (glyph.width + 7) // 8
