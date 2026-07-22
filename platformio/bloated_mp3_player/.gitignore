@@ -199,6 +199,7 @@ env.back/
 venv.back/
 env.bak/
 venv.bak/
+*_env/
 
 # Spyder project settings
 .spyderproject
