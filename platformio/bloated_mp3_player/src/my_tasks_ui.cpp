@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_ui.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 16:30:51 22-07-2026
+* LAST Modified: 18:17:11 22-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -48,17 +48,20 @@ namespace My
 
                 Environmental::Reading env;
                 if (Environmental::read(env)) {
-                    SharedInstances::lcd.printAt(0, 24, "Temp: %.1f C", env.temperature);
-                    SharedInstances::lcd.printAt(0, 32, "Hum:  %.0f %%", env.humidity);
-                    SharedInstances::lcd.printAt(0, 40, "Pres: %.0f hPa", env.pressure);
+                    SharedInstances::lcd.printAt(24, 40, "Temp: %.1f °C", env.temperature);
+                    SharedInstances::lcd.printAt(32, 40, "Hum:  %.0f %%", env.humidity);
+                    SharedInstances::lcd.printAt(40, 40, "Pres: %.0f hPa", env.pressure);
+                    SharedInstances::serial.serial_print("[UI] Temp: % .1f °C, Hum:  %.0f %%, Pres: %.0f hPa", env.temperature, env.humidity, env.pressure);
+                } else {
+                    SharedInstances::serial.serial_print("[UI] Failed to read environemental values.");
                 }
 
                 SharedInstances::lcd.printAt(0, 50, "Uptime: %lus", millis() / 1000);
 
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
-                    SharedInstances::lcd.printAt(76, 24, ">> PLAY");
+                    SharedInstances::lcd.printAt(70, 24, "|| PAUSE");
                 } else {
-                    SharedInstances::lcd.printAt(76, 24, "|| STOP");
+                    SharedInstances::lcd.printAt(70, 24, ">> PLAY");
                 }
 
                 SharedInstances::lcd.drawRect(0, 54, 128, 8);
