@@ -101,6 +101,33 @@ void Canvas::set_font(const uint8_t *font)
     (void)font;
 }
 
+static uint32_t utf8_decode(const char *&s)
+{
+    uint8_t c = (uint8_t)*s;
+    if (c < 0x80) {
+        s++;
+        return c;
+    }
+    if (c < 0xC0) {
+        s++;
+        return 0xFFFD;
+    }
+    uint32_t cp;
+    uint8_t extra;
+    if (c < 0xE0) { cp = c & 0x1F; extra = 1; }
+    else if (c < 0xF0) { cp = c & 0x0F; extra = 2; }
+    else if (c < 0xF8) { cp = c & 0x07; extra = 3; }
+    else { s++; return 0xFFFD; }
+    for (uint8_t i = 0; i < extra; i++) {
+        s++;
+        uint8_t b = (uint8_t)*s;
+        if ((b & 0xC0) != 0x80) return 0xFFFD;
+        cp = (cp << 6) | (b & 0x3F);
+    }
+    s++;
+    return cp;
+}
+
 static uint16_t find_glyph(
     const uint32_t *codes, uint16_t count, uint32_t cp)
 {
@@ -123,11 +150,24 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
     uint8_t cell_h = fh->glyph_height;
 
     while (*str) {
-        uint32_t cp = (uint8_t)*str;
+        uint32_t cp = utf8_decode(str);
+        if (cp == 0xFFFD) continue;
+
+        if (cp == 0x20) {
+            uint16_t idx = find_glyph(fh->codes, count, cp);
+            if (idx != 0xFFFF) {
+                x += fh->widths[idx];
+            }
+            else {
+                x += fh->glyph_width / 2 + 1;
+            }
+            continue;
+        }
+
         uint16_t idx = find_glyph(fh->codes, count, cp);
         if (idx != 0xFFFF) {
             uint8_t gw = fh->widths[idx];
-            if (gw == 0) { str++; continue; }
+            if (gw == 0) continue;
 
             uint8_t row_bytes = (gw + 7) / 8;
 
@@ -145,7 +185,6 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
             }
             x += gw + 1;
         }
-        str++;
     }
 }
 
