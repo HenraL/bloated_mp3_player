@@ -119,6 +119,27 @@ void setup()
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
         SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
+        if (SharedInstances::environmental.get_chip_id() != 0) {
+            SharedInstances::serial.serial_print("[ENV] BMP280 chip ID mismatch: got 0x%02X, expected 0x58",
+                SharedInstances::environmental.get_chip_id());
+        }
+    }
+
+    if (SharedInstances::environmental.has_bmp280()) {
+        const auto &cal = SharedInstances::environmental.get_calibration();
+        SharedInstances::serial.serial_print(
+            "[ENV] BMP280 detected at 0x%02X, chip ID=0x%02X",
+            SharedInstances::environmental.get_bmp_addr(),
+            SharedInstances::environmental.get_chip_id());
+        SharedInstances::serial.serial_print(
+            "[ENV] BMP280 cal T1=%u T2=%d T3=%d",
+            cal.dig_T1, cal.dig_T2, cal.dig_T3);
+        SharedInstances::serial.serial_print(
+            "[ENV] BMP280 cal P1=%u P2=%d P3=%d P4=%d P5=%d P6=%d P7=%d P8=%d P9=%d",
+            cal.dig_P1, cal.dig_P2, cal.dig_P3, cal.dig_P4,
+            cal.dig_P5, cal.dig_P6, cal.dig_P7, cal.dig_P8, cal.dig_P9);
+    } else {
+        SharedInstances::serial.serial_print("[ENV] BMP280 not found");
     }
 
     // IMU

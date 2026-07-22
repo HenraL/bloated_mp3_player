@@ -40,6 +40,9 @@ namespace Environmental
     static const uint8_t BMP280_REG_CONFIG  = 0xF5;
     static const uint8_t BMP280_REG_DATA    = 0xF7;
 
+    static const uint8_t BMP280_REG_CHIPID   = 0xD0;
+    static const uint8_t BMP280_CHIPID       = 0x58;
+
     // Normal mode, 2x temp oversampling, 16x pressure oversampling
     static const uint8_t BMP280_CTRL_VALUE  = 0x57;
 

@@ -42,6 +42,13 @@ namespace Environmental
         bool read(Reading &out);
 
         uint32_t get_poll_interval() const;
+        bool has_bmp280() const;
+        uint8_t get_chip_id() const;
+        uint8_t get_bmp_addr() const;
+        const BMP280Calibration &get_calibration() const;
+        uint32_t get_last_adc_p() const;
+        uint32_t get_last_adc_t() const;
+        int64_t get_last_intermediate_p() const;
 
         History &get_history();
         void reset_history();
@@ -55,7 +62,12 @@ namespace Environmental
         BMP280Calibration _bmp_cal;
         bool    _has_bmp280;
         uint8_t _bmp_addr;
+        uint8_t _chip_id;
         int32_t _t_fine;
+
+        uint32_t _last_adc_p;
+        uint32_t _last_adc_t;
+        int64_t  _last_intermediate_p;
 
         bool read_aht20(float &temp, float &hum);
         bool read_bmp280(float &pressure);

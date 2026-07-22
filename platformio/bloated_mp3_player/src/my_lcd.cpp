@@ -68,9 +68,13 @@ void My::LCD::Display::set_font(const uint8_t *font)
 }
 
 void My::LCD::Display::text(int16_t x, int16_t y,
-                             const char *str, My::LED::Colour)
+                             const char *str, My::LED::Colour c)
 {
-    printAt(str, x, y);
+    if (_baked_font) {
+        Canvas::text(x, y, str, c);
+    } else {
+        printAt(str, x, y);
+    }
 }
 
 // ── Primitives ────────────────────────────────────────────────────────

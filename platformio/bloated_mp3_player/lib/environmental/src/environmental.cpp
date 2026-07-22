@@ -82,7 +82,11 @@ Environmental::Environmental::Environmental(
     , _poll_interval(poll_interval_ms)
     , _has_bmp280(false)
     , _bmp_addr(0)
+    , _chip_id(0)
     , _t_fine(0)
+    , _last_adc_p(0)
+    , _last_adc_t(0)
+    , _last_intermediate_p(0)
     , _log_interval(2000)
     , _last_log(0)
 {
@@ -113,10 +117,30 @@ bool Environmental::Environmental::begin()
 
     if (_has_bmp280)
     {
+        // Verify chip ID (0xD0 should return 0x58 for BMP280, 0x60 for BME280)
+        uint8_t chip_id = 0;
+        Wire.beginTransmission(_bmp_addr);
+        Wire.write(::Environmental::BMP280_REG_CHIPID);
+        Wire.endTransmission();
+        Wire.requestFrom(_bmp_addr, (uint8_t)1);
+        if (Wire.available())
+        {
+            chip_id = Wire.read();
+        }
+
+        _chip_id = chip_id;
+        if (chip_id != ::Environmental::BMP280_CHIPID)
+        {
+            _has_bmp280 = false;
+        }
+    }
+
+    if (_has_bmp280)
+    {
         // Read calibration data (24 bytes starting at 0x88)
         Wire.beginTransmission(_bmp_addr);
         Wire.write(::Environmental::BMP280_REG_CALIB);
-        Wire.endTransmission(false);
+        Wire.endTransmission();
         Wire.requestFrom(_bmp_addr, (uint8_t)24);
 
         if (Wire.available() >= 24)
@@ -138,20 +162,30 @@ bool Environmental::Environmental::begin()
         {
             _has_bmp280 = false;
         }
+    }
 
-        if (_has_bmp280)
+    if (_has_bmp280)
+    {
+        // Normal mode, 2x temp oversampling, 16x pressure oversampling
+        Wire.beginTransmission(_bmp_addr);
+        Wire.write(::Environmental::BMP280_REG_CTRL_MEAS);
+        Wire.write(0x57);
+        Wire.endTransmission();
+
+        // Config: no filter, 0.5 ms standby
+        Wire.beginTransmission(_bmp_addr);
+        Wire.write(::Environmental::BMP280_REG_CONFIG);
+        Wire.write(0x00);
+        Wire.endTransmission();
+
+        // Verify: read back ctrl_meas register (not stored, just a check)
+        Wire.beginTransmission(_bmp_addr);
+        Wire.write(::Environmental::BMP280_REG_CTRL_MEAS);
+        Wire.endTransmission();
+        Wire.requestFrom(_bmp_addr, (uint8_t)1);
+        if (Wire.available())
         {
-            // Normal mode, 2x temp oversampling, 16x pressure oversampling
-            Wire.beginTransmission(_bmp_addr);
-            Wire.write(::Environmental::BMP280_REG_CTRL_MEAS);
-            Wire.write(0x57);
-            Wire.endTransmission();
-
-            // Config: no filter, 0.5 ms standby
-            Wire.beginTransmission(_bmp_addr);
-            Wire.write(::Environmental::BMP280_REG_CONFIG);
-            Wire.write(0x00);
-            Wire.endTransmission();
+            (void)Wire.read();
         }
     }
 
@@ -202,7 +236,7 @@ bool Environmental::Environmental::read_bmp280(float &pressure)
     // Read 6 bytes: press[3] + temp[3] from 0xF7
     Wire.beginTransmission(_bmp_addr);
     Wire.write(::Environmental::BMP280_REG_DATA);
-    Wire.endTransmission(false);
+    Wire.endTransmission();
     Wire.requestFrom(_bmp_addr, (uint8_t)6);
     if (Wire.available() < 6) return false;
 
@@ -220,24 +254,27 @@ bool Environmental::Environmental::read_bmp280(float &pressure)
     _t_fine = var1 + var2;
 
     // --- pressure compensation -------------------------------------------
-    int64_t var3, var4, p;
-    var3 = ((int64_t)_t_fine) - 128000;
-    var4 = var3 * var3 * (int64_t)_bmp_cal.dig_P6;
-    var4 = var4 + ((var3 * (int64_t)_bmp_cal.dig_P5) << 17);
-    var4 = var4 + (((int64_t)_bmp_cal.dig_P4) << 35);
-    var3 = ((var3 * var3 * (int64_t)_bmp_cal.dig_P3) >> 8)
-         + ((var3 * (int64_t)_bmp_cal.dig_P2) << 12);
-    var3 = (((((int64_t)1) << 47) + var3)) * ((int64_t)_bmp_cal.dig_P1) >> 33;
+    int64_t v1, v2, p;
+    int64_t v1a = ((int64_t)_t_fine) - 128000;
+    int64_t v2a = v1a * v1a * (int64_t)_bmp_cal.dig_P6;
+    v2a = v2a + ((v1a * (int64_t)_bmp_cal.dig_P5) << 17);
+    v2a = v2a + (((int64_t)_bmp_cal.dig_P4) << 35);
+    v1a = ((v1a * v1a * (int64_t)_bmp_cal.dig_P3) >> 8)
+        + ((v1a * (int64_t)_bmp_cal.dig_P2) << 12);
+    v1a = (((((int64_t)1) << 47) + v1a)) * ((int64_t)_bmp_cal.dig_P1) >> 33;
 
-    if (var3 == 0) return false;
+    if (v1a == 0) return false;
 
     p = 1048576 - adc_P;
-    p = (((p << 31) - var4) * 3125) / var3;
-    var1 = (((int64_t)_bmp_cal.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
-    var2 = (((int64_t)_bmp_cal.dig_P8) * p) >> 19;
-    p = ((p + var1 + var2) >> 8) + (((int64_t)_bmp_cal.dig_P7) << 4);
+    p = (((p << 31) - v2a) * 3125) / v1a;
+    v1 = (((int64_t)_bmp_cal.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
+    v2 = (((int64_t)_bmp_cal.dig_P8) * p) >> 19;
+    p = ((p + v1 + v2) >> 8) + (((int64_t)_bmp_cal.dig_P7) << 4);
 
-    pressure = (float)p / 100.0f; // Pa → hPa
+    _last_adc_p = adc_P;
+    _last_adc_t = adc_T;
+    _last_intermediate_p = p;
+    pressure = (float)p / 25600.0f; // Q24.8 → Pa → hPa
     return true;
 }
 
@@ -278,6 +315,41 @@ bool Environmental::Environmental::read(Reading &out)
 uint32_t Environmental::Environmental::get_poll_interval() const
 {
     return _poll_interval;
+}
+
+bool Environmental::Environmental::has_bmp280() const
+{
+    return _has_bmp280;
+}
+
+uint8_t Environmental::Environmental::get_chip_id() const
+{
+    return _chip_id;
+}
+
+uint8_t Environmental::Environmental::get_bmp_addr() const
+{
+    return _bmp_addr;
+}
+
+const Environmental::BMP280Calibration &Environmental::Environmental::get_calibration() const
+{
+    return _bmp_cal;
+}
+
+uint32_t Environmental::Environmental::get_last_adc_p() const
+{
+    return _last_adc_p;
+}
+
+uint32_t Environmental::Environmental::get_last_adc_t() const
+{
+    return _last_adc_t;
+}
+
+int64_t Environmental::Environmental::get_last_intermediate_p() const
+{
+    return _last_intermediate_p;
 }
 
 Environmental::History &Environmental::Environmental::get_history()
