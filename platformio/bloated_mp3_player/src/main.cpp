@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 15:26:10 22-07-2026
+* LAST Modified: 18:32:46 22-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -109,7 +109,7 @@ void setup()
         Matrix::set_pixel(i, My::LED::blue_colour);
     }
     Matrix::show();
-    delay(2050);
+    delay(2100);
 
     Matrix::set_animation(Matrix::Animation::Rainbow);
 
@@ -143,13 +143,16 @@ void setup()
     // Bluetooth
     Bluetooth::begin("BloatedMP3");
 
+    // Artificial delay (to read the initialisaiton issues)
+    delay(My::Config::Delays::PRE_THREAD_INITIALISATION_DELAY);
+
     // ─── Spawn FreeRTOS tasks ─────────────────────────────────────────
     SharedInstances::my_threads.initialise_ui();
-    SharedInstances::my_threads.initialise_audio();
+    // SharedInstances::my_threads.initialise_audio();
     SharedInstances::my_threads.initialise_sensors();
     SharedInstances::my_threads.initialise_led();
-    SharedInstances::my_threads.initialise_matrix();
-    SharedInstances::my_threads.initialise_input();
+    // SharedInstances::my_threads.initialise_matrix();
+    // SharedInstances::my_threads.initialise_input();
 
     SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
     Profiler::dump_task_stats();
