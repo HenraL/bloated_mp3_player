@@ -86,12 +86,6 @@ namespace Audio
             return false;
         }
 
-        gpio_matrix_out(
-            _mirror_pin,
-            i2s_periph_signal[_i2s_port].data_out_sig,
-            false, false
-        );
-
         return true;
     }
 
@@ -243,10 +237,19 @@ namespace Audio
 
             size_t chunk = avail > 512 ? 512 : avail;
             size_t n = _ring_read(out_buf, chunk);
-            if (n > 0)
+            if (n == 0) continue;
+
+            size_t to_send = n * sizeof(int16_t);
+            uint8_t *ptr = (uint8_t *)out_buf;
+            while (to_send > 0)
             {
                 size_t written;
-                i2s_write(_i2s_port, out_buf, n * sizeof(int16_t), &written, portMAX_DELAY);
+                esp_err_t err = i2s_write(
+                    _i2s_port, ptr, to_send, &written, portMAX_DELAY
+                );
+                if (err != ESP_OK || written == 0) break;
+                to_send -= written;
+                ptr += written;
             }
         }
 

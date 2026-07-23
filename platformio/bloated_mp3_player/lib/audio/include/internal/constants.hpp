@@ -37,6 +37,6 @@ namespace Audio
     static const uint32_t MP3_IN_BUF_SIZE = 4096;
     static const uint32_t MP3_FRAME_PCM_SIZE = 2304;
 
-    static const uint32_t PLAYER_MAX_FRAMES  = 512;
+    static const uint32_t PLAYER_MAX_FRAMES  = 2304;
 
 }

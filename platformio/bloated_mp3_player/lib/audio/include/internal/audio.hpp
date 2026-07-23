@@ -1,7 +1,6 @@
 #pragma once
 #include <Arduino.h>
 #include <driver/i2s.h>
-#include <soc/i2s_periph.h>
 #include "constants.hpp"
 #include "structs.hpp"
 
@@ -37,7 +36,7 @@ namespace Audio
 
     private:
         uint8_t      _speaker_pin;
-        uint8_t      _mirror_pin;
+        uint8_t      _mirror_pin; // unused, kept for API compat
         uint8_t      _dma_buf_count;
         uint16_t     _dma_buf_len;
         Status       _status    = Stopped;

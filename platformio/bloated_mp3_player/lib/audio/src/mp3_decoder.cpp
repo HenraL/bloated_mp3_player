@@ -244,6 +244,7 @@ namespace Audio
                 {
                     break;
                 }
+                vTaskDelay(1);
             } while (_ring_frames < _ring_cap && !_eof);
         }
 
