@@ -284,6 +284,9 @@ def build_bits_array(
         widths.append(glyph.width)
         glyph_row_bytes: int = (glyph.width + 7) // 8
         start_row: int = max_top - glyph.offset_y
+        glyph_bottom: int = start_row + glyph.height
+        if glyph_bottom < max_top:
+            start_row = max_top - glyph.height
         for row in range(cell_h):
             if start_row <= row < start_row + glyph.height:
                 data_row: int = row - start_row
