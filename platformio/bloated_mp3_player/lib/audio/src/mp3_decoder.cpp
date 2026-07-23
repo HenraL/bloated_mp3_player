@@ -78,7 +78,7 @@ namespace Audio
     {
         if (_in_avail > 0 && _in_pos > 0)
         {
-            size_t remaining = _in_avail;
+            size_t remaining = _in_avail - _in_pos;
             std::memmove(_in_buf, _in_buf + _in_pos, remaining);
             _in_avail = remaining;
             _in_pos = 0;
@@ -111,6 +111,7 @@ namespace Audio
         }
 
         size_t total_frames = 0;
+        int bail = 2048;
 
         while (total_frames < max_frames)
         {
@@ -129,6 +130,11 @@ namespace Audio
                 total_frames += copy_frames;
                 _frame_consumed += copy_frames;
                 continue;
+            }
+
+            if (--bail <= 0)
+            {
+                break;
             }
 
             refill();
@@ -171,6 +177,11 @@ namespace Audio
 
             if (result != 0)
             {
+                if (consumed == 0)
+                {
+                    _in_pos += 1;
+                    _in_avail -= 1;
+                }
                 continue;
             }
 
