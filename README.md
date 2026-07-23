@@ -1,3 +1,26 @@
+<!-- 
+-- +==== BEGIN Bloated MP3 Player =================+
+-- LOGO:
+-- .......................
+-- ...><>.............<><.
+-- ..><>.><>.......<><.<><
+-- .><>.<><.><>.<><.<><.<>
+-- ..><>.><>.......<><.<><
+-- ...><>.............<><.
+-- .......................
+-- /STOP
+-- PROJECT: Bloated MP3 Player
+-- FILE: README.md
+-- CREATION DATE: 23-07-2026
+-- LAST Modified: 15:48:0 23-07-2026
+-- DESCRIPTION:
+-- This is the code in charge of making the bloated player come to life.
+-- /STOP
+-- COPYRIGHT: (c) Henry Letellier
+-- PURPOSE: This is the file that presents and explains the projects aim.
+-- // AR
+-- +==== END Bloated MP3 Player =================+
+-->
 # **DON'T PANIC**
 
 ## bloated_mp3_player
@@ -7,7 +30,6 @@
 This is a multithreaded embedded project that started life as a humble MP3 player and, through a series of unfortunate events vaguely resembling a real-time systems course, accreted so many non-essential components that it now requires a concurrent scheduler just to keep them all arguing fairly for CPU time.
 
 It runs on an ESP32-S3 (the electronic equivalent of an Infinite Improbability Drive, only slightly less likely to turn you into a potted plant or a philosophical whale), uses FreeRTOS under the hood (courtesy of the Arduino framework), and demonstrates that you can, in fact, teach concurrency by strapping seventeen unrelated sensors to a single I²C bus and hoping for the best.
-
 
 ## About
 
@@ -22,7 +44,6 @@ Is it practical? No.
 Does it demonstrate concurrency? Absolutely.
 Would Zaphod Beeblebrox approve? Almost certainly, right before stealing it.
 
-
 ## Disclaimer
 
 - This program is provided **as is**, without warranty of any kind — implied, express, or Vogon-constructed. If your ESP32 achieves sentience and demands a better quality of MP3, that's your problem.
@@ -31,7 +52,6 @@ Would Zaphod Beeblebrox approve? Almost certainly, right before stealing it.
 - Targeted at the **ESP32-S3 WROOM FREENOVE** dev board. Flashed via the PlatformIO extension for VS Code (or however one normally communicates with small, irritable computers).
 - The [KiCad schematic](./hardware/) is provided as a wiring reference. You could send it to a PCB manufacturer if you're feeling brave, but the author (and his AI accomplice) accept no responsibility for design issues, misplaced vias, or spontaneous combustion.
 - Components are universally sourcable from websites such as Amazon, AliExpress, or (for the truly adventurous) by flagging down a passing Dentrassi supply ship.
-
 
 ## Dependencies
 
@@ -43,9 +63,30 @@ The software stack, from bottom to top:
 | Arduino ESP32 Core | HAL / framework | Because writing raw ESP-IDF is for people with more patience |
 | [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) | RGB LED control | Makes the matrix glow reassuringly |
 | [U8g2](https://github.com/olikraus/u8g2) | OLED/LCD monochrome graphics | Draws text and badly-scaled album art on the 128×64 LCD |
+| [arduino-libhelix](https://github.com/pschatzmann/arduino-libhelix) | Fixed-point MP3 decoder | Helix-based MP3 decoding with PSRAM support; because software decoding without it is like a Vogon without a thesaurus |
 
-All library dependencies are resolved automatically by PlatformIO via `platformio.ini`.
+Most library dependencies materialise automagically from the PlatformIO ether. The exception is the one that does the actual heavy lifting — see the submodule note below, and try not to think about what happens if you forget `--recursive`.
 
+### Git Submodule: arduino-libhelix
+
+> *"The major difference between a thing that might go wrong and a thing that cannot possibly go wrong is that when a thing that cannot possibly go wrong goes wrong, it usually turns out to be impossible to get at or repair."*
+> — Douglas Adams, *Mostly Harmless*
+
+This library lives at `platformio/bloated_mp3_player/lib/arduino-libhelix` and is not a PlatformIO registry package — it is, officially, A Thing That Cannot Possibly Go Wrong.
+
+To initialise it (and thereby disprove the above quote):
+
+```
+git clone --recursive <repository-url>
+```
+
+If you cloned without `--recursive` (you magnificent fool):
+
+```
+git submodule update --init --recursive
+```
+
+PlatformIO scans `lib/` automatically, so the submodule compiles itself into the firmware with no further configuration. If this sounds too easy, re-read the quote at the top of this section.
 
 ## Components Used
 
@@ -69,7 +110,6 @@ The following have been sacrificed on the altar of concurrency:
 **Total carnage:** ~€52.58 plus fuses, caps, and whatever else you inevitably forgot.
 
 For fuses, capacitors, resistors, and the 5 V → 3.3 V regulators, see the schematic. You probably have them in a drawer somewhere. The author assumes no responsibility for the state of that drawer.
-
 
 ## How to Flash
 
@@ -95,7 +135,6 @@ python middleware/full_erase.py --port /dev/ttyUSB0      # explicit port
 
 It will find `esptool.py` in your PATH, or tell you to `pip install esptool` if you haven't.
 
-
 ## How to Use
 
 > *"In the beginning, the universe was created. This has made a lot of people very angry and been widely regarded as a bad move."*
@@ -103,7 +142,6 @@ It will find `esptool.py` in your PATH, or tell you to `pip install esptool` if 
 Turn the rotary encoder to navigate the menu. Press the switch to select. The interface, such as it is, will appear on the LCD. The RGB matrix will do something presumably artistic. The ultrasonic sensor will judge your distance from the board. The MPU-9250 will ponder its orientation in the cosmos. The temperature sensor will inform you that it is, in fact, room temperature.
 
 There is no off switch. You have been warned.
-
 
 ## Bonus Tools
 
@@ -115,14 +153,18 @@ The firmware includes a lightweight profiler that can dump task timing traces an
 
 1. In the firmware, ensure `Profiling::dump_traces()` or `Profiling::dump_task_stats()` is called. The output appears on the serial console (typically 115200 baud) in sections bracketed by `=== PROFILING TRACES ===` / `=== END PROFILING TRACES ===`.
 2. Save that serial output to a file:
+
    ```
    platformio device monitor --raw > serial_dump.txt
    ```
+
    Press the reset button to trigger the dump, then hit Ctrl+C to stop.
 3. Generate the flamegraph:
+
    ```
    python bonus/extras/flamegraph.py serial_dump.txt
    ```
+
    This produces `flamegraph.svg` (or `flamegraph_traces.svg` / `flamegraph_task_stats.svg` if multiple sections are present).
 4. Open the SVG in any browser. The wider a bar, the more time that function consumed. Hover for details.
 
@@ -162,19 +204,23 @@ bitmap; widths are proportional, the living is easy, and the flash usage is only
 moderately horrifying.
 
 **Quickest path to enlightenment:**
+
 ```bash
 ./bonus/font2c.sh
 ```
+
 This processes every font in `bonus/fonts/` at point sizes 2 through 20 (step 2)
 and deposits the resulting C library into `lib/fonts/`. The noise you hear is
 Pillow rendering approximately 500 glyphs per size per font. Have a towel ready.
 
 **Single font, specific size:**
+
 ```bash
 ./bonus/font2c.sh bonus/fonts/Tiny5/Tiny5-Regular.ttf lib/fonts/ --size 14
 ```
 
 **What you can tweak:**
+
 | Flag | Default | What it does (in plain Galactic) |
 |------|---------|----------------------------------|
 | `--size SIZE` | — | Exactly one point size; ignores `--min`/`--max` |
@@ -188,6 +234,7 @@ Pillow rendering approximately 500 glyphs per size per font. Have a towel ready.
 | `--no-progmem` | — | Omit PROGMEM (if you hate flash and love RAM) |
 
 **What lands in `lib/fonts/`:**
+
 ```
 lib/fonts/
 ├── include/
@@ -205,6 +252,7 @@ lib/fonts/
 ```
 
 **Manual run (if you distrust shell scripts — and who can blame you?):**
+
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
@@ -218,23 +266,28 @@ deactivate
 #### Image → C (`bonus/img2c.sh` / `bonus/img2c/convert.py`)
 
 Turns PNGs into C byte arrays. Each image gets two representations:
+
 - **1-bit packed bitmap** — 8 pixels per byte, perfect for the 128×64 LCD
 - **8-bit grayscale** — for when you eventually want to dither like a Vogon
   constructor fleet painting a bypass
 
 **Quick start:**
+
 ```bash
 ./bonus/img2c.sh
 ```
+
 Every PNG in `bonus/images/` gets converted and packed into `lib/images/` as a
 PlatformIO library. If the images had towels, they'd be packed too.
 
 **Single file:**
+
 ```bash
 ./bonus/img2c.sh bonus/images/baseline_menu_black_48dp.png --output lib/images/
 ```
 
 **Available levers:**
+
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-o DIR`, `--output DIR` | — | Where to put the result |
@@ -247,6 +300,7 @@ PlatformIO library. If the images had towels, they'd be packed too.
 | `--no-progmem` | — | No PROGMEM (RAM is a dish best served cold) |
 
 **Output terrain:**
+
 ```
 lib/images/
 ├── include/
@@ -260,6 +314,7 @@ lib/images/
 ```
 
 **Manual run (for the autonomously inclined):**
+
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
