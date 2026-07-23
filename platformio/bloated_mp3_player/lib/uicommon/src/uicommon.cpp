@@ -153,7 +153,7 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
                 x += fh->widths[idx];
             }
             else {
-                x += fh->glyph_width / 2 + 1;
+                x += fh->glyph_width / 3 + 1;
             }
             continue;
         }
