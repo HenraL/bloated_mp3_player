@@ -84,6 +84,12 @@ Use `static const` inside `namespace` instead. `constexpr` can trigger undefined
 certain embedded compilers (ESP8266, some GCC/architecture combinations).  Use `static const`
 at namespace scope — it's safe and gives the same compile-time constant semantics.
 
+### 8. Never execute git commands
+
+AI assistants must **never** run `git add`, `git commit`, `git push`, `git submodule`, `git tag`, or any
+other command that alters repository state. Only read-only inspection (`git status`, `git diff`,
+`git log`, `git show`) is permitted. The user handles all version control operations manually.
+
 ---
 
 ## Coding Conventions
