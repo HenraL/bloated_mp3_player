@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: display_layout.hpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 3:31:41 23-07-2026
+* LAST Modified: 4:5:51 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -39,11 +39,11 @@ namespace My
             static const int16_t        TEMPERATURE_Y = ENVIRONEMENT_POSITION_Y;
 
             // Humidity position
-            static const int16_t                                HUMIDITY_X = 45;
+            static const int16_t                                HUMIDITY_X = 46;
             static const int16_t           HUMIDITY_Y = ENVIRONEMENT_POSITION_Y;
 
             // Pressure position
-            static const int16_t                                PRESSURE_X = 75;
+            static const int16_t                                PRESSURE_X = 77;
             static const int16_t           PRESSURE_Y = ENVIRONEMENT_POSITION_Y;
 
             // Audio status message

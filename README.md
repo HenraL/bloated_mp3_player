@@ -136,17 +136,144 @@ python bonus/extras/flamegraph.py serial_dump.txt -o output.svg  # custom output
 
 ### Image & Font Conversion (bonus/ dir)
 
-- **`bonus/img2c/convert.py`** — Convert PNG icons to C byte arrays (1-bit packed + 8-bit grayscale), with optional PlatformIO library mode.
-- **`bonus/font2c/convert.py`** — Render TTF/OTF fonts to C byte arrays at configurable point sizes, with full Unicode range support and proportional glyph width tables.
+> *"The ships hung in the compiler's symbol table in much the same way that bricks don't."*
+> — The Maker's Guide to the Codebase
 
-See each script's `--help` for details. Both require Pillow:
+Two Python converters that perform the digital equivalent of the Total Perspective Vortex:
+they take your PNGs and TTF/OTF fonts, shrink them down to their essential C byte-array
+essence, and embed them directly into the firmware. No filesystem reads. No SD card
+dependency. Just pure, uncompromising, flash-resident data.
 
+Use the provided shell scripts — they create their own virtual environment from
+`requirements.txt`, install Pillow and fonttools, run the converter, then clean up
+after themselves. Like a well-mannered Vogon butler.
+
+| If you want to | Run this | It auto-creates venv from |
+|---|---|---|
+| Bake fonts into C | `./bonus/font2c.sh` | `bonus/font2c/requirements.txt` |
+| Bake images into C | `./bonus/img2c.sh` | `bonus/img2c/requirements.txt` |
+
+---
+
+#### Font → C (`bonus/font2c.sh` / `bonus/font2c/convert.py`)
+
+Converts TTF/OTF fonts into a PlatformIO C library. Each glyph becomes a compact
+bitmap; widths are proportional, the living is easy, and the flash usage is only
+moderately horrifying.
+
+**Quickest path to enlightenment:**
+```bash
+./bonus/font2c.sh
 ```
-pip install -r bonus/img2c/requirements.txt
+This processes every font in `bonus/fonts/` at point sizes 2 through 20 (step 2)
+and deposits the resulting C library into `lib/fonts/`. The noise you hear is
+Pillow rendering approximately 500 glyphs per size per font. Have a towel ready.
+
+**Single font, specific size:**
+```bash
+./bonus/font2c.sh bonus/fonts/Tiny5/Tiny5-Regular.ttf lib/fonts/ --size 14
+```
+
+**What you can tweak:**
+| Flag | Default | What it does (in plain Galactic) |
+|------|---------|----------------------------------|
+| `--size SIZE` | — | Exactly one point size; ignores `--min`/`--max` |
+| `--min MIN` | 8 | Smallest size to generate |
+| `--max MAX` | 20 | Largest size to generate |
+| `--step STEP` | 2 | Step between sizes (2 = 8, 10, 12, …) |
+| `--first FIRST` | 32 (space) | First Unicode code point to include |
+| `--last LAST` | 0x10FFFF | Last Unicode code point (yes, that's the whole of Unicode) |
+| `--batch` | — | Recursively find all TTF/OTF in the input directory |
+| `--no-extern` | — | Stuff everything into the headers (no separate .cpp) |
+| `--no-progmem` | — | Omit PROGMEM (if you hate flash and love RAM) |
+
+**What lands in `lib/fonts/`:**
+```
+lib/fonts/
+├── include/
+│   ├── fonts.hpp              — Master include (include this, get all)
+│   ├── font_structs.hpp       — FontHandle, RenderedGlyph, and friends
+│   ├── font_constants.hpp     — Size and style constants
+│   ├── font_families.hpp      — Family cross-reference tables
+│   ├── font_helpers.hpp       — find_font(), get_glyph() & co.
+│   └── internal/<family>/
+│       └── <family>_<size>pt.hpp  — Per-size declarations
+├── src/
+│   └── <family>_<size>pt.cpp  — Actual bit data + FontHandle
+├── library.json
+└── CMakeLists.txt
+```
+
+**Manual run (if you distrust shell scripts — and who can blame you?):**
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -r bonus/font2c/requirements.txt
+python bonus/font2c/convert.py bonus/fonts/Tiny5/Tiny5-Regular.ttf lib/fonts/ --size 14
+deactivate
 ```
 
-If you don't want to upset the universe, use a virtual environment — your OS is the planet and the env is the cryogenised body in orbit keeping the British speaking clock off your phone bill.
+---
+
+#### Image → C (`bonus/img2c.sh` / `bonus/img2c/convert.py`)
+
+Turns PNGs into C byte arrays. Each image gets two representations:
+- **1-bit packed bitmap** — 8 pixels per byte, perfect for the 128×64 LCD
+- **8-bit grayscale** — for when you eventually want to dither like a Vogon
+  constructor fleet painting a bypass
+
+**Quick start:**
+```bash
+./bonus/img2c.sh
+```
+Every PNG in `bonus/images/` gets converted and packed into `lib/images/` as a
+PlatformIO library. If the images had towels, they'd be packed too.
+
+**Single file:**
+```bash
+./bonus/img2c.sh bonus/images/baseline_menu_black_48dp.png --output lib/images/
+```
+
+**Available levers:**
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-o DIR`, `--output DIR` | — | Where to put the result |
+| `--batch` | — | Process all PNGs in input directory |
+| `--library` | — | Generate `include/` + `src/` PlatformIO structure |
+| `--no-gray` | — | Skip the grayscale array |
+| `--no-bits` | — | Skip the 1-bit packed array |
+| `--gen-source FILE` | — | One `.cpp` to rule them all |
+| `--no-extern` | — | Inline everything in headers |
+| `--no-progmem` | — | No PROGMEM (RAM is a dish best served cold) |
+
+**Output terrain:**
+```
+lib/images/
+├── include/
+│   ├── images.hpp                 — Aggregated master header
+│   └── internal/
+│       └── baseline_menu_black_48dp.hpp  — Per-image header
+├── src/
+│   └── images.cpp                 — Bit data definitions
+├── library.json
+└── CMakeLists.txt
+```
+
+**Manual run (for the autonomously inclined):**
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r bonus/img2c/requirements.txt
+python bonus/img2c/convert.py bonus/images/ lib/images/ --batch --library
+deactivate
+```
+
+> **A note on virtual environments:**
+> Your operating system's Python is a precious and temperamental ecosystem —
+> rather like a Babel fish, but less useful at translating Vogon poetry.
+> Do not install random packages into it. Use the shell scripts (they handle
+> everything) or create a temporary venv manually. The universe will thank you.
+> Probably.
 
 ## License
 
