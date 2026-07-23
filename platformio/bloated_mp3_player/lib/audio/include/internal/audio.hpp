@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include <driver/i2s.h>
 #include "struct.hpp"
 
 
@@ -16,7 +15,7 @@ namespace Audio
     class Audio
     {
     public:
-        Audio(uint8_t bclk, uint8_t lrc, uint8_t dout, uint8_t dout2,
+        Audio(uint8_t speaker_pin_1, uint8_t speaker_pin_2,
               uint8_t dma_buf_count, uint16_t dma_buf_len);
 
         bool        open();
@@ -33,16 +32,15 @@ namespace Audio
         Status      getStatus() const;
 
     private:
-        uint8_t     _bclk;
-        uint8_t     _lrc;
-        uint8_t     _dout;
-        uint8_t     _dout2;
+        uint8_t     _speaker_pin_1;
+        uint8_t     _speaker_pin_2;
         uint8_t     _dma_buf_count;
         uint16_t    _dma_buf_len;
         Status      _status    = Stopped;
         uint8_t     _volume    = 128;
         uint32_t    _sr        = 44100;
-        i2s_port_t  _i2s_port  = I2S_NUM_0;
+        uint8_t     _ledc_chan_1;
+        uint8_t     _ledc_chan_2;
     };
 
 } // namespace Audio

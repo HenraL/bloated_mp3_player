@@ -73,16 +73,13 @@ namespace My
             static const uint8_t SDMMC_CMD = 38;
             static const uint8_t SDMMC_D0  = 40;
 
-            // ─── I2S Audio out (stereo, 2 speakers) ────────────────────────────
-            // BCLK (bit clock) and LRC (word select) are shared by both channels.
-            // DOUT1 carries left-channel data, DOUT2 carries right-channel data.
-            // On the Freenove board, LS1 maps to GPIO18, LS2 maps to GPIO21.
-            // The audio quality remains approximately that of a Dalek singing
-            // through a rolled-up newspaper. This is a feature, not a bug.
-            static const uint8_t I2S_BCLK_PIN = 16;
-            static const uint8_t I2S_LRC_PIN = 17;
-            static const uint8_t I2S_DOUT_PIN = 18;
-            static const uint8_t I2S_DOUT2_PIN = 21;
+            // ─── Audio out (2 speakers direct to ESP pins) ─────────────────
+            // Speakers are connected positive-pin-only through coupling caps
+            // to GPIOs 17 (LS1) and 18 (LS2). No I2S DAC, no amplifier —
+            // just the ESP's internal DAC or LEDC PWM doing the heavy lifting.
+            // The audio quality is best described as "aggressively charming."
+            static const uint8_t SPEAKER_PIN_1 = 17;
+            static const uint8_t SPEAKER_PIN_2 = 18;
 
             // ─── Rotary encoder (Alps EC11E, Prusa-style) ─────────────────────────
             // Use this to navigate the UI. Turn left to go back, turn right to go

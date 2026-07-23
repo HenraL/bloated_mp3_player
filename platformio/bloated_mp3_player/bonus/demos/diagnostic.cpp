@@ -31,7 +31,7 @@
 #include <matrix.hpp>
 #include <ultrasonic.hpp>
 #include <rotary.hpp>
-#include <audio.hpp>
+#include "my/audio.hpp"
 #include <environmental.hpp>
 #include <imu.hpp>
 #include <sdcard.hpp>
@@ -96,8 +96,8 @@ void setup()
         SD_MISO_PIN, SD_SCLK_PIN);
     diag_print("SD Card", sd_ok);
 
-    bool i2s_ok = Audio::begin(I2S_BCLK_PIN, I2S_LRC_PIN, I2S_DOUT_PIN);
-    diag_print("I2S Audio", i2s_ok);
+    // Audio uses ESP internal DAC on GPIO17/18 — no begin() needed.
+    diag_print("Audio (internal DAC)", true);
 
     Rotary::begin(ROTARY_PIN_A, ROTARY_PIN_B, ROTARY_SW_PIN);
     diag_print("Rotary Encoder", true);

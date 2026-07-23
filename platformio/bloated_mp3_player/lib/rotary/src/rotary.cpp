@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: rotary.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:39:12 15-07-2026
+* LAST Modified: 12:21:22 23-07-2026
 * DESCRIPTION:
 * Implements a rotary encoder with software debounce and long-press.
 * The callback mechanism is minimal because we believe in doing things
@@ -52,16 +52,13 @@ void Rotary::tick()
     uint8_t a = digitalRead(pinA);
     uint8_t b = digitalRead(pinB);
     uint32_t now = micros();
+    bool sw = digitalRead(pinSW);
 
-    if (a != last_a && (now - last_a_ms) > DEBOUNCE_US)
-    {
-        if (b != a)
-        {
+    if (a != last_a && (now - last_a_ms) > DEBOUNCE_US) {
+        if (b != a) {
             encoder_pos++;
             last_dir = 1;
-        }
-        else
-        {
+        } else {
             encoder_pos--;
             last_dir = -1;
         }
@@ -70,19 +67,15 @@ void Rotary::tick()
         last_a_ms = now;
     }
 
-    bool sw = digitalRead(pinSW);
-    if (sw && !sw_last)
-    {
+    if (sw && !sw_last) {
         sw_was_pressed = true;
         sw_long_reported = false;
         sw_press_ms = 0;
     }
-    if (!sw && sw_last)
-    {
+    if (!sw && sw_last) {
         sw_press_ms = millis();
     }
-    if (!sw && !sw_last && sw_press_ms > 0 && (millis() - sw_press_ms) > 1000 && !sw_long_reported)
-    {
+    if (!sw && !sw_last && sw_press_ms > 0 && (millis() - sw_press_ms) > 1000 && !sw_long_reported) {
         sw_long_reported = true;
     }
     sw_last = sw;
@@ -104,8 +97,7 @@ bool Rotary::was_pressed()
 
 bool Rotary::was_long_pressed(uint32_t hold_ms)
 {
-    if (!digitalRead(pinSW) && (millis() - sw_press_ms) > hold_ms && !sw_long_reported)
-    {
+    if (!digitalRead(pinSW) && (millis() - sw_press_ms) > hold_ms && !sw_long_reported) {
         sw_long_reported = true;
         return true;
     }
