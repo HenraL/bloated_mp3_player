@@ -5319,6 +5319,10 @@
 		(uuid "784ed9e3-0a10-43ba-a6c5-32afdfaa3fa8")
 	)
 	(no_connect
+		(at 118.11 35.56)
+		(uuid "8de0d51c-d5d7-4a7a-87e7-0a961d4ba73d")
+	)
+	(no_connect
 		(at 148.59 40.64)
 		(uuid "8fe9c83d-b634-4894-8650-dbe675c4fbf2")
 	)
