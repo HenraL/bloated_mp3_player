@@ -1,0 +1,43 @@
+/*
+* +==== BEGIN Bloated MP3 Player =================+
+* LOGO:
+* .......................
+* ...><>.............<><.
+* ..><>.><>.......<><.<><
+* .><>.<><.><>.<><.<><.<>
+* ..><>.><>.......<><.<><
+* ...><>.............<><.
+* .......................
+* /STOP
+* PROJECT: Bloated MP3 Player
+* FILE: debug.hpp
+* CREATION DATE: 23-07-2026
+* LAST Modified: 12:1:11 23-07-2026
+* DESCRIPTION:
+* This is the code in charge of making the bloated player come to life.
+* /STOP
+* COPYRIGHT: (c) Henry Letellier
+* PURPOSE: This is the file in charge of providing the information wether to show a debug line or not.
+* // AR
+* +==== END Bloated MP3 Player =================+
+*/
+#pragma once
+// Global debugging
+#define ENABLE_GLOBAL_DEBUGGING
+namespace My
+{
+    namespace Config
+    {
+        namespace Debug
+        {
+            // BMP280 debug lines
+            static const bool UART_BMP280_RAW_MODULE_DATA = false;
+            static const bool UART_BMP280_COMPUTED_MODULE_DATA = false;
+
+            // Input debug lines
+
+        } // namespace Debug
+
+    } // namespace Config
+
+} // namespace My

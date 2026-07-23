@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: serial.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 12:2:25 20-07-2026
+* LAST Modified: 12:0:56 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -25,6 +25,7 @@
 #pragma once
 #include "config.hpp"
 #include <Arduino.h>
+#include "config/debug.hpp"
 
 namespace My
 {
@@ -34,6 +35,7 @@ namespace My
         ~Serial();
         void initialise();
         void serial_print(const char *fmt, ...);
+        void serial_debug(const bool display, const char *fmt, ...);
         void get_queue(char *msg);
         void dump_to_uart(char *msg);
         private:
