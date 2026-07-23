@@ -17,15 +17,46 @@ namespace Audio
         , _eof(false)
         , _in_avail(0)
         , _in_pos(0)
-        , _frame_samples(0)
-        , _frame_consumed(0)
+        , _pcm_ring(nullptr)
+        , _ring_cap(0)
+        , _ring_frames(0)
+        , _ring_pos(0)
     {
         _diag_str[0] = '\0';
+        _ring_alloc();
     }
 
     Mp3Decoder::~Mp3Decoder()
     {
         close();
+        if (_pcm_ring)
+        {
+            free(_pcm_ring);
+            _pcm_ring = nullptr;
+        }
+    }
+
+    bool Mp3Decoder::_ring_alloc()
+    {
+        if (_pcm_ring)
+        {
+            return true;
+        }
+        size_t bytes = PCM_RING_FRAMES * 2 * sizeof(int16_t);
+        _pcm_ring = (int16_t*)heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM);
+        if (!_pcm_ring)
+        {
+            _pcm_ring = (int16_t*)malloc(bytes);
+        }
+        if (_pcm_ring)
+        {
+            _ring_cap = PCM_RING_FRAMES;
+            _ring_frames = 0;
+            _ring_pos = 0;
+            return true;
+        }
+        _ring_cap = 0;
+        return false;
     }
 
     void Mp3Decoder::_diag_printf(const char *fmt, ...)
@@ -58,11 +89,12 @@ namespace Audio
         _eof = false;
         _in_avail = 0;
         _in_pos = 0;
-        _frame_samples = 0;
-        _frame_consumed = 0;
+        _ring_frames = 0;
+        _ring_pos = 0;
         _diag_str[0] = '\0';
+        _ring_alloc();
 
-        return true;
+        return _pcm_ring != nullptr;
     }
 
     void Mp3Decoder::close()
@@ -81,8 +113,8 @@ namespace Audio
         _eof = false;
         _in_avail = 0;
         _in_pos = 0;
-        _frame_samples = 0;
-        _frame_consumed = 0;
+        _ring_frames = 0;
+        _ring_pos = 0;
         _diag_str[0] = '\0';
     }
 
@@ -115,115 +147,130 @@ namespace Audio
         }
     }
 
-    int Mp3Decoder::read(int16_t *pcm, size_t max_frames)
+    bool Mp3Decoder::_decode_one_frame()
     {
-        if (!_file || _eof)
+        int tries = 0;
+        while (tries < 4096)
         {
-            _diag_printf("eof=%d file=%d", _eof, !!_file);
-            return 0;
-        }
+            tries++;
+            refill();
 
-        size_t total_frames = 0;
-        long start_pos = _file.position();
-
-        while (total_frames < max_frames)
-        {
-            if (_frame_consumed < _frame_samples)
+            if (_in_avail <= 0)
             {
-                int remaining = _frame_samples - _frame_consumed;
-                int needed = max_frames - total_frames;
-                int copy_frames = (remaining < needed) ? remaining : needed;
-                int copy_samples = copy_frames * _channels;
-                int src_offset = _frame_consumed * _channels;
+                _eof = true;
+                break;
+            }
 
-                std::memcpy(pcm + total_frames * _channels,
-                           _frame_pcm + src_offset,
-                           copy_samples * sizeof(int16_t));
-
-                total_frames += copy_frames;
-                _frame_consumed += copy_frames;
+            int sync = MP3FindSyncWord(_in_buf + _in_pos, _in_avail);
+            if (sync < 0)
+            {
+                _in_avail = 0;
                 continue;
             }
 
-            int tries = 0;
-            bool got_frame = false;
-            int last_decode_result = -99;
+            _in_pos += sync;
+            _in_avail -= sync;
 
-            while (tries < 4096)
+            unsigned char *mp3_ptr = _in_buf + _in_pos;
+            int mp3_left = _in_avail;
+
+            if (mp3_left < (int)MP3_SYNC_MIN)
             {
-                tries++;
-                refill();
-
-                if (_in_avail <= 0)
-                {
-                    _eof = true;
-                    break;
-                }
-
-                int sync = MP3FindSyncWord(_in_buf + _in_pos, _in_avail);
-                if (sync < 0)
-                {
-                    _in_avail = 0;
-                    continue;
-                }
-
-                _in_pos += sync;
-                _in_avail -= sync;
-
-                unsigned char *mp3_ptr = _in_buf + _in_pos;
-                int mp3_left = _in_avail;
-
-                if (mp3_left < (int)MP3_SYNC_MIN)
-                {
-                    continue;
-                }
-
-                int result = MP3Decode(_decoder, &mp3_ptr, &mp3_left, _frame_pcm, 0);
-                last_decode_result = result;
-
-                int consumed = _in_avail - mp3_left;
-                if (consumed < 0)
-                {
-                    consumed = 0;
-                }
-                _in_pos += consumed;
-                _in_avail -= consumed;
-
-                if (result == 0)
-                {
-                    MP3FrameInfo info;
-                    MP3GetLastFrameInfo(_decoder, &info);
-
-                    _sr = info.samprate;
-                    _channels = info.nChans;
-                    _frame_samples = info.outputSamps / info.nChans;
-                    _frame_consumed = 0;
-                    got_frame = true;
-                    break;
-                }
-
-                if (consumed == 0)
-                {
-                    _in_pos += 1;
-                    _in_avail -= 1;
-                }
+                continue;
             }
 
-            if (!got_frame)
+            int result = MP3Decode(_decoder, &mp3_ptr, &mp3_left, _frame_pcm, 0);
+
+            int consumed = _in_avail - mp3_left;
+            if (consumed < 0)
             {
-                _diag_printf("tries=%d eof=%d avail=%d pos=%d fpos=%ld decode=%d total=%d/%d",
-                    tries, _eof, _in_avail, _in_pos, start_pos, last_decode_result,
-                    (int)total_frames, (int)max_frames);
-                break;
+                consumed = 0;
+            }
+            _in_pos += consumed;
+            _in_avail -= consumed;
+
+            if (result == 0)
+            {
+                MP3FrameInfo info;
+                MP3GetLastFrameInfo(_decoder, &info);
+
+                _sr = info.samprate;
+                _channels = info.nChans;
+                int frame_samps = info.outputSamps;
+                int frame_frames = frame_samps / info.nChans;
+
+                size_t wp_samp = ((_ring_pos + _ring_frames) % _ring_cap) * 2;
+                size_t ring_samps = _ring_cap * 2;
+                size_t first = (size_t)frame_samps;
+                if (first > ring_samps - wp_samp)
+                {
+                    first = ring_samps - wp_samp;
+                }
+                std::memcpy(_pcm_ring + wp_samp, _frame_pcm, first * sizeof(int16_t));
+                if (first < (size_t)frame_samps)
+                {
+                    std::memcpy(_pcm_ring, _frame_pcm + first,
+                               ((size_t)frame_samps - first) * sizeof(int16_t));
+                }
+                _ring_frames += frame_frames;
+                return true;
+            }
+
+            if (consumed == 0)
+            {
+                _in_pos += 1;
+                _in_avail -= 1;
             }
         }
 
-        if (total_frames > 0 && _diag_str[0] == '\0')
+        return false;
+    }
+
+    int Mp3Decoder::read(int16_t *pcm, size_t max_frames)
+    {
+        if (!_file || (_eof && _ring_frames == 0))
         {
-            _diag_printf("ok:%d/%d fpos=%ld", (int)total_frames, (int)max_frames, start_pos);
+            _diag_printf("eof");
+            return 0;
         }
 
-        return total_frames;
+        // Refill: keep ring ≥ 75% full, fill to 100% when we do refill
+        size_t refill_threshold = (_ring_cap * 3) / 4;
+        if (_ring_frames < refill_threshold && !_eof)
+        {
+            do
+            {
+                if (!_decode_one_frame())
+                {
+                    break;
+                }
+            } while (_ring_frames < _ring_cap && !_eof);
+        }
+
+        size_t to_copy = (max_frames < _ring_frames) ? max_frames : _ring_frames;
+        if (to_copy == 0)
+        {
+            _diag_printf("ring empty eof=%d", _eof);
+            return 0;
+        }
+
+        size_t first = _ring_cap - _ring_pos;
+        if (first > to_copy)
+        {
+            first = to_copy;
+        }
+        std::memcpy(pcm, _pcm_ring + _ring_pos * 2, first * 2 * sizeof(int16_t));
+        if (first < to_copy)
+        {
+            std::memcpy(pcm + first * 2, _pcm_ring,
+                       (to_copy - first) * 2 * sizeof(int16_t));
+        }
+
+        _ring_pos = (_ring_pos + to_copy) % _ring_cap;
+        _ring_frames -= to_copy;
+
+        _diag_printf("ring=%d/%d", (int)_ring_frames, (int)_ring_cap);
+        return (int)to_copy;
     }
 
 }

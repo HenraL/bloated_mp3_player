@@ -25,13 +25,16 @@
 #include "constants.hpp"
 #include <Arduino.h>
 #include <SD_MMC.h>
+#include <esp_heap_caps.h>
 
 namespace Audio
 {
 
+    static const size_t PCM_RING_FRAMES = 132300;
+
     class Mp3Decoder : public Decoder
     {
-    public:
+        public:
         Mp3Decoder();
         ~Mp3Decoder() override;
 
@@ -42,12 +45,12 @@ namespace Audio
 
         uint32_t sample_rate() const override { return _sr; }
         uint16_t channels() const override { return _channels; }
-        bool     eof() const override { return _eof; }
+        bool     eof() const override { return _eof && _ring_frames == 0; }
         bool     is_open() const override { return _file ? true : false; }
-        const char* diag() const override { return _diag_str; }
+        const char *diag() const override { return _diag_str; }
 
-    private:
-        void         *_decoder;
+        private:
+        void *_decoder;
         File          _file;
         uint32_t      _sr;
         uint16_t      _channels;
@@ -57,10 +60,15 @@ namespace Audio
         int           _in_avail;
         int           _in_pos;
         int16_t       _frame_pcm[MP3_FRAME_PCM_SIZE];
-        int           _frame_samples;
-        int           _frame_consumed;
         char          _diag_str[256];
 
+        int16_t *_pcm_ring;
+        size_t        _ring_cap;
+        size_t        _ring_frames;
+        size_t        _ring_pos;
+
+        bool _ring_alloc();
+        bool _decode_one_frame();
         void refill();
         void _diag_printf(const char *fmt, ...);
     };
