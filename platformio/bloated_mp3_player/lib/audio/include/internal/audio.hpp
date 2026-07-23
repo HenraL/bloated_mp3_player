@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <driver/i2s.h>
+#include <soc/i2s_periph.h>
 #include "constants.hpp"
 #include "structs.hpp"
 

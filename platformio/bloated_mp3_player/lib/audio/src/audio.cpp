@@ -86,6 +86,16 @@ namespace Audio
             return false;
         }
 
+        if (_speaker_pin != _mirror_pin)
+        {
+            pinMode(_mirror_pin, OUTPUT);
+            gpio_matrix_out(
+                _mirror_pin,
+                i2s_periph_signal[_i2s_port].data_out_sig,
+                false, false
+            );
+        }
+
         return true;
     }
 
