@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: lcd.hpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 21:11:38 22-07-2026
+* LAST Modified: 13:5:22 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -53,7 +53,10 @@ namespace My
             void begin();
             void clear(My::LED::Colour c = My::LED::Colour(0, 0, 0, 0)) override;
             void show() override;
-            void display() { show(); }
+            void display()
+            {
+                show();
+            }
 
             // ── Font ─────────────────────────────────────────────────────
             void setFont(const uint8_t *font);
@@ -61,8 +64,7 @@ namespace My
             void setContrast(uint8_t value);
 
             // Canvas overrides for U8G2 rendering
-            void text(int16_t x, int16_t y, const char *str,
-                My::LED::Colour c) override;
+            void text(int16_t x, int16_t y, const char *str, My::LED::Colour c) override;
 
             // ── U8G2-accelerated primitives ─────────────────────────────
             void drawPixel(uint16_t x, uint16_t y);
@@ -82,11 +84,8 @@ namespace My
 
             // ── Images ───────────────────────────────────────────────────
             void drawAscii(const uint8_t *data, uint16_t w, uint16_t h, uint16_t x, uint16_t y);
-            void draw_xbm(int16_t x, int16_t y, uint16_t w, uint16_t h, const uint8_t *bits,
-                My::LED::Colour fg = My::LED::Colour(255, 255, 255, 0)) override;
-            void draw_image(int16_t x, int16_t y, const uint8_t *data,
-                uint16_t w, uint16_t h,
-                My::LED::Colour fg = My::LED::Colour(255, 255, 255, 0)) override;
+            void draw_xbm(int16_t x, int16_t y, uint16_t w, uint16_t h, const uint8_t *bits, My::LED::Colour fg = My::LED::Colour(255, 255, 255, 0)) override;
+            void draw_image(int16_t x, int16_t y, const uint8_t *data, uint16_t w, uint16_t h, My::LED::Colour fg = My::LED::Colour(255, 255, 255, 0)) override;
 
             // ── Metrics ──────────────────────────────────────────────────
             uint16_t width() const override;

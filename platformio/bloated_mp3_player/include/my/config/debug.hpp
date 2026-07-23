@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 12:36:11 23-07-2026
+* LAST Modified: 13:0:26 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -52,6 +52,11 @@ namespace My
             static const bool UART_ANGLE_SENSOR_SHAKE = true;
             static const bool UART_ANGLE_SENSOR_TILT_LEFT = true;
             static const bool UART_ANGLE_SENSOR_TILT_RIGHT = true;
+
+            // Audio
+            static const bool UART_AUDIO_NOT_PLAYING = false;
+            static const bool UART_AUDIO_NOT_LOADED = false;
+            static const bool UART_AUDIO_TICKED = false;
 
         } // namespace Debug
 

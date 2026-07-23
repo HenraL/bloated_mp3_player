@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <driver/ledc.h>
 #include "struct.hpp"
 
 
@@ -39,8 +40,8 @@ namespace Audio
         Status      _status    = Stopped;
         uint8_t     _volume    = 128;
         uint32_t    _sr        = 44100;
-        uint8_t     _ledc_chan_1;
-        uint8_t     _ledc_chan_2;
+        ledc_channel_t _ledc_chan_1;
+        ledc_channel_t _ledc_chan_2;
     };
 
 } // namespace Audio

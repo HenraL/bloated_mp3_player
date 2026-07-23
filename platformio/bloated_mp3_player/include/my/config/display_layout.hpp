@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: display_layout.hpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 11:34:59 23-07-2026
+* LAST Modified: 13:18:51 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -29,6 +29,18 @@ namespace My
     {
         namespace DisplayLayout
         {
+            // Booting screen
+
+            // Booting message
+            static const int16_t                                 BOOTING_X = 0;
+            static const int16_t                                 BOOTING_Y = 30;
+
+            // Audio seeking
+            static const int16_t                       AUDIO_DISCOVERING_X = 5;
+            static const int16_t                       AUDIO_DISCOVERING_Y = 50;
+
+            // Main screen
+
             // Title position
             static const int16_t                                    TITLE_X = 0;
             static const int16_t                                    TITLE_Y = 5;

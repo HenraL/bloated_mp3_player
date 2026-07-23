@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: config.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:38:9 23-07-2026
+* LAST Modified: 13:16:24 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -51,6 +51,7 @@ namespace My
 #endif
 
         // ─── Display fonts ───────────────────────────────────────────────────────
+        static const uint8_t *const FONT_BOOT = u8g2_font_ncenB08_tr;
         static const BakedFonts::FontHandle *const FONT_TITLE = &BakedFonts::tiny5_10pt_handle;
         static const BakedFonts::FontHandle *const FONT_BODY = &BakedFonts::tiny5_8pt_handle;
         static const BakedFonts::FontHandle *const FONT_INFO = &BakedFonts::tiny5_8pt_handle;

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 20:27:38 22-07-2026
+* LAST Modified: 13:23:53 23-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -60,15 +60,33 @@ void boot_screen()
     SharedInstances::lcd.begin();
     SharedInstances::lcd.clear();
     // Demo: draw a play icon from the generated assets
-    SharedInstances::lcd.drawAscii(baseline_play_circle_filled_black_48dp_bits,
+    SharedInstances::lcd.drawAscii(
+        baseline_play_circle_filled_black_48dp_bits,
         baseline_play_circle_filled_black_48dp_WIDTH,
-        baseline_play_circle_filled_black_48dp_HEIGHT, 1, 1);
+        baseline_play_circle_filled_black_48dp_HEIGHT,
+        1,
+        1
+    );
     SharedInstances::lcd.display();
     delay(500);
     SharedInstances::lcd.clear();
-    SharedInstances::lcd.setFont(u8g2_font_ncenB08_tr);
-    SharedInstances::lcd.printAt("Booting...", 0, 30);
+    SharedInstances::lcd.setFont(My::Config::FONT_BOOT);
+    SharedInstances::lcd.printAt("Booting...", My::Config::DisplayLayout::BOOTING_X, My::Config::DisplayLayout::BOOTING_Y);
     SharedInstances::lcd.display();
+}
+
+bool discover_audio_tracks()
+{
+    if (!SDCard::is_mounted()) {
+        SharedInstances::serial.serial_print("WARN: SD card not mounted, not scanning for audio tracks.");
+        return false;
+    }
+    SharedInstances::lcd.clear();
+    SharedInstances::lcd.setFont(My::Config::FONT_BOOT);
+    SharedInstances::lcd.printAt("Booting...", My::Config::DisplayLayout::BOOTING_X, My::Config::DisplayLayout::BOOTING_Y);
+    SharedInstances::lcd.printAt("Discovering music...", My::Config::DisplayLayout::AUDIO_DISCOVERING_X, My::Config::DisplayLayout::AUDIO_DISCOVERING_Y);
+    SharedInstances::lcd.display();
+    return true;
 }
 
 // ─── Setup ────────────────────────────────────────────────────────────
@@ -129,6 +147,10 @@ void setup()
     // SD card (SDMMC 1-bit mode on hardware pins 38/39/40)
     if (!SDCard::begin(My::Config::Pins::SDMMC_CLK, My::Config::Pins::SDMMC_CMD, My::Config::Pins::SDMMC_D0)) {
         SharedInstances::serial.serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
+    } else {
+        if (!discover_audio_tracks()) {
+            SharedInstances::serial.serial_print("WARN: No music found -- ");
+        }
     }
 
     // Audio
@@ -148,7 +170,7 @@ void setup()
 
     // ─── Spawn FreeRTOS tasks ─────────────────────────────────────────
     SharedInstances::my_threads.initialise_ui();
-    // SharedInstances::my_threads.initialise_audio();
+    SharedInstances::my_threads.initialise_audio();
     SharedInstances::my_threads.initialise_sensors();
     SharedInstances::my_threads.initialise_led();
     // SharedInstances::my_threads.initialise_matrix();
