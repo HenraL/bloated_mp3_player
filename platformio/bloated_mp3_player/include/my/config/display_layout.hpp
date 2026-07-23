@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: display_layout.hpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 23:49:38 22-07-2026
+* LAST Modified: 3:31:41 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -31,9 +31,9 @@ namespace My
         {
             // Title position
             static const int16_t                                    TITLE_X = 0;
-            static const int16_t                                    TITLE_Y = 3;
+            static const int16_t                                    TITLE_Y = 5;
 
-            static const int16_t                   ENVIRONEMENT_POSITION_Y = 12;
+            static const int16_t          ENVIRONEMENT_POSITION_Y = TITLE_Y + 8; //18
             // temperature position
             static const int16_t                              TEMPERATURE_X = 2;
             static const int16_t        TEMPERATURE_Y = ENVIRONEMENT_POSITION_Y;
@@ -46,23 +46,23 @@ namespace My
             static const int16_t                                PRESSURE_X = 75;
             static const int16_t           PRESSURE_Y = ENVIRONEMENT_POSITION_Y;
 
-            // Uptime message
-            static const int16_t                                   UPTIME_X = 0;
-            static const int16_t                                  UPTIME_Y = 45;
-
             // Audio status message
             static const int16_t                            AUDIO_STATUS_X = 70;
-            static const int16_t                            AUDIO_STATUS_Y = 20;
+            static const int16_t   AUDIO_STATUS_Y = ENVIRONEMENT_POSITION_Y + 8; //20
+
+            // Uptime message
+            static const int16_t                                   UPTIME_X = 0;
+            static const int16_t                 UPTIME_Y = AUDIO_STATUS_Y + 25; //45
 
             // Rectangle
             static const int16_t                                RECTANGLE_X = 0;
-            static const int16_t                               RECTANGLE_Y = 54;
+            static const int16_t                     RECTANGLE_Y = UPTIME_Y + 9; //54
             static const int16_t                              RECTANGLE_W = 128;
             static const int16_t                                RECTANGLE_H = 8;
 
             // Rectangle fill
             static const int16_t                           RECTANGLE_FILL_X = 2;
-            static const int16_t                          RECTANGLE_FILL_Y = 56;
+            static const int16_t             RECTANGLE_FILL_Y = RECTANGLE_Y + 2; //56
             static const int16_t                           RECTANGLE_FILL_W = 0;
             static const int16_t                           RECTANGLE_FILL_H = 4;
         } // namespace DisplayLayout

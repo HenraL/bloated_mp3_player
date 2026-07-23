@@ -1,3 +1,26 @@
+/*
+* +==== BEGIN Bloated MP3 Player =================+
+* LOGO:
+* .......................
+* ...><>.............<><.
+* ..><>.><>.......<><.<><
+* .><>.<><.><>.<><.<><.<>
+* ..><>.><>.......<><.<><
+* ...><>.............<><.
+* .......................
+* /STOP
+* PROJECT: Bloated MP3 Player
+* FILE: uicommon.cpp
+* CREATION DATE: 23-07-2026
+* LAST Modified: 2:57:53 23-07-2026
+* DESCRIPTION:
+* This is the code in charge of making the bloated player come to life.
+* /STOP
+* COPYRIGHT: (c) Henry Letellier
+* PURPOSE: This is the file in charge of implementing the logic for the fonts that will be displayed on screen
+* // AR
+* +==== END Bloated MP3 Player =================+
+*/
 #include "uicommon.hpp"
 
 /**
@@ -107,10 +130,7 @@ static uint32_t utf8_decode(const char *&s)
     }
     uint32_t cp;
     uint8_t extra;
-    if (c < 0xE0) { cp = c & 0x1F; extra = 1; }
-    else if (c < 0xF0) { cp = c & 0x0F; extra = 2; }
-    else if (c < 0xF8) { cp = c & 0x07; extra = 3; }
-    else { s++; return 0xFFFD; }
+    if (c < 0xE0) { cp = c & 0x1F; extra = 1; } else if (c < 0xF0) { cp = c & 0x0F; extra = 2; } else if (c < 0xF8) { cp = c & 0x07; extra = 3; } else { s++; return 0xFFFD; }
     for (uint8_t i = 0; i < extra; i++) {
         s++;
         uint8_t b = (uint8_t)*s;
@@ -151,9 +171,8 @@ void Canvas::text(int16_t x, int16_t y, const char *str, My::LED::Colour c)
             uint16_t idx = find_glyph(fh->codes, count, cp);
             if (idx != 0xFFFF && fh->widths[idx] > 0) {
                 x += fh->widths[idx];
-            }
-            else {
-                x += fh->glyph_width / 3 + 1;
+            } else {
+                x += fh->glyph_width / 2 + 1;
             }
             continue;
         }
