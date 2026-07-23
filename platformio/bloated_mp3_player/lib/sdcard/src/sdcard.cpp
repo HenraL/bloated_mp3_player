@@ -27,7 +27,7 @@
 static bool mounted = false;
 static SDCard::TrackInfo track_list[SDCard::MAX_TRACKS];
 static size_t track_count = 0;
-static const char *audio_ext[] = { ".wav", ".mp3", ".WAV", ".MP3" };
+static const char *audio_ext[] = { ".wav", ".WAV", ".mp3", ".MP3" };
 
 bool SDCard::begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail)
 {
@@ -118,11 +118,18 @@ static void scan_dir(const char *dir)
         return;
     }
 
+    size_t dlen = strlen(dir);
+    bool dir_has_slash = (dlen > 0 && dir[dlen - 1] == '/');
+
     File file;
     while ((file = root.openNextFile()) && track_count < SDCard::MAX_TRACKS) {
         if (file.isDirectory()) {
             char sub[SDCard::MAX_SUBPATH_LEN];
-            snprintf(sub, sizeof(sub), "%s/%s", dir, file.name());
+            if (dir_has_slash) {
+                snprintf(sub, sizeof(sub), "%s%s", dir, file.name());
+            } else {
+                snprintf(sub, sizeof(sub), "%s/%s", dir, file.name());
+            }
             scan_dir(sub);
         } else if (SDCard::is_audio_file(file.name())) {
             SDCard::TrackInfo &ti = track_list[track_count];

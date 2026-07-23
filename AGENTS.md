@@ -60,11 +60,11 @@ Files under `lib/fonts/` and `lib/images/` are **generated** by the Python conve
 Always modify the converter (`bonus/font2c/convert.py` or `bonus/img2c/convert.py`) and re-run.
 Hand-edits will be overwritten.
 
-### 3. `using namespace` is banned
+### 3. `using` is banned
 
 Every type must be accessed via its full qualified name. No `using namespace std;`,
-no `using namespace BakedFonts;`, etc. Exception: `using` for specific types in narrow scopes
-(e.g. `using My::Config::Structures::duration_ms_t`) is acceptable.
+no `using namespace BakedFonts;`, no `using std::vector;`, no `using` of any kind.
+Qualify everything explicitly.
 
 ### 4. Ternary `? :` with brace bodies is banned
 
@@ -130,6 +130,30 @@ Read back with `pgm_read_byte()`, `pgm_read_ptr()`, or `memcpy_P()`.
 - Headers: `.hpp`
 - Sources: `.cpp`
 - Config headers: `include/my/config/<name>.hpp`
+
+### Library structure
+
+Every library follows a consistent layout. For a library named `<libname>` in namespace `<Libname>`:
+
+```
+lib/<libname>/
+├── include/
+│   ├── <libname>.hpp           — public forwarder: #include "internal/<libname>.hpp"
+│   └── internal/
+│       ├── <libname>.hpp       — main header (class, public API)
+│       ├── constants.hpp       — magic numbers, limits, pin defs
+│       ├── structs.hpp         — struct/ POD definitions
+│       └── ...                 — any additional headers as needed
+├── src/
+│   ├── <libname>.cpp           — implementation
+│   └── ...                     — any additional .cpp files
+```
+
+- The public `<libname>.hpp` is a single-line forwarder so users write `#include <libname.hpp>`.
+- No magic numbers inline — everything goes in `constants.hpp`.
+- Enclose the library in a namespace matching the library name (e.g. `namespace SDCard { ... }`).
+- Values that cannot be known at compile time must be constructor or function parameters, never hardcoded globals.
+- Shared runtime state is communicated through class members or pointer arguments, never via file-scope variables.
 
 ---
 

@@ -1,12 +1,48 @@
 #include "internal/player.hpp"
-#include <sdcard.hpp>
+#include "internal/wav_decoder.hpp"
+#include "internal/mp3_decoder.hpp"
+#include <cstring>
 
 namespace Audio
 {
 
     Player::Player(Audio &audio)
         : _audio(audio)
+        , _decoder(nullptr)
+        , _loading(false)
     {
+    }
+
+    Player::~Player()
+    {
+        unload();
+    }
+
+    static bool has_extension(const char *path, const char *ext)
+    {
+        const char *dot = std::strrchr(path, '.');
+        if (!dot)
+        {
+            return false;
+        }
+        size_t plen = std::strlen(dot);
+        size_t elen = std::strlen(ext);
+        if (plen != elen)
+        {
+            return false;
+        }
+        for (size_t i = 0; i < plen; i++)
+        {
+            char a = dot[i];
+            char b = ext[i];
+            if (a >= 'A' && a <= 'Z') a += 32;
+            if (b >= 'A' && b <= 'Z') b += 32;
+            if (a != b)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     bool Player::load(const char *path)
@@ -14,117 +50,69 @@ namespace Audio
         _loading = true;
         unload();
 
-        File f = SDCard::open(path);
-        if (!f)
+        if (has_extension(path, ".mp3"))
         {
+            _decoder = new Mp3Decoder();
+        }
+        else
+        {
+            _decoder = new WavDecoder();
+        }
+
+        if (!_decoder->open(path))
+        {
+            delete _decoder;
+            _decoder = nullptr;
             _loading = false;
             return false;
         }
 
-        WavHeader hdr;
-        if (SDCard::read(f, (uint8_t *)&hdr, sizeof(hdr)) != sizeof(hdr))
-        {
-            f.close();
-            _loading = false;
-            return false;
-        }
-
-        if (memcmp(hdr.riff, "RIFF", 4) != 0 ||
-            memcmp(hdr.wave, "WAVE", 4) != 0)
-        {
-            f.close();
-            _loading = false;
-            return false;
-        }
-
-        uint32_t pos   = sizeof(hdr);
-        uint32_t fsize = SDCard::size(f);
-        bool     found = false;
-
-        while (pos + 8 <= fsize)
-        {
-            char     chunk_id[4];
-            uint32_t chunk_size;
-
-            SDCard::seek(f, pos);
-            SDCard::read(f, (uint8_t *)chunk_id, 4);
-            SDCard::read(f, (uint8_t *)&chunk_size, 4);
-
-            if (memcmp(chunk_id, "data", 4) == 0)
-            {
-                _data_start = pos + 8;
-                _data_left  = chunk_size;
-                SDCard::seek(f, _data_start);
-                found = true;
-                break;
-            }
-
-            pos += 8 + ((chunk_size + 1) & ~1);
-        }
-
-        if (!found)
-        {
-            f.close();
-            _loading = false;
-            return false;
-        }
-
-        _audio.setSampleRate(hdr.sample_rate);
-        _file = f;
+        _audio.setSampleRate(_decoder->sample_rate());
         _loading = false;
         return true;
     }
 
     void Player::unload()
     {
-        if (_file)
+        if (_decoder)
         {
-            _file.close();
+            _decoder->close();
+            delete _decoder;
+            _decoder = nullptr;
         }
-        _data_start = 0;
-        _data_left  = 0;
     }
 
     void Player::tick()
     {
-        if (!_file || _loading)
+        if (!_decoder || _loading)
         {
             return;
         }
 
-        int16_t mono_buf[1024];
-        size_t to_read = _data_left;
-        if (to_read > sizeof(mono_buf))
-        {
-            to_read = sizeof(mono_buf);
-        }
+        int frames = _decoder->read(_tick_buf, PLAYER_MAX_FRAMES);
 
-        size_t bytes_read = SDCard::read(_file, (uint8_t *)mono_buf, to_read);
-
-        if (_loading || bytes_read == 0)
+        if (frames == 0)
         {
             _audio.stop();
             unload();
             return;
         }
 
-        size_t mono_count = bytes_read / sizeof(int16_t);
-        int16_t stereo[2048];
-
-        for (size_t i = 0; i < mono_count; i++)
+        if (_decoder->channels() == 1)
         {
-            stereo[i * 2]     = mono_buf[i];
-            stereo[i * 2 + 1] = mono_buf[i];
+            for (int i = frames - 1; i >= 0; i--)
+            {
+                _tick_buf[i * 2]     = _tick_buf[i];
+                _tick_buf[i * 2 + 1] = _tick_buf[i];
+            }
+            _audio.write(_tick_buf, frames * 2);
+        }
+        else
+        {
+            _audio.write(_tick_buf, frames * 2);
         }
 
-        _audio.write(stereo, mono_count * 2);
-
-        if (!_loading)
-        {
-            _data_left -= bytes_read;
-        }
-
-        if (_data_left == 0 || bytes_read < to_read)
+        if (_decoder->eof())
         {
             _audio.stop();
             unload();
@@ -133,7 +121,7 @@ namespace Audio
 
     bool Player::is_loaded() const
     {
-        return _file ? true : false;
+        return _decoder && _decoder->is_open();
     }
 
-} // namespace Audio
+}

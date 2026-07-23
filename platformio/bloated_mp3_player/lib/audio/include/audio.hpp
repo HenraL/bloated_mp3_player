@@ -25,5 +25,7 @@
 #pragma once
 
 #include "internal/audio.hpp"
-
+#include "internal/decoder.hpp"
 #include "internal/player.hpp"
+#include "internal/wav_decoder.hpp"
+#include "internal/mp3_decoder.hpp"

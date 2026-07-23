@@ -1,7 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include <driver/ledc.h>
-#include "struct.hpp"
+#include "constants.hpp"
+#include "structs.hpp"
 
 
 namespace Audio
@@ -45,5 +46,3 @@ namespace Audio
     };
 
 } // namespace Audio
-
-#include "player.hpp"

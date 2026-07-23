@@ -1,3 +1,25 @@
+/*
+* +==== BEGIN Bloated MP3 Player =================+
+* LOGO:
+* .......................
+* ...><>.............<><.
+* ..><>.><>.......<><.<><
+* .><>.<><.><>.<><.<><.<>
+* ..><>.><>.......<><.<><
+* ...><>.............<><.
+* .......................
+* /STOP
+* PROJECT: Bloated MP3 Player
+* FILE: structs.hpp
+* CREATION DATE: 23-07-2026
+* DESCRIPTION:
+* POD structures and data types for the Audio library.
+* /STOP
+* COPYRIGHT: (c) Henry Letellier
+* PURPOSE: WavHeader and other audio-related structs.
+* // AR
+* +==== END Bloated MP3 Player =================+
+*/
 #pragma once
 #include <stdint.h>
 
