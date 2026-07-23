@@ -21,7 +21,7 @@ namespace Audio
         timer.speed_mode = LEDC_LOW_SPEED_MODE;
         timer.duty_resolution = LEDC_TIMER_8_BIT;
         timer.timer_num = LEDC_TIMER_0;
-        timer.freq_hz = 50000;
+        timer.freq_hz = 200000;
         timer.clk_cfg = LEDC_AUTO_CLK;
         if (ledc_timer_config(&timer) != ESP_OK)
         {
@@ -90,22 +90,14 @@ namespace Audio
     size_t Audio::write(const int16_t *samples, size_t count)
     {
         size_t frames = count / 2;
-        if (frames > 512)
-        {
-            frames = 512;
-        }
-
-        uint32_t us_per_frame = 1000000 / _sr;
-        uint32_t frame_us = us_per_frame * frames;
-        uint32_t t0 = micros();
+        uint32_t us_per_frame = (_sr > 0) ? 1000000 / _sr : 23;
 
         for (size_t i = 0; i < frames; i++)
         {
-            int32_t left = samples[i * 2];
-            int32_t right = samples[i * 2 + 1];
+            uint32_t t0 = micros();
 
-            left = (left * _volume) >> 8;
-            right = (right * _volume) >> 8;
+            int32_t left = (samples[i * 2] * _volume) >> 8;
+            int32_t right = (samples[i * 2 + 1] * _volume) >> 8;
 
             uint32_t duty_l = (left + 32768) >> 8;
             uint32_t duty_r = (right + 32768) >> 8;
@@ -114,12 +106,12 @@ namespace Audio
             ledc_update_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_1);
             ledc_set_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_2, duty_r);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_2);
-        }
 
-        uint32_t elapsed = micros() - t0;
-        if (elapsed < frame_us)
-        {
-            delayMicroseconds(frame_us - elapsed);
+            uint32_t elapsed = micros() - t0;
+            if (elapsed < us_per_frame)
+            {
+                delayMicroseconds(us_per_frame - elapsed);
+            }
         }
 
         return frames * 2;

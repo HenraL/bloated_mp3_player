@@ -76,7 +76,7 @@ namespace My
             namespace Input
             {
                 static const char PROCESS_NAME[] = "Input";
-                static const uint32_t US_STACK_DEPTH = 2048;
+                static const uint32_t US_STACK_DEPTH = 4096;
                 static const UBaseType_t TASK_PRIORITY = 2;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Input

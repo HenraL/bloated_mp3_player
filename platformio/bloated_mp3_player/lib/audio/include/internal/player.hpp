@@ -22,6 +22,7 @@ namespace Audio
         File        _file;
         uint32_t    _data_start = 0;
         uint32_t    _data_left  = 0;
+        volatile bool _loading = false;
     };
 
 } // namespace Audio

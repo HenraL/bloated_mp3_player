@@ -11,11 +11,13 @@ namespace Audio
 
     bool Player::load(const char *path)
     {
+        _loading = true;
         unload();
 
         File f = SDCard::open(path);
         if (!f)
         {
+            _loading = false;
             return false;
         }
 
@@ -23,6 +25,7 @@ namespace Audio
         if (SDCard::read(f, (uint8_t *)&hdr, sizeof(hdr)) != sizeof(hdr))
         {
             f.close();
+            _loading = false;
             return false;
         }
 
@@ -30,6 +33,7 @@ namespace Audio
             memcmp(hdr.wave, "WAVE", 4) != 0)
         {
             f.close();
+            _loading = false;
             return false;
         }
 
@@ -61,11 +65,13 @@ namespace Audio
         if (!found)
         {
             f.close();
+            _loading = false;
             return false;
         }
 
         _audio.setSampleRate(hdr.sample_rate);
         _file = f;
+        _loading = false;
         return true;
     }
 
@@ -81,7 +87,7 @@ namespace Audio
 
     void Player::tick()
     {
-        if (!_file)
+        if (!_file || _loading)
         {
             return;
         }
@@ -95,7 +101,7 @@ namespace Audio
 
         size_t bytes_read = SDCard::read(_file, (uint8_t *)mono_buf, to_read);
 
-        if (bytes_read == 0)
+        if (_loading || bytes_read == 0)
         {
             _audio.stop();
             unload();
@@ -112,7 +118,11 @@ namespace Audio
         }
 
         _audio.write(stereo, mono_count * 2);
-        _data_left -= bytes_read;
+
+        if (!_loading)
+        {
+            _data_left -= bytes_read;
+        }
 
         if (_data_left == 0 || bytes_read < to_read)
         {

@@ -1,3 +1,26 @@
+/*
+* +==== BEGIN Bloated MP3 Player =================+
+* LOGO:
+* .......................
+* ...><>.............<><.
+* ..><>.><>.......<><.<><
+* .><>.<><.><>.<><.<><.<>
+* ..><>.><>.......<><.<><
+* ...><>.............<><.
+* .......................
+* /STOP
+* PROJECT: Bloated MP3 Player
+* FILE: my_tasks_audio.cpp
+* CREATION DATE: 23-07-2026
+* LAST Modified: 14:57:17 23-07-2026
+* DESCRIPTION:
+* This is the code in charge of making the bloated player come to life.
+* /STOP
+* COPYRIGHT: (c) Henry Letellier
+* PURPOSE: This is the task in charge of handling the audio ouput loop (make the music play)
+* // AR
+* +==== END Bloated MP3 Player =================+
+*/
 #include <audio.hpp>
 #include <profiling.hpp>
 #include "my/tasks.hpp"
@@ -7,12 +30,14 @@ namespace My
 {
     namespace Tasks
     {
+
         void audio(void *pvParameters)
         {
             SharedInstances::serial.serial_print("[Audio] So long, and thanks for all the fish.");
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
-            const TickType_t freq = pdMS_TO_TICKS(20);
+            const TickType_t freq = pdMS_TO_TICKS(25);
+            SharedInstances::audio.play();
 
             while (true) {
                 PROFILE_BLOCK("audio_tick");
