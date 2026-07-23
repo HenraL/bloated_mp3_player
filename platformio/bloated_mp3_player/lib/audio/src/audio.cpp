@@ -3,208 +3,127 @@
 namespace Audio
 {
 
-    static Audio *g_audio_instance = nullptr;
-
-    void IRAM_ATTR Audio::_isr_handler()
-    {
-        Audio *self = g_audio_instance;
-        if (!self || self->_status != Playing)
-        {
-            return;
-        }
-
-        size_t rp = self->_ring_rp;
-        size_t wp = self->_ring_wp;
-        size_t mask = AUDIO_RING_SIZE - 1;
-        size_t avail = (wp - rp) & mask;
-
-        if (avail >= 2)
-        {
-            int16_t left = self->_ring[rp];
-            rp = (rp + 1) & mask;
-            int16_t right = self->_ring[rp];
-            rp = (rp + 1) & mask;
-            self->_ring_rp = rp;
-
-            int32_t vl = (int32_t)left * self->_volume;
-            int32_t vr = (int32_t)right * self->_volume;
-            uint32_t dl = ((vl >> VOLUME_SHIFT) + (int32_t)PCM_OFFSET) >> PCM_SHIFT;
-            uint32_t dr = ((vr >> VOLUME_SHIFT) + (int32_t)PCM_OFFSET) >> PCM_SHIFT;
-
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, self->_ledc_chan_1, dl);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, self->_ledc_chan_1);
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, self->_ledc_chan_2, dr);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, self->_ledc_chan_2);
-        }
-    }
-
     Audio::Audio(
         uint8_t speaker_pin_1, uint8_t speaker_pin_2,
         uint8_t dma_buf_count, uint16_t dma_buf_len)
-        : _speaker_pin_1(speaker_pin_1)
-        , _speaker_pin_2(speaker_pin_2)
+        : _speaker_pin(speaker_pin_1)
+        , _mirror_pin(speaker_pin_2)
         , _dma_buf_count(dma_buf_count)
         , _dma_buf_len(dma_buf_len)
-        , _ring_wp(0)
-        , _ring_rp(0)
-        , _timer(nullptr)
+        , _i2s_port(I2S_NUM_0)
     {
-        (void)_dma_buf_count;
-        (void)_dma_buf_len;
     }
 
     bool Audio::open()
     {
-        ledc_timer_config_t timer = {};
-        timer.speed_mode = LEDC_LOW_SPEED_MODE;
-        timer.duty_resolution = LEDC_TIMER_8_BIT;
-        timer.timer_num = LEDC_TIMER_0;
-        timer.freq_hz = PWM_FREQ_HZ;
-        timer.clk_cfg = LEDC_AUTO_CLK;
-        if (ledc_timer_config(&timer) != ESP_OK)
+        if (_i2s_installed)
+        {
+            return true;
+        }
+
+        i2s_config_t cfg = {};
+        cfg.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_PDM);
+        cfg.sample_rate = _sr;
+        cfg.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
+        cfg.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
+        cfg.communication_format = I2S_COMM_FORMAT_STAND_I2S;
+        cfg.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+        cfg.dma_buf_count = _dma_buf_count;
+        cfg.dma_buf_len = _dma_buf_len;
+        cfg.use_apll = true;
+        cfg.tx_desc_auto_clear = true;
+        cfg.fixed_mclk = 0;
+        cfg.mclk_multiple = I2S_MCLK_MULTIPLE_256;
+
+        if (i2s_driver_install(_i2s_port, &cfg, 0, NULL) != ESP_OK)
         {
             return false;
         }
+        _i2s_installed = true;
 
-        ledc_channel_config_t chan1 = {};
-        chan1.gpio_num = _speaker_pin_1;
-        chan1.speed_mode = LEDC_LOW_SPEED_MODE;
-        chan1.channel = LEDC_CHANNEL_0;
-        chan1.intr_type = LEDC_INTR_DISABLE;
-        chan1.timer_sel = LEDC_TIMER_0;
-        chan1.duty = STOP_DUTY;
-        chan1.hpoint = 0;
-        if (ledc_channel_config(&chan1) != ESP_OK)
+        i2s_pin_config_t pins = {};
+        pins.bck_io_num = I2S_PIN_NO_CHANGE;
+        pins.ws_io_num = I2S_PIN_NO_CHANGE;
+        pins.data_out_num = _speaker_pin;
+        pins.data_in_num = I2S_PIN_NO_CHANGE;
+
+        if (i2s_set_pin(_i2s_port, &pins) != ESP_OK)
         {
+            i2s_driver_uninstall(_i2s_port);
+            _i2s_installed = false;
             return false;
         }
-        _ledc_chan_1 = LEDC_CHANNEL_0;
 
-        ledc_channel_config_t chan2 = {};
-        chan2.gpio_num = _speaker_pin_2;
-        chan2.speed_mode = LEDC_LOW_SPEED_MODE;
-        chan2.channel = LEDC_CHANNEL_1;
-        chan2.intr_type = LEDC_INTR_DISABLE;
-        chan2.timer_sel = LEDC_TIMER_0;
-        chan2.duty = STOP_DUTY;
-        chan2.hpoint = 0;
-        if (ledc_channel_config(&chan2) != ESP_OK)
-        {
-            return false;
-        }
-        _ledc_chan_2 = LEDC_CHANNEL_1;
+        gpio_matrix_out(
+            _mirror_pin,
+            i2s_periph_signal[_i2s_port].data_out_sig,
+            false, false
+        );
 
-        _ring_wp = 0;
-        _ring_rp = 0;
-        _status = Stopped;
-        _timer = NULL;
-
-        g_audio_instance = this;
         return true;
     }
 
     void Audio::play()
     {
         if (_status == Playing) return;
-        if (_sr == 0) return;
-
         _status = Playing;
-        _ring_wp = 0;
-        _ring_rp = 0;
-
-        uint64_t alarm = 1000000 / _sr;
-        if (alarm < 10) alarm = 10;
-
-        if (_timer)
-        {
-            timerAlarmDisable(_timer);
-            timerDetachInterrupt(_timer);
-            timerEnd(_timer);
-        }
-        _timer = timerBegin(1, 80, true);
-        if (_timer)
-        {
-            timerAttachInterrupt(_timer, &Audio::_isr_handler, true);
-            timerAlarmWrite(_timer, alarm, true);
-            timerAlarmEnable(_timer);
-        }
     }
 
     void Audio::pause()
     {
-        if (_status == Playing)
-        {
-            _status = Paused;
-            if (_timer)
-            {
-                timerAlarmDisable(_timer);
-            }
-        }
+        _status = Paused;
     }
 
     void Audio::stop()
     {
-        if (_timer)
-        {
-            timerAlarmDisable(_timer);
-        }
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_1, STOP_DUTY);
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_1);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_2, STOP_DUTY);
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, _ledc_chan_2);
         _status = Stopped;
+        i2s_stop(_i2s_port);
+        i2s_zero_dma_buffer(_i2s_port);
     }
 
     void Audio::setSampleRate(uint32_t sr)
     {
         _sr = sr;
-        if (_timer && _status == Playing)
+        if (_i2s_installed)
         {
-            uint64_t alarm = 1000000 / _sr;
-            if (alarm < 10) alarm = 10;
-            timerAlarmWrite(_timer, alarm, true);
+            i2s_set_clk(_i2s_port, _sr, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
         }
-    }
-
-    size_t Audio::_ring_avail() const
-    {
-        return (_ring_wp - _ring_rp) & (AUDIO_RING_SIZE - 1);
     }
 
     size_t Audio::write(const int16_t *samples, size_t count)
     {
-        size_t written = 0;
-        size_t mask = AUDIO_RING_SIZE - 1;
-
-        while (written < count)
+        if (_status != Playing || !_i2s_installed)
         {
-            size_t avail = _ring_avail();
-            size_t space = (AUDIO_RING_SIZE - 1) - avail;
-            if (space == 0)
+            return 0;
+        }
+
+        size_t frames = count / 2;
+        size_t written = 0;
+
+        while (written < frames)
+        {
+            size_t chunk = frames - written;
+            if (chunk > 512)
             {
-                taskYIELD();
-                continue;
+                chunk = 512;
             }
 
-            size_t chunk = count - written;
-            if (chunk > space) chunk = space;
-
-            size_t wp = _ring_wp;
-            size_t first = AUDIO_RING_SIZE - wp;
-            if (first > chunk) first = chunk;
-
-            memcpy(_ring + wp, samples + written, first * sizeof(int16_t));
-            if (first < chunk)
+            for (size_t i = 0; i < chunk; i++)
             {
-                memcpy(_ring, samples + written + first, (chunk - first) * sizeof(int16_t));
+                size_t idx = (written + i) * 2;
+                int32_t l = samples[idx];
+                int32_t r = samples[idx + 1];
+                int32_t m = (l + r) >> 1;
+                m = (m * (int32_t)_volume) >> VOLUME_SHIFT;
+                _mix_buf[i] = (int16_t)m;
             }
 
-            size_t new_wp = (wp + chunk) & mask;
-            _ring_wp = new_wp;
+            size_t bytes_written = 0;
+            i2s_write(_i2s_port, _mix_buf, chunk * sizeof(int16_t), &bytes_written, portMAX_DELAY);
             written += chunk;
         }
 
-        return written;
+        return count;
     }
 
     void Audio::setVolume(uint8_t v)

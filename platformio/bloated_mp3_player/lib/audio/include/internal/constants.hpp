@@ -26,14 +26,7 @@
 namespace Audio
 {
 
-    static const uint32_t PWM_FREQ_HZ = 200000;
-    static const uint32_t STOP_DUTY = 128;
-
-    static const uint32_t US_PER_SEC = 1000000;
-    static const uint32_t DEFAULT_US_PER_FRAME = 23;
     static const uint32_t VOLUME_SHIFT = 8;
-    static const uint32_t PCM_OFFSET = 32768;
-    static const uint32_t PCM_SHIFT = 8;
     static const uint32_t DEFAULT_SAMPLE_RATE = 44100;
 
     static const uint32_t WAV_CHUNK_ID_LEN = 4;
