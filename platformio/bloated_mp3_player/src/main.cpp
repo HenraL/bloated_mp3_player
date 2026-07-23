@@ -86,7 +86,10 @@ bool discover_audio_tracks()
     SharedInstances::lcd.printAt("Booting...", My::Config::DisplayLayout::BOOTING_X, My::Config::DisplayLayout::BOOTING_Y);
     SharedInstances::lcd.printAt("Discovering music...", My::Config::DisplayLayout::AUDIO_DISCOVERING_X, My::Config::DisplayLayout::AUDIO_DISCOVERING_Y);
     SharedInstances::lcd.display();
-    return true;
+    SharedInstances::serial.serial_print("[SD] Scanning for audio tracks...");
+    bool ok = SDCard::scan_tracks("/");
+    SharedInstances::serial.serial_print("[SD] Found %lu tracks.", SDCard::total_tracks());
+    return ok;
 }
 
 // ─── Setup ────────────────────────────────────────────────────────────

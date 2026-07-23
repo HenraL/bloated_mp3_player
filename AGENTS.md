@@ -80,8 +80,9 @@ Never `Serial.print()`. Always go through the shared serial instance.
 
 ### 7. `constexpr` is banned
 
-Use `static const` inside `namespace` instead. `constexpr` causes compatibility issues with
-ESP8266 and certain GCC/architecture combinations.
+Use `static const` inside `namespace` instead. `constexpr` can trigger undefined behaviour on
+certain embedded compilers (ESP8266, some GCC/architecture combinations).  Use `static const`
+at namespace scope — it's safe and gives the same compile-time constant semantics.
 
 ---
 

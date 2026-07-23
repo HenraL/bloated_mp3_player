@@ -27,19 +27,11 @@
 #include <Arduino.h>
 #include <SD_MMC.h>
 #include <SPI.h>
+#include "sdcard_constants.hpp"
+#include "sdcard_structures.hpp"
 
 namespace SDCard
 {
-    struct TrackInfo
-    {
-        char path[64];
-        char filename[32];
-        uint32_t size;
-        bool is_wav;
-    };
-
-    static constexpr size_t MAX_TRACKS = 256;
-
     bool begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail = false);
     bool is_mounted();
     File open(const char *path);
@@ -53,4 +45,6 @@ namespace SDCard
     bool is_audio_file(const char *path);
     uint32_t total_tracks();
     const TrackInfo *get_track(uint32_t index);
+
+    size_t list_dir(const char *path, DirEntry *entries, size_t max_entries);
 }

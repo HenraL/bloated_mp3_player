@@ -108,33 +108,66 @@ bool SDCard::is_audio_file(const char *path)
     return false;
 }
 
+static void scan_dir(const char *dir)
+{
+    if (track_count >= SDCard::MAX_TRACKS) {
+        return;
+    }
+    File root = SD_MMC.open(dir);
+    if (!root) {
+        return;
+    }
+
+    File file;
+    while ((file = root.openNextFile()) && track_count < SDCard::MAX_TRACKS) {
+        if (file.isDirectory()) {
+            char sub[SDCard::MAX_SUBPATH_LEN];
+            snprintf(sub, sizeof(sub), "%s/%s", dir, file.name());
+            scan_dir(sub);
+        } else if (SDCard::is_audio_file(file.name())) {
+            SDCard::TrackInfo &ti = track_list[track_count];
+            strncpy(ti.path, file.path(), sizeof(ti.path));
+            strncpy(ti.filename, file.name(), sizeof(ti.filename));
+            ti.size = file.size();
+            ti.is_wav = strstr(file.name(), ".wav") || strstr(file.name(), ".WAV");
+            track_count++;
+        }
+        file.close();
+    }
+    root.close();
+}
+
 bool SDCard::scan_tracks(const char *dir)
 {
     if (!mounted) {
         return false;
     }
     track_count = 0;
-    File root = SD_MMC.open(dir);
-    if (!root) {
-        return false;
+    scan_dir(dir);
+    return track_count > 0;
+}
+
+size_t SDCard::list_dir(const char *path, DirEntry *entries, size_t max_entries)
+{
+    if (!mounted || !entries || max_entries == 0) {
+        return 0;
+    }
+    File dir = SD_MMC.open(path);
+    if (!dir) {
+        return 0;
     }
 
-    File file;
-    while ((file = root.openNextFile()) && track_count < MAX_TRACKS) {
-        if (!file.isDirectory()) {
-            if (is_audio_file(file.name())) {
-                TrackInfo &ti = track_list[track_count];
-                strncpy(ti.path, file.path(), sizeof(ti.path));
-                strncpy(ti.filename, file.name(), sizeof(ti.filename));
-                ti.size = file.size();
-                ti.is_wav = strstr(file.name(), ".wav") || strstr(file.name(), ".WAV");
-                track_count++;
-            }
-        }
-        file.close();
+    size_t n = 0;
+    File f;
+    while ((f = dir.openNextFile()) && n < max_entries) {
+        strncpy(entries[n].name, f.name(), sizeof(entries[n].name));
+        entries[n].name[sizeof(entries[n].name) - 1] = '\0';
+        entries[n].is_dir = f.isDirectory();
+        n++;
+        f.close();
     }
-    root.close();
-    return true;
+    dir.close();
+    return n;
 }
 
 uint32_t SDCard::total_tracks()
