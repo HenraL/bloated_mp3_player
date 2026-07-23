@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_ui.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 4:19:41 23-07-2026
+* LAST Modified: 11:58:30 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -48,14 +48,16 @@ namespace My
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::TEMPERATURE_X, My::Config::DisplayLayout::HUMIDITY_Y, "T: %.1f°C", env->temperature);
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::HUMIDITY_X, My::Config::DisplayLayout::HUMIDITY_Y, "H: %.0f%%", env->humidity);
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::PRESSURE_X, My::Config::DisplayLayout::PRESSURE_Y, "P: %.0fhPa", env->pressure);
-                SharedInstances::serial.serial_print("[UI] Temp: %.1f C, Hum:  %.0f %%, Pres: %.0f hPa", env->temperature, env->humidity, env->pressure);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_BMP280_COMPUTED_MODULE_DATA, "[UI] Temp: %.1f C, Hum:  %.0f %%, Pres: %.0f hPa", env->temperature, env->humidity, env->pressure);
                 if (SharedInstances::environmental.has_bmp280()) {
-                    SharedInstances::serial.serial_print(
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_BMP280_RAW_MODULE_DATA,
                         "[UI] BMP280 adc_P=%u adc_T=%u p=%lld press=%.1f hPa",
                         SharedInstances::environmental.get_last_adc_p(),
                         SharedInstances::environmental.get_last_adc_t(),
                         (long long)SharedInstances::environmental.get_last_intermediate_p(),
-                        env->pressure);
+                        env->pressure
+                    );
                 }
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
             }

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_sensor.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 15:43:42 22-07-2026
+* LAST Modified: 12:41:41 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -50,19 +50,20 @@ namespace My
 
                 switch (g) {
                     case IMU::Gesture::Shake:
-                        SharedInstances::serial.serial_print("[Sensor] Shake");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_SHAKE, "[Sensor] Shake");
                         // Audio::stop();
                         // Audio::play_raw(nullptr, 0);
                         break;
                     case IMU::Gesture::TiltLeft:
-                        SharedInstances::serial.serial_print("[Sensor] TiltLeft");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_LEFT, "[Sensor] TiltLeft");
                         // Audio::pause();
                         break;
                     case IMU::Gesture::TiltRight:
-                        SharedInstances::serial.serial_print("[Sensor] TiltRight");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_RIGHT, "[Sensor] TiltRight");
                         // Audio::resume();
                         break;
-                    default: break;
+                    default:
+                        break;
                 }
 
                 vTaskDelayUntil(&xLastWake, freq);

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: config.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 22:32:17 22-07-2026
+* LAST Modified: 11:38:9 23-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -27,6 +27,7 @@
 #include <U8g2lib.h>
 #include <fonts.hpp>
 #include "config/pins.hpp"
+#include "config/debug.hpp"
 #include "config/delays.hpp"
 #include "config/priorities.hpp"
 #include "config/onboard_led.hpp"
