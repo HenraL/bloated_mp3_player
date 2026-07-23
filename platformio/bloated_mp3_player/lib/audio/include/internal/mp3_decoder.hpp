@@ -44,6 +44,7 @@ namespace Audio
         uint16_t channels() const override { return _channels; }
         bool     eof() const override { return _eof; }
         bool     is_open() const override { return _file ? true : false; }
+        const char* diag() const override { return _diag_str; }
 
     private:
         void         *_decoder;
@@ -58,8 +59,10 @@ namespace Audio
         int16_t       _frame_pcm[MP3_FRAME_PCM_SIZE];
         int           _frame_samples;
         int           _frame_consumed;
+        char          _diag_str[256];
 
         void refill();
+        void _diag_printf(const char *fmt, ...);
     };
 
 }

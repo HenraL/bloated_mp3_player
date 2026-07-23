@@ -42,6 +42,7 @@ namespace Audio
         virtual uint16_t channels() const = 0;
         virtual bool     eof() const = 0;
         virtual bool     is_open() const = 0;
+        virtual const char* diag() const { static const char e[] = ""; return e; }
     };
 
 }

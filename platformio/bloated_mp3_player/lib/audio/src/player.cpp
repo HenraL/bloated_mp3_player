@@ -82,20 +82,34 @@ namespace Audio
         }
     }
 
-    void Player::tick()
+    int Player::tick()
     {
         if (!_decoder || _loading)
         {
-            return;
+            _last_diag[0] = '\0';
+            return -1;
         }
 
         int frames = _decoder->read(_tick_buf, PLAYER_MAX_FRAMES);
+
+        {
+            const char *d = _decoder->diag();
+            if (d)
+            {
+                std::strncpy(_last_diag, d, sizeof(_last_diag) - 1);
+                _last_diag[sizeof(_last_diag) - 1] = '\0';
+            }
+            else
+            {
+                _last_diag[0] = '\0';
+            }
+        }
 
         if (frames == 0)
         {
             _audio.stop();
             unload();
-            return;
+            return 0;
         }
 
         if (_decoder->channels() == 1)
@@ -117,11 +131,18 @@ namespace Audio
             _audio.stop();
             unload();
         }
+
+        return frames;
     }
 
     bool Player::is_loaded() const
     {
         return _decoder && _decoder->is_open();
+    }
+
+    const char* Player::last_diag() const
+    {
+        return _last_diag;
     }
 
 }

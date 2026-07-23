@@ -43,9 +43,14 @@ namespace My
                 PROFILE_BLOCK("audio_tick");
 
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
-                    if (SharedInstances::player.is_loaded()) {
-                        SharedInstances::player.tick();
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_TICKED, "[Audio] Player is loaded and has ticked.");
+                if (SharedInstances::player.is_loaded()) {
+                    int tick_r = SharedInstances::player.tick();
+                    const char *d = SharedInstances::player.last_diag();
+                    if (tick_r > 0) {
+                        SharedInstances::serial.serial_print("[Audio] wrote %d frames [%s]\n", tick_r, d);
+                    } else if (tick_r == 0) {
+                        SharedInstances::serial.serial_print("[Audio] tick ret 0 [%s]\n", d);
+                    }
                     } else {
                         SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_NOT_LOADED, "[Audio] No players are loaded.");
                     }

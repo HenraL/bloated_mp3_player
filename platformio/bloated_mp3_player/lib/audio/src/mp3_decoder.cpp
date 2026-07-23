@@ -1,6 +1,7 @@
 #include "internal/mp3_decoder.hpp"
 #include <sdcard.hpp>
 #include <cstring>
+#include <cstdio>
 
 extern "C" {
 #include "libhelix-mp3/mp3dec.h"
@@ -19,11 +20,20 @@ namespace Audio
         , _frame_samples(0)
         , _frame_consumed(0)
     {
+        _diag_str[0] = '\0';
     }
 
     Mp3Decoder::~Mp3Decoder()
     {
         close();
+    }
+
+    void Mp3Decoder::_diag_printf(const char *fmt, ...)
+    {
+        va_list args;
+        va_start(args, fmt);
+        vsnprintf(_diag_str, sizeof(_diag_str), fmt, args);
+        va_end(args);
     }
 
     bool Mp3Decoder::open(const char *path)
@@ -50,6 +60,7 @@ namespace Audio
         _in_pos = 0;
         _frame_samples = 0;
         _frame_consumed = 0;
+        _diag_str[0] = '\0';
 
         return true;
     }
@@ -72,13 +83,14 @@ namespace Audio
         _in_pos = 0;
         _frame_samples = 0;
         _frame_consumed = 0;
+        _diag_str[0] = '\0';
     }
 
     void Mp3Decoder::refill()
     {
         if (_in_avail > 0 && _in_pos > 0)
         {
-            size_t remaining = _in_avail - _in_pos;
+            size_t remaining = _in_avail;
             std::memmove(_in_buf, _in_buf + _in_pos, remaining);
             _in_avail = remaining;
             _in_pos = 0;
@@ -107,11 +119,12 @@ namespace Audio
     {
         if (!_file || _eof)
         {
+            _diag_printf("eof=%d file=%d", _eof, !!_file);
             return 0;
         }
 
         size_t total_frames = 0;
-        int bail = 2048;
+        long start_pos = _file.position();
 
         while (total_frames < max_frames)
         {
@@ -132,66 +145,82 @@ namespace Audio
                 continue;
             }
 
-            if (--bail <= 0)
+            int tries = 0;
+            bool got_frame = false;
+            int last_decode_result = -99;
+
+            while (tries < 4096)
             {
-                break;
-            }
-
-            refill();
-
-            if (_in_avail <= 0)
-            {
-                _eof = true;
-                break;
-            }
-
-            int sync = MP3FindSyncWord(_in_buf + _in_pos, _in_avail);
-            if (sync < 0)
-            {
-                _in_avail = 0;
-                continue;
-            }
-
-            _in_pos += sync;
-            _in_avail -= sync;
-
-            unsigned char *mp3_ptr = _in_buf + _in_pos;
-            int mp3_left = _in_avail;
-
-            if (mp3_left < (int)MP3_SYNC_MIN)
-            {
+                tries++;
                 refill();
-                mp3_ptr = _in_buf + _in_pos;
-                mp3_left = _in_avail;
-                if (mp3_left < (int)MP3_SYNC_MIN)
+
+                if (_in_avail <= 0)
                 {
+                    _eof = true;
                     break;
                 }
-            }
 
-            int result = MP3Decode(_decoder, &mp3_ptr, &mp3_left, _frame_pcm, 1);
+                int sync = MP3FindSyncWord(_in_buf + _in_pos, _in_avail);
+                if (sync < 0)
+                {
+                    _in_avail = 0;
+                    continue;
+                }
 
-            int consumed = _in_avail - mp3_left;
-            _in_pos += consumed;
-            _in_avail -= consumed;
+                _in_pos += sync;
+                _in_avail -= sync;
 
-            if (result != 0)
-            {
+                unsigned char *mp3_ptr = _in_buf + _in_pos;
+                int mp3_left = _in_avail;
+
+                if (mp3_left < (int)MP3_SYNC_MIN)
+                {
+                    continue;
+                }
+
+                int result = MP3Decode(_decoder, &mp3_ptr, &mp3_left, _frame_pcm, 0);
+                last_decode_result = result;
+
+                int consumed = _in_avail - mp3_left;
+                if (consumed < 0)
+                {
+                    consumed = 0;
+                }
+                _in_pos += consumed;
+                _in_avail -= consumed;
+
+                if (result == 0)
+                {
+                    MP3FrameInfo info;
+                    MP3GetLastFrameInfo(_decoder, &info);
+
+                    _sr = info.samprate;
+                    _channels = info.nChans;
+                    _frame_samples = info.outputSamps / info.nChans;
+                    _frame_consumed = 0;
+                    got_frame = true;
+                    break;
+                }
+
                 if (consumed == 0)
                 {
                     _in_pos += 1;
                     _in_avail -= 1;
                 }
-                continue;
             }
 
-            MP3FrameInfo info;
-            MP3GetLastFrameInfo(_decoder, &info);
+            if (!got_frame)
+            {
+                _diag_printf("tries=%d eof=%d avail=%d pos=%d fpos=%ld decode=%d total=%d/%d",
+                    tries, _eof, _in_avail, _in_pos, start_pos, last_decode_result,
+                    (int)total_frames, (int)max_frames);
+                break;
+            }
+        }
 
-            _sr = info.samprate;
-            _channels = info.nChans;
-            _frame_samples = info.outputSamps / info.nChans;
-            _frame_consumed = 0;
+        if (total_frames > 0 && _diag_str[0] == '\0')
+        {
+            _diag_printf("ok:%d/%d fpos=%ld", (int)total_frames, (int)max_frames, start_pos);
         }
 
         return total_frames;

@@ -36,15 +36,17 @@ namespace Audio
 
         bool load(const char *path);
         void unload();
-        void tick();
+        int  tick();
 
         bool is_loaded() const;
+        const char* last_diag() const;
 
     private:
         Audio      &_audio;
         Decoder    *_decoder;
         volatile bool _loading;
         int16_t     _tick_buf[PLAYER_MAX_FRAMES * 2];
+        char        _last_diag[256];
     };
 
 }
