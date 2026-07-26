@@ -64,17 +64,20 @@ USAGE
   python flamegraph.py < serial_dump.txt           folded → stdout
   python flamegraph.py dump.txt                    folded → stdout
   python flamegraph.py --svg < dump.txt            SVG → stdout
-  python flamegraph.py --scan src/                 folded → stdout
-  python flamegraph.py --scan src/ --svg           SVG → stdout
-  python flamegraph.py --scan src/ -o out.svg      SVG → file
+  python flamegraph.py --scan <dir>...             folded → stdout
+  python flamegraph.py --scan <dir>... --svg       SVG → stdout
+  python flamegraph.py --scan <dir>... -o f.svg    SVG → file
 
 MODES
   stdin / file        Read PROFILING sections from serial dump text
-  --scan <dir>        Scan .cpp/.hpp files for PROFILE_BLOCK macros
+  --scan <dir> ...    Scan .cpp/.hpp files in one or more directories
+                      for PROFILE_BLOCK macros. You can specify any
+                      combination: project root, src/, include/, lib/,
+                      or system library paths.
 
 OUTPUT FORMATS
   (default)           Brendan Gregg folded format — one stack per line:
-                        frame;subframe;subsubframe count
+                        file.cpp;function;block_name count
   --svg               Interactive SVG flamegraph (dark theme, tooltips, zoom)
 
 INPUT (serial dump)
@@ -89,8 +92,9 @@ INPUT (serial dump)
 EXAMPLES
   python flamegraph.py < serial_dump.txt
   python flamegraph.py --svg < serial_dump.txt > profile.svg
-  python flamegraph.py --scan ../src/ --svg > code_profile.svg
-  python flamegraph.py --scan ../src/ -o out.svg""")
+  python flamegraph.py --scan src/ include/ --svg > profile.svg
+  python flamegraph.py --scan src/ include/ lib/ -o out.svg
+  python flamegraph.py --scan . -o out.svg""")
     sys.exit(0)
 
 
@@ -244,16 +248,28 @@ def parse_source_file(path):
     return {'file': rel, 'blocks': blocks, 'functions': funcs}
 
 
-def scan_source_tree(root):
+def scan_source_tree(roots):
+    if isinstance(roots, str):
+        roots = [roots]
     results = []
-    for dirpath, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
-        for fn in files:
-            if fn.endswith(('.cpp', '.hpp')):
-                try:
-                    results.append(parse_source_file(os.path.join(dirpath, fn)))
-                except Exception as e:
-                    print(f'  ! {fn}: {e}', file=sys.stderr)
+    seen = set()
+    for r in roots:
+        r = os.path.abspath(r)
+        if not os.path.isdir(r):
+            print(f'  ! not a directory: {r}', file=sys.stderr)
+            continue
+        for dirpath, dirs, files in os.walk(r):
+            dirs[:] = [d for d in dirs if not d.startswith('.')]
+            for fn in files:
+                if fn.endswith(('.cpp', '.hpp')):
+                    fp = os.path.join(dirpath, fn)
+                    if fp in seen:
+                        continue
+                    seen.add(fp)
+                    try:
+                        results.append(parse_source_file(fp))
+                    except Exception as e:
+                        print(f'  ! {fn}: {e}', file=sys.stderr)
     return results
 
 
@@ -475,48 +491,61 @@ def build_folded_from_source(parsed):
 # ────────────────────────────────────────────────────────────────────────────
 
 def main():
-    args = sys.argv[1:]
+    raw = sys.argv[1:]
 
-    if '-h' in args or '--help' in args:
+    if '-h' in raw or '--help' in raw:
         print_help()
 
-    if not args and sys.stdin.isatty():
+    if not raw and sys.stdin.isatty():
         print_help()
 
-    svg_mode = '--svg' in args
-    scan_mode = '--scan' in args
+    svg_mode = False
+    scan_mode = False
+    scan_dirs = []
     outfile = None
+    infile = None
 
-    tail = []
-    skip_next = False
-    for i, a in enumerate(args):
-        if skip_next:
-            skip_next = False
-            continue
+    i = 0
+    while i < len(raw):
+        a = raw[i]
+        if a in ('-h', '--help'):
+            print_help()
         if a == '--svg':
-            continue
-        if a == '--scan':
+            svg_mode = True
+            i += 1
+        elif a == '--scan':
             scan_mode = True
-            continue
-        if a == '-o':
-            if i + 1 < len(args):
-                outfile = args[i + 1]
-                skip_next = True
-            continue
-        if a.startswith('-'):
-            continue
-        tail.append(a)
+            i += 1
+            while i < len(raw) and not raw[i].startswith('-'):
+                scan_dirs.append(raw[i])
+                i += 1
+        elif a == '-o':
+            if i + 1 < len(raw):
+                outfile = raw[i + 1]
+                i += 2
+            else:
+                print('Error: -o requires a filename argument', file=sys.stderr)
+                sys.exit(1)
+        elif a.startswith('-'):
+            print(f'Error: unknown flag {a}', file=sys.stderr)
+            sys.exit(1)
+        else:
+            infile = a
+            i += 1
 
     if scan_mode:
-        d = tail[0] if tail else '.'
-        parsed = scan_source_tree(d)
+        if not scan_dirs:
+            scan_dirs = ['.']
+        parsed = scan_source_tree(scan_dirs)
         total_blocks = sum(len(p['blocks']) for p in parsed)
         if total_blocks == 0:
-            print(f'No PROFILE_BLOCK macros found in {d}.', file=sys.stderr)
+            dirs_str = ', '.join(scan_dirs)
+            print(f'No PROFILE_BLOCK macros found in: {dirs_str}', file=sys.stderr)
             sys.exit(1)
+        dirs_label = ', '.join(os.path.basename(d) for d in scan_dirs)
         if svg_mode or outfile:
             folded = build_folded_from_source(parsed)
-            title = f'Source Profile — {d}'
+            title = f'Source Profile — {dirs_label}'
             svg = render_folded_to_svg(folded, title)
             if outfile:
                 with open(outfile, 'w') as f:
@@ -531,7 +560,6 @@ def main():
                     print(f'{f};{func};{bname} 1')
         return
 
-    infile = tail[0] if tail else None
     text = ''
     if infile:
         with open(infile) as f:
