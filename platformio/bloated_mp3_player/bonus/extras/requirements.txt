@@ -1,0 +1,26 @@
+# 
+# +==== BEGIN Bloated MP3 Player =================+
+# LOGO:
+# .......................
+# ...><>.............<><.
+# ..><>.><>.......<><.<><
+# .><>.<><.><>.<><.<><.<>
+# ..><>.><>.......<><.<><
+# ...><>.............<><.
+# .......................
+# /STOP
+# PROJECT: Bloated MP3 Player
+# FILE: requirements.txt
+# CREATION DATE: 26-07-2026
+# LAST Modified: 0:0:0 26-07-2026
+# DESCRIPTION:
+# This is the code in charge of making the bloated player come to life.
+# /STOP
+# COPYRIGHT: (c) Henry Letellier
+# PURPOSE: Requirements for flamegraph.py (stdlib only, no external deps).
+# // AR
+# +==== END Bloated MP3 Player =================+
+#
+# flamegraph.py uses only Python standard library modules:
+#   sys, os, re, html, glob, collections
+# No external packages required.
