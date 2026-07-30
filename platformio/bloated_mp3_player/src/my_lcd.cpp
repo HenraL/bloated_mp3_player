@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_lcd.cpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 21:12:15 22-07-2026
+* LAST Modified: 18:31:47 30-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -57,10 +57,10 @@ void My::LCD::Display::initialise()
 
 // ── Lifecycle ─────────────────────────────────────────────────────────
 
-void My::LCD::Display::begin()
+void My::LCD::Display::begin(const uint8_t contrast)
 {
     _u8g2.begin();
-    _u8g2.setContrast(40);
+    _u8g2.setContrast(contrast);
 }
 
 void My::LCD::Display::clear(My::LED::Colour)

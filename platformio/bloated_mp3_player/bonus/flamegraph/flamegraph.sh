@@ -13,18 +13,18 @@
 # PROJECT: Bloated MP3 Player
 # FILE: flamegraph.sh
 # CREATION DATE: 26-07-2026
-# LAST Modified: 18:40:18 30-07-2026
+# LAST Modified: 18:37:1 30-07-2026
 # DESCRIPTION:
 #   Docker-orchestrated flamegraph generator.
-#   Parses C++ source or serial dumps via flamegraph.py (outside Docker),
-#   then pipes folded-format data into Brendan Gregg's flamegraph.pl
-#   running inside a Docker container for SVG rendering.
+#   Pipes raw serial output (mixed debug + PROFILING lines) through a
+#   Docker container that runs the profiler_filter.pl → flamegraph.pl
+#   pipeline to produce an SVG.
 # /STOP
 # COPYRIGHT: (c) Henry Letellier
 # PURPOSE:
-#   Entry point for generating flamegraphs from C++ profiling data.
+#   Entry point for generating flamegraphs from embedded profiling data.
 #   Uses Docker to run flamegraph.pl so no Perl installation needed
-#   on the host — only Docker and Python 3 (stdlib).
+#   on the host — only Docker.
 # // AR
 # +==== END Bloated MP3 Player =================+
 
@@ -38,59 +38,70 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON_SCRIPT="$SCRIPT_DIR/flamegraph.py"
 DOCKERFILE="$SCRIPT_DIR/Dockerfile"
 IMAGE_TAG="flamegraph-tool"
+DOCKER_CMD="docker"
 
 show_help() {
-    echo "flamegraph.sh — Docker-orchestrated flamegraph generator for C++ profiling"
+    echo "flamegraph.sh — Docker-orchestrated flamegraph generator"
     echo ""
     echo "USAGE"
     echo "  ./flamegraph.sh -h                          this help"
-    echo "  ./flamegraph.sh --scan <dir>...             folded → stdout"
-    echo "  ./flamegraph.sh --scan <dir>... > out.svg   SVG → file"
     echo "  ./flamegraph.sh < serial_dump.txt           SVG → stdout"
     echo "  ./flamegraph.sh dump.txt -o out.svg         SVG → named file"
     echo ""
     echo "MODES"
-    echo "  --scan <dir> ...   Scan .cpp/.hpp files in one or more directories"
-    echo "                     for PROFILE_BLOCK macros. Parsed by flamegraph.py"
-    echo "                     on the host, rendered to SVG via Docker + flamegraph.pl."
-    echo "  stdin / file       Read PROFILING sections from serial dump text"
-    echo "                     and render to SVG."
+    echo "  stdin / file       Pipe raw serial output (human debug logs +"
+    echo "                     PROFILING: lines) through the container."
+    echo "                     The container filters and renders to SVG."
+    echo ""
+    echo "  --scan <dir>...    (fallback) Scan .cpp/.hpp files for"
+    echo "                     PROFILE_BLOCK usage. Requires Python 3."
     echo ""
     echo "DEPENDENCIES"
     echo "  Docker   — required (runs Brendan Gregg's flamegraph.pl)"
-    echo "  Python 3 — required (stdlib only, for C++ data parsing)"
     echo ""
     echo "EXAMPLES"
-    echo "  ./flamegraph.sh --scan src/ include/ > profile.svg"
-    echo "  ./flamegraph.sh --scan src/ include/ lib/ -o profile.svg"
-    echo "  ./flamegraph.sh < serial_dump.txt > trace.svg"
-    echo "  ./flamegraph.sh dump.txt -o dump.svg"
+    echo "  minicom -D /dev/ttyACM0 -C dump.txt     # capture serial first"
+    echo "  ./flamegraph.sh dump.txt -o profile.svg"
+    echo "  screen /dev/ttyUSB0 115200 | tee dump.txt | ./flamegraph.sh > live.svg"
 }
 
 check_docker() {
     if ! command -v docker &>/dev/null; then
         echerr "Error: Docker is not installed or not in PATH."
         echerr "Please install Docker: https://docs.docker.com/get-docker/"
-        echerr ""
-        echerr "Alternatively, you can use flamegraph.py directly for"
-        echerr "folded-format output (without SVG rendering):"
-        echerr "  python3 $PYTHON_SCRIPT --scan . > folded.txt"
         exit 1
     fi
-    if ! docker info &>/dev/null; then
+
+    echerr "Checking Docker accessibility..."
+    if docker info &>/dev/null; then
+        echerr "Docker accessible directly."
+        DOCKER_CMD="docker"
+    elif command -v sudo &>/dev/null; then
+        echerr "Direct Docker access failed — trying with sudo..."
+        if sudo docker info &>/dev/null; then
+            echerr "Docker accessible via sudo."
+            DOCKER_CMD="sudo docker"
+        else
+            echerr "Error: Docker daemon is not running or not accessible."
+            echerr ""
+            echerr "Tried both direct and sudo access. Common fixes:"
+            echerr "  1. Add your user to the docker group and re-login:"
+            echerr "       sudo usermod -aG docker \$USER"
+            echerr "     then log out and back in."
+            echerr "  2. Start the Docker daemon:"
+            echerr "       sudo systemctl start docker"
+            echerr "  3. Check your Docker context:"
+            echerr "       docker context ls"
+            echerr "       docker context use default"
+            exit 1
+        fi
+    else
         echerr "Error: Docker daemon is not running or not accessible."
         echerr ""
-        echerr "Common fixes:"
-        echerr "  1. Add your user to the docker group and re-login:"
-        echerr "       sudo usermod -aG docker \$USER"
-        echerr "     then log out and back in."
-        echerr "  2. Start the Docker daemon:"
-        echerr "       sudo systemctl start docker"
-        echerr "  3. Check your Docker context:"
-        echerr "       docker context ls"
-        echerr "       docker context use default"
-        echerr ""
-        echerr "Or use flamegraph.py directly for folded-format output."
+        echerr "Direct access failed and sudo is not available."
+        echerr "Add your user to the docker group:"
+        echerr "  sudo usermod -aG docker \$USER"
+        echerr "Then log out and back in."
         exit 1
     fi
 }
@@ -107,27 +118,36 @@ check_python() {
 }
 
 ensure_image() {
-    if ! docker image inspect "$IMAGE_TAG" &>/dev/null; then
-        echerr "Building Docker image '$IMAGE_TAG' from $DOCKERFILE ..."
-        if [ ! -f "$DOCKERFILE" ]; then
-            echerr "Error: Dockerfile not found at: $DOCKERFILE"
-            exit 1
+    echerr "Checking for Docker image '$IMAGE_TAG'..."
+    if [ ! -f "$DOCKERFILE" ]; then
+        echerr "Error: Dockerfile not found at: $DOCKERFILE"
+        exit 1
+    fi
+
+    LOCAL_HASH=$(md5sum "$DOCKERFILE" | cut -d' ' -f1)
+    IMAGE_HASH=$($DOCKER_CMD image inspect "$IMAGE_TAG" \
+        --format '{{index .Config.Labels "dockerfile.hash"}}' 2>/dev/null || echo "")
+
+    if [ "$LOCAL_HASH" != "$IMAGE_HASH" ]; then
+        if [ -n "$IMAGE_HASH" ]; then
+            echerr "Dockerfile changed — rebuilding image."
+        else
+            echerr "Image not found — building from $DOCKERFILE ..."
         fi
-        docker build -t "$IMAGE_TAG" -f "$DOCKERFILE" "$SCRIPT_DIR"
+        $DOCKER_CMD build -t "$IMAGE_TAG" \
+            --label "dockerfile.hash=$LOCAL_HASH" \
+            -f "$DOCKERFILE" "$SCRIPT_DIR"
         echerr "Done building image."
+    else
+        echerr "Image is up to date."
     fi
 }
 
-run_flamegraph_pl() {
-    docker run --rm -i "$IMAGE_TAG" "$@"
+run_container() {
+    $DOCKER_CMD run --rm -i "$IMAGE_TAG" "$@"
 }
 
 main() {
-    if [ $# -eq 0 ]; then
-        show_help
-        exit 0
-    fi
-
     for arg in "$@"; do
         if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]; then
             show_help
@@ -135,8 +155,12 @@ main() {
         fi
     done
 
+    if [ $# -eq 0 ] && [ -t 0 ]; then
+        show_help
+        exit 0
+    fi
+
     check_docker
-    check_python
     ensure_image
 
     SCAN_MODE=false
@@ -189,41 +213,41 @@ main() {
             SCAN_DIRS=(".")
         fi
 
-        echerr "Scanning: ${SCAN_DIRS[*]}"
+        check_python
+        echerr "WARNING: --scan is a static fallback. Prefer runtime profiling."
+        echerr "Scanning source directories: ${SCAN_DIRS[*]}"
 
         if [ -n "$OUTFILE" ]; then
             python3 "$PYTHON_SCRIPT" --scan "${SCAN_DIRS[@]}" \
-                | run_flamegraph_pl --title="Source Profile — ${SCAN_DIRS[*]}" \
+                | run_container --title="Source Profile — ${SCAN_DIRS[*]}" \
                     --countname="blocks" \
                 > "$OUTFILE"
-            echerr "Wrote $OUTFILE"
+            echerr "Wrote SVG output to: $OUTFILE"
         else
             python3 "$PYTHON_SCRIPT" --scan "${SCAN_DIRS[@]}" \
-                | run_flamegraph_pl --title="Source Profile — ${SCAN_DIRS[*]}" \
+                | run_container --title="Source Profile — ${SCAN_DIRS[*]}" \
                     --countname="blocks"
         fi
         exit $?
     fi
 
     if [ -n "$INFILE" ]; then
+        echerr "Processing input file: $INFILE"
+        echerr "Running pipeline: raw serial → filter → flamegraph.pl → SVG"
         if [ -n "$OUTFILE" ]; then
-            python3 "$PYTHON_SCRIPT" "$INFILE" \
-                | run_flamegraph_pl \
-                > "$OUTFILE"
-            echerr "Wrote $OUTFILE"
+            run_container < "$INFILE" > "$OUTFILE"
+            echerr "Wrote SVG output to: $OUTFILE"
         else
-            python3 "$PYTHON_SCRIPT" "$INFILE" \
-                | run_flamegraph_pl
+            run_container < "$INFILE"
         fi
     else
+        echerr "Reading from stdin..."
+        echerr "Running pipeline: raw serial → filter → flamegraph.pl → SVG"
         if [ -n "$OUTFILE" ]; then
-            python3 "$PYTHON_SCRIPT" \
-                | run_flamegraph_pl \
-                > "$OUTFILE"
-            echerr "Wrote $OUTFILE"
+            run_container > "$OUTFILE"
+            echerr "Wrote SVG output to: $OUTFILE"
         else
-            python3 "$PYTHON_SCRIPT" \
-                | run_flamegraph_pl
+            run_container
         fi
     fi
 }

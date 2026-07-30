@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: lcd.hpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 13:5:22 23-07-2026
+* LAST Modified: 18:32:10 30-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -50,7 +50,7 @@ namespace My
 
             // ── Lifecycle ───────────────────────────────────────────────
             /** Start the U8G2 driver and set default contrast. */
-            void begin();
+            void begin(const uint8_t contrast = 40);
             void clear(My::LED::Colour c = My::LED::Colour(0, 0, 0, 0)) override;
             void show() override;
             void display()

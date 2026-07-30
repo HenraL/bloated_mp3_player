@@ -1,8 +1,8 @@
 {
     "name": "profiling",
-    "version": "1.0.0",
-    "description": "FreeRTOS + manual trace profiler for flamegraph export",
-    "keywords": "profiling, flamegraph, freertos, performance",
+    "version": "2.0.0",
+    "description": "Per-task call-stack profiler with live PROFILING: output for flamegraph export",
+    "keywords": "profiling, flamegraph, freertos, performance, esp32",
     "authors": { "name": "Henry Letellier" },
     "license": "MIT",
     "frameworks": "arduino",

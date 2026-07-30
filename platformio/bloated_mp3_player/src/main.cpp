@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 13:23:53 23-07-2026
+* LAST Modified: 18:32:35 30-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -57,7 +57,7 @@
 void boot_screen()
 {
     // Screen
-    SharedInstances::lcd.begin();
+    SharedInstances::lcd.begin(My::Config::DISPLAY_CONTRAST);
     SharedInstances::lcd.clear();
     // Demo: draw a play icon from the generated assets
     SharedInstances::lcd.drawAscii(

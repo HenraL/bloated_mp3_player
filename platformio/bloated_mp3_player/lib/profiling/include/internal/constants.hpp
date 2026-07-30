@@ -10,16 +10,23 @@
 * .......................
 * /STOP
 * PROJECT: Bloated MP3 Player
-* FILE: profiling.hpp (public forwarder)
-* CREATION DATE: 15-07-2026
+* FILE: constants.hpp
+* CREATION DATE: 30-07-2026
 * LAST Modified: 30-07-2026
 * DESCRIPTION:
-* Public entry point — delegates to internal/profiling.hpp.
+* Compile-time limits for the Profiler library.
 * /STOP
 * COPYRIGHT: (c) Henry Letellier
-* PURPOSE: Forwarding header for the Profiler library.
+* PURPOSE: Profiler tuning constants.
 * // AR
 * +==== END Bloated MP3 Player =================+
 */
 #pragma once
-#include "internal/profiling.hpp"
+#include <stdint.h>
+
+namespace ProfilerConstants
+{
+    static const uint16_t MAX_DEPTH = 16;
+    static const uint16_t MAX_TRACKED_TASKS = 8;
+    static const uint16_t MAX_PATH_LEN = 384;
+}
