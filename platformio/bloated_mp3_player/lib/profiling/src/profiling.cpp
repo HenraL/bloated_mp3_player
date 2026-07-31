@@ -16,8 +16,7 @@
 * DESCRIPTION:
 * Per-task call stack profiler. Each trace_begin pushes a frame onto
 * the current task's stack; trace_end pops it and outputs a
-* PROFILING: line with the full call path to the shared serial
-* instance for flamegraph consumption.
+* PROFILING: line through the configured output callback.
 * /STOP
 * COPYRIGHT: (c) Henry Letellier
 * PURPOSE: Live embedded profiling with flamegraph export.
@@ -26,10 +25,16 @@
 */
 #include "internal/profiling.hpp"
 #include <esp_timer.h>
-#include "shared_instances.hpp"
+#include <stdio.h>
 
 ProfilerData::TaskStack Profiler::_task_stacks[ProfilerConstants::MAX_TRACKED_TASKS];
 uint16_t Profiler::_task_count = 0;
+Profiler::output_func_t Profiler::_output = nullptr;
+
+void Profiler::set_output(output_func_t func)
+{
+    _output = func;
+}
 
 ProfilerData::TaskStack* Profiler::_get_task_stack()
 {
@@ -72,24 +77,35 @@ void Profiler::trace_end(uint16_t slot)
     if (slot >= ts->depth) return;
 
     uint64_t dur = esp_timer_get_time() - ts->frames[slot].start_us;
-    char path[ProfilerConstants::MAX_PATH_LEN];
+    char line[128];
     uint16_t pos = 0;
-    for (uint16_t i = 0; i <= slot && pos < ProfilerConstants::MAX_PATH_LEN - 1; i++)
+
+    pos = snprintf(line, sizeof(line), "PROFILING: ");
+    for (uint16_t i = 0; i <= slot && pos < sizeof(line) - 24; i++)
     {
         if (i > 0)
         {
-            path[pos++] = ';';
-            if (pos >= ProfilerConstants::MAX_PATH_LEN - 1) break;
+            line[pos++] = ';';
+            if (pos >= sizeof(line) - 24) break;
         }
         const char *n = ts->frames[i].name;
-        while (*n != '\0' && pos < ProfilerConstants::MAX_PATH_LEN - 1)
+        while (*n != '\0' && pos < sizeof(line) - 24)
         {
-            path[pos++] = *n;
+            line[pos++] = *n;
             n++;
         }
     }
-    path[pos] = '\0';
-    SharedInstances::serial.serial_print("PROFILING: %s %llu", path, dur);
+    pos += snprintf(line + pos, sizeof(line) - pos, " %llu", dur);
+    line[pos] = '\0';
+
+    if (_output != nullptr)
+    {
+        _output(line);
+    }
+    else
+    {
+        Serial.println(line);
+    }
     ts->depth = slot;
 }
 
@@ -108,18 +124,30 @@ void Profiler::dump_task_stats()
         uint32_t pct_x100 = total_time > 0
             ? (uint32_t)((uint64_t)tasks[i].ulRunTimeCounter * 10000 / total_time)
             : 0;
-        SharedInstances::serial.serial_print(
-            "PROFILING: %s %lu",
-            tasks[i].pcTaskName,
-            (unsigned long)pct_x100
-        );
+        char line[128];
+        snprintf(line, sizeof(line), "PROFILING: %s %lu", tasks[i].pcTaskName, (unsigned long)pct_x100);
+        if (_output != nullptr)
+        {
+            _output(line);
+        }
+        else
+        {
+            Serial.println(line);
+        }
     }
     free(tasks);
 #else
-    SharedInstances::serial.serial_print(
-        "PROFILING: Enable CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS "
-        "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
-        "for task-level CPU stats"
-    );
+    if (_output != nullptr)
+    {
+        _output("PROFILING: Enable CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS "
+                "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
+                "for task-level CPU stats");
+    }
+    else
+    {
+        Serial.println("PROFILING: Enable CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS "
+                       "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
+                       "for task-level CPU stats");
+    }
 #endif
 }

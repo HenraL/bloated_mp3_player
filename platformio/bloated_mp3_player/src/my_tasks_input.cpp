@@ -24,6 +24,7 @@
 #include <rotary.hpp>
 #include <sdcard.hpp>
 #include <ultrasonic.hpp>
+#include <profiling.hpp>
 #include "my/tasks.hpp"
 #include "shared_instances.hpp"
 
@@ -130,6 +131,7 @@ namespace My
             play_track(&track_index);
 
             while (true) {
+                PROFILE_BLOCK("input_tick");
                 Rotary::tick();
                 Ultrasonic::gesture_tick();
 

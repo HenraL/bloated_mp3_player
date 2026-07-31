@@ -54,6 +54,11 @@
 #include "my.hpp"
 #include "shared_instances.hpp"
 
+static void profiling_output(const char *msg)
+{
+    SharedInstances::serial.serial_print("%s", msg);
+}
+
 void boot_screen()
 {
     // Screen
@@ -104,6 +109,9 @@ void setup()
     // no contention: each task sends its message in one atomic
     // xQueueSend call, and the single serial_output_task drains in
     // order.  It also means tasks never block waiting for UART DMA.
+
+    // Route profiler output through the queue-based serial
+    Profiler::set_output(profiling_output);
 
     // Display boot message
     SharedInstances::serial.serial_print("Bloated MP3 Player -- DON'T PANIC");

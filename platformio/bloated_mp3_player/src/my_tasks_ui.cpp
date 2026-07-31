@@ -24,6 +24,7 @@
 
 #include <audio.hpp>
 #include <environmental.hpp>
+#include <profiling.hpp>
 #include "my/tasks.hpp"
 #include "my/config.hpp"
 #include "shared_instances.hpp"
@@ -75,6 +76,7 @@ namespace My
             uint32_t last_poll = 0;
 
             while (true) {
+                PROFILE_BLOCK("ui_tick");
                 SharedInstances::lcd.clear();
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
                 SharedInstances::lcd.printAt("Bloated MP3 v1\u25e60", My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y);

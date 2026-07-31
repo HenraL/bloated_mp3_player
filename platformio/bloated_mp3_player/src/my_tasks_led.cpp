@@ -23,6 +23,7 @@
 */
 
 #include <stdint.h>
+#include <profiling.hpp>
 #include "my/tasks.hpp"
 #include "shared_instances.hpp"
 
@@ -72,6 +73,7 @@ namespace My
             SharedInstances::serial.serial_print("[LED] The light that burns twice as bright...");
 
             while (true) {
+                PROFILE_BLOCK("led_tick");
                 duration_ms = 0;
                 xLastWake = xTaskGetTickCount();
 
