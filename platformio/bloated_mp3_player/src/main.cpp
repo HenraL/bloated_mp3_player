@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 17:47:36 31-07-2026
+* LAST Modified: 19:35:28 31-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -56,7 +56,7 @@
 
 static void profiling_output(const char *msg)
 {
-    SharedInstances::serial.serial_print("%s", msg);
+    SharedInstances::serial.serial_print_raw(msg);
 }
 
 void boot_screen()

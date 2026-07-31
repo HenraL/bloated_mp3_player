@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: profiling.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 30-07-2026
+* LAST Modified: 19:35:19 31-07-2026
 * DESCRIPTION:
 * Per-task call stack profiler. Each trace_begin pushes a frame onto
 * the current task's stack; trace_end pops it and outputs a
@@ -36,18 +36,15 @@ void Profiler::set_output(output_func_t func)
     _output = func;
 }
 
-ProfilerData::TaskStack* Profiler::_get_task_stack()
+ProfilerData::TaskStack *Profiler::_get_task_stack()
 {
     TaskHandle_t current = xTaskGetCurrentTaskHandle();
-    for (uint16_t i = 0; i < _task_count; i++)
-    {
-        if (_task_stacks[i].handle == current)
-        {
+    for (uint16_t i = 0; i < _task_count; i++) {
+        if (_task_stacks[i].handle == current) {
             return &_task_stacks[i];
         }
     }
-    if (_task_count >= ProfilerConstants::MAX_TRACKED_TASKS)
-    {
+    if (_task_count >= ProfilerConstants::MAX_TRACKED_TASKS) {
         return nullptr;
     }
     ProfilerData::TaskStack *ts = &_task_stacks[_task_count];
@@ -80,30 +77,41 @@ void Profiler::trace_end(uint16_t slot)
     char line[128];
     uint16_t pos = 0;
 
-    pos = snprintf(line, sizeof(line), "PROFILING: ");
-    for (uint16_t i = 0; i <= slot && pos < sizeof(line) - 24; i++)
-    {
-        if (i > 0)
-        {
+    static const char header[] = "PROFILING: ";
+    for (uint16_t i = 0; header[i] != '\0' && pos < sizeof(line) - 24; i++) {
+        line[pos++] = header[i];
+    }
+    for (uint16_t i = 0; i <= slot && pos < sizeof(line) - 24; i++) {
+        if (i > 0) {
             line[pos++] = ';';
             if (pos >= sizeof(line) - 24) break;
         }
         const char *n = ts->frames[i].name;
-        while (*n != '\0' && pos < sizeof(line) - 24)
-        {
+        while (*n != '\0' && pos < sizeof(line) - 24) {
             line[pos++] = *n;
             n++;
         }
     }
-    pos += snprintf(line + pos, sizeof(line) - pos, " %llu", dur);
+
+    line[pos++] = ' ';
+    char digits[24];
+    uint8_t ndigits = 0;
+    uint64_t v = dur;
+    if (v == 0) {
+        digits[ndigits++] = '0';
+    }
+    while (v > 0 && ndigits < sizeof(digits)) {
+        digits[ndigits++] = (char)('0' + (v % 10));
+        v /= 10;
+    }
+    while (ndigits > 0 && pos < sizeof(line) - 1) {
+        line[pos++] = digits[--ndigits];
+    }
     line[pos] = '\0';
 
-    if (_output != nullptr)
-    {
+    if (_output != nullptr) {
         _output(line);
-    }
-    else
-    {
+    } else {
         Serial.println(line);
     }
     ts->depth = slot;
@@ -119,35 +127,28 @@ void Profiler::dump_task_stats()
     uint32_t total_time = 0;
     count = uxTaskGetSystemState(tasks, count, &total_time);
 
-    for (UBaseType_t i = 0; i < count; i++)
-    {
+    for (UBaseType_t i = 0; i < count; i++) {
         uint32_t pct_x100 = total_time > 0
             ? (uint32_t)((uint64_t)tasks[i].ulRunTimeCounter * 10000 / total_time)
             : 0;
         char line[128];
         snprintf(line, sizeof(line), "PROFILING: %s %lu", tasks[i].pcTaskName, (unsigned long)pct_x100);
-        if (_output != nullptr)
-        {
+        if (_output != nullptr) {
             _output(line);
-        }
-        else
-        {
+        } else {
             Serial.println(line);
         }
     }
     free(tasks);
 #else
-    if (_output != nullptr)
-    {
+    if (_output != nullptr) {
         _output("PROFILING: Enable CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS "
-                "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
-                "for task-level CPU stats");
-    }
-    else
-    {
+            "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
+            "for task-level CPU stats");
+    } else {
         Serial.println("PROFILING: Enable CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS "
-                       "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
-                       "for task-level CPU stats");
+            "and CONFIG_FREERTOS_USE_TRACE_FACILITY in build_flags "
+            "for task-level CPU stats");
     }
 #endif
 }

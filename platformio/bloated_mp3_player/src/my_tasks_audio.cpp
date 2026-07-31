@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_audio.cpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 17:24:34 23-07-2026
+* LAST Modified: 19:35:41 31-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -37,10 +37,20 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(25);
+            uint16_t tick_count = 0;
             SharedInstances::audio.play();
 
             while (true) {
                 PROFILE_BLOCK("audio_tick");
+
+                if (tick_count % 50 == 0) {
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_AUDIO_STACK_HIGH_WATER,
+                        "[Audio] Stack high-water mark: %u bytes free",
+                        (unsigned int)uxTaskGetStackHighWaterMark(NULL)
+                    );
+                }
+                tick_count++;
 
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     if (SharedInstances::player.is_loaded()) {

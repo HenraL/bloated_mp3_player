@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_serial.cpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 11:59:57 23-07-2026
+* LAST Modified: 19:33:1 31-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -63,6 +63,20 @@ namespace My
             xQueueSend(_serial_queue, buf, portMAX_DELAY);
         }
 #endif
+    }
+
+    void Serial::serial_print_raw(const char *msg)
+    {
+        char buf[_serial_msg_len];
+        size_t len = 0;
+        while (msg[len] != '\0' && len < (size_t)_serial_msg_len - 1) {
+            len++;
+        }
+        for (size_t i = 0; i < len; i++) {
+            buf[i] = msg[i];
+        }
+        buf[len] = '\0';
+        xQueueSend(_serial_queue, buf, portMAX_DELAY);
     }
 
     void Serial::get_queue(char *msg)

@@ -39,12 +39,13 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace UI
-            // Audio (stack increased from 2048 — scan_tracks + WavHeader parsing
-            // blows the canary at 2K)
+            // Audio (8192 → 16384 — the Helix MP3 decode + FATFS/SDMMC read
+            // chain is deep, and tick-interrupt frames on top of a mid-decode
+            // stack blew the canary even at 8K)
             namespace Audio
             {
                 static const char PROCESS_NAME[] = "Audio";
-                static const uint32_t US_STACK_DEPTH = 8192;
+                static const uint32_t US_STACK_DEPTH = 16384;
                 static const UBaseType_t TASK_PRIORITY = 3;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Audio
