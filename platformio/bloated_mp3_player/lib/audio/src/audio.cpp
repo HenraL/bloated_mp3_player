@@ -62,13 +62,15 @@ namespace Audio
         cfg.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
         cfg.dma_buf_count = _dma_buf_count;
         cfg.dma_buf_len = _dma_buf_len;
-        cfg.use_apll = true;
+        cfg.use_apll = false;
         cfg.tx_desc_auto_clear = true;
         cfg.fixed_mclk = 0;
         cfg.mclk_multiple = I2S_MCLK_MULTIPLE_256;
 
-        if (i2s_driver_install(_i2s_port, &cfg, 0, NULL) != ESP_OK)
+        esp_err_t err = i2s_driver_install(_i2s_port, &cfg, 0, NULL);
+        if (err != ESP_OK)
         {
+            _last_error = (uint32_t)err;
             return false;
         }
         _i2s_installed = true;
@@ -83,6 +85,7 @@ namespace Audio
         {
             i2s_driver_uninstall(_i2s_port);
             _i2s_installed = false;
+            _last_error = (uint32_t)ESP_ERR_INVALID_STATE;
             return false;
         }
 
@@ -193,7 +196,10 @@ namespace Audio
             size_t space = _ring_space();
             if (space == 0)
             {
-                taskYIELD();
+                // Yield to IDLE (and the output task on the other core).
+                // taskYIELD() at priority 3 would starve IDLE0 and trip
+                // the task watchdog when the ring stays full.
+                vTaskDelay(1);
                 continue;
             }
 
@@ -251,18 +257,41 @@ namespace Audio
 
             size_t to_send = n * sizeof(int16_t);
             uint8_t *ptr = (uint8_t *)out_buf;
+            bool ok = true;
             while (to_send > 0)
             {
                 size_t written;
                 esp_err_t err = i2s_write(
-                    _i2s_port, ptr, to_send, &written, portMAX_DELAY
+                    _i2s_port, ptr, to_send, &written, pdMS_TO_TICKS(50)
                 );
-                if (err != ESP_OK || written == 0) break;
+                if (err != ESP_OK || written == 0)
+                {
+                    ok = false;
+                    break;
+                }
                 to_send -= written;
                 ptr += written;
             }
+
+            if (ok)
+            {
+                _stall_count = 0;
+            }
+            else
+            {
+                // DMA not draining (dead clock / bad PDM config). Give up
+                // after ~5s of stalls so the fault is visible instead of
+                // silently blocking forever.
+                _stall_count++;
+                if (_stall_count >= 100)
+                {
+                    _output_fault = true;
+                    break;
+                }
+            }
         }
 
+        _output_task = nullptr;
         vTaskDelete(NULL);
     }
 

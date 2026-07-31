@@ -170,7 +170,7 @@ void setup()
 
     // Audio
     if (!SharedInstances::audio.open()) {
-        SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
+        SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move. (err 0x%lx)", (unsigned long)SharedInstances::audio.last_error());
         delay(My::Config::Delays::AUDIO_HANDLER_I2S_OPEN_FAILURE_MS);
     }
 

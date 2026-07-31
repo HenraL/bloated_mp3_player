@@ -35,6 +35,9 @@ namespace Audio
         uint8_t     getVolume() const;
         Status      getStatus() const;
 
+        bool        output_faulted() const { return _output_fault; }
+        uint32_t    last_error() const { return _last_error; }
+
     private:
         uint8_t      _speaker_pin;
         uint8_t      _mirror_pin; // unused, kept for API compat
@@ -43,6 +46,9 @@ namespace Audio
         Status       _status    = Stopped;
         uint8_t      _volume    = 128;
         uint32_t     _sr        = 44100;
+        uint32_t     _last_error = 0;
+        bool         _output_fault = false;
+        uint32_t     _stall_count = 0;
         i2s_port_t   _i2s_port;
         bool         _i2s_installed = false;
 

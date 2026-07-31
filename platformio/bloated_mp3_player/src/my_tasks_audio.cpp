@@ -38,10 +38,19 @@ namespace My
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(25);
             uint16_t tick_count = 0;
+            bool fault_reported = false;
             SharedInstances::audio.play();
 
             while (true) {
                 PROFILE_BLOCK("audio_tick");
+
+                if (SharedInstances::audio.output_faulted() && !fault_reported) {
+                    fault_reported = true;
+                    SharedInstances::serial.serial_print(
+                        "[Audio] I2S output stalled (err 0x%lx) -- DMA not draining, no sound",
+                        (unsigned long)SharedInstances::audio.last_error()
+                    );
+                }
 
                 if (tick_count % 50 == 0) {
                     SharedInstances::serial.serial_debug(

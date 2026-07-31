@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 16:0:14 31-07-2026
+* LAST Modified: 19:46:45 31-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -32,7 +32,7 @@ namespace My
         {
             // BMP280 debug lines
             static const bool UART_BMP280_RAW_MODULE_DATA = false;
-            static const bool UART_BMP280_COMPUTED_MODULE_DATA = false;
+            static const bool UART_BMP280_COMPUTED_MODULE_DATA = true;
 
             // Input debug lines
             // |- Clicky potentiometer
@@ -44,7 +44,7 @@ namespace My
             // |- Ultrasonic
             static const bool UART_ULTRASONIC_PRESSED = true;
             static const bool UART_ULTRASONIC_SWIPED = true;
-            static const bool UART_ULTRASONIC_SWIPE_VALUE = false;
+            static const bool UART_ULTRASONIC_SWIPE_VALUE = true;
 
             // SD Card
             static const bool UART_SD_TOTAL_TRACKS = true;
@@ -60,7 +60,7 @@ namespace My
             static const bool UART_ANGLE_SENSOR_TILT_RIGHT = true;
 
             // Audio
-            static const bool UART_AUDIO_NOT_PLAYING = false;
+            static const bool UART_AUDIO_NOT_PLAYING = true;
             static const bool UART_AUDIO_NOT_LOADED = false;
             static const bool UART_AUDIO_TICKED = true;
             static const bool UART_AUDIO_STACK_HIGH_WATER = true;
