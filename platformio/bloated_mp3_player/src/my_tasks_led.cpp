@@ -68,6 +68,7 @@ namespace My
             uint16_t character_index = 0;
             uint16_t led_position = 0;
             uint16_t duration_ms = 0;
+            uint16_t tick_count = 0;
             bool refresh = true;
             bool special_animation = false;
             SharedInstances::serial.serial_print("[LED] The light that burns twice as bright...");
@@ -76,6 +77,15 @@ namespace My
                 PROFILE_BLOCK("led_tick");
                 duration_ms = 0;
                 xLastWake = xTaskGetTickCount();
+
+                if (tick_count % 50 == 0) {
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_LED_STACK_HIGH_WATER,
+                        "[LED] Stack high-water mark: %u bytes free",
+                        (unsigned int)uxTaskGetStackHighWaterMark(NULL)
+                    );
+                }
+                tick_count++;
 
                 if (special_animation) {
                     duration_ms = My::Config::onboard_eom[0].steps[character_index].duration_ms;

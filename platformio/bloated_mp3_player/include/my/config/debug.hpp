@@ -64,6 +64,9 @@ namespace My
             static const bool UART_AUDIO_NOT_LOADED = false;
             static const bool UART_AUDIO_TICKED = true;
 
+            // LED stack usage
+            static const bool UART_LED_STACK_HIGH_WATER = true;
+
         } // namespace Debug
 
     } // namespace Config

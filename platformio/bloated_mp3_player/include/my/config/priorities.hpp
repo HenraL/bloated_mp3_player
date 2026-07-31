@@ -56,11 +56,12 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Sensor
-            // LED
+            // LED (stack increased from 2048 — set_led_position + NeoPixel
+            // RMT show() + profiler trace_end blows the canary at 2K)
             namespace LED
             {
                 static const char PROCESS_NAME[] = "LED";
-                static const uint32_t US_STACK_DEPTH = 2048;
+                static const uint32_t US_STACK_DEPTH = 8192;
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace LED
