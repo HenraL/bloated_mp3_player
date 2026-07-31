@@ -36,7 +36,7 @@ bool SDCard::begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail)
     // fails.  We must set the pins explicitly.
     SD_MMC.setPins(clk, cmd, d0);
 
-    if (!SD_MMC.begin("", 1, format_if_fail))  // 1-bit SDMMC
+    if (!SD_MMC.begin("", 1, format_if_fail, SDMMC_FREQ_DEFAULT))  // 1-bit SDMMC @ 20 MHz
     {
         mounted = false;
         return false;
