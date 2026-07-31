@@ -4,5 +4,5 @@
 # Pipes stdin through the profiler filter (extracts PROFILING: lines,
 # accumulates to folded format), then renders SVG via flamegraph.pl.
 #
-exec perl /usr/local/bin/profiler_filter.pl \
+perl /usr/local/bin/profiler_filter.pl \
     | /usr/local/bin/flamegraph.pl "$@"
