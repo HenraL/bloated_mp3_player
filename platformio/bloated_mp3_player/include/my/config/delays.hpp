@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: delays.hpp
 * CREATION DATE: 20-07-2026
-* LAST Modified: 17:18:10 31-07-2026
+* LAST Modified: 17:47:30 31-07-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -35,22 +35,22 @@ namespace My
             static const uint32_t PRE_THREAD_INITIALISATION_DELAY = 1000; //ms
 
             // How often to poll the AHT20+BMP280 environmental sensor (milliseconds)
-            static const uint32_t ENVIRONMENTAL_POLL_INTERVAL_MS = 1000; //ms
+            static const uint32_t ENVIRONMENTAL_POLL_INTERVAL_MS = 5000; //ms
 
             // Environemental sensor initialisation issue, delay so the message can be read
-            static const uint32_t ENVIRONMENTAL_INITIALISATION_ISSUE_MS = 1000; //ms
+            static const uint32_t ENVIRONMENTAL_INITIALISATION_ISSUE_MS = 5000; //ms
 
             // IMU initialisation issue, delay so the message can be read
-            static const uint32_t IMU_INITIALISATION_FAILURE_MS = 1000; //ms
+            static const uint32_t IMU_INITIALISATION_FAILURE_MS = 5000; //ms
 
             // No sd card, delay so the message can be read
-            static const uint32_t SD_CARD_NOT_PRESENT_MESSAGE_MS = 1000; //ms
+            static const uint32_t SD_CARD_NOT_PRESENT_MESSAGE_MS = 5000; //ms
 
             // No tracks, delay so the message can be read
-            static const uint32_t SD_CARD_NO_MUSIC_PREDSENT_MS = 1000; //ms
+            static const uint32_t SD_CARD_NO_MUSIC_PRESENT_MS = 5000; //ms
 
             // Audio channel handler initialisation issue, delay so the message can be read.
-            static const uint32_t AUDIO_HANDLER_I2S_OPEN_FAILURE_MS = 1000; //ms
+            static const uint32_t AUDIO_HANDLER_I2S_OPEN_FAILURE_MS = 5000; //ms
         } // namespace Delays
     } // namespace Config
 } // namespace My

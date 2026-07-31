@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 17:18:24 31-07-2026
+* LAST Modified: 17:47:36 31-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -164,7 +164,7 @@ void setup()
     } else {
         if (!discover_audio_tracks()) {
             SharedInstances::serial.serial_print("WARN: No music found -- ");
-            delay(My::Config::Delays::SD_CARD_NO_MUSIC_PREDSENT_MS);
+            delay(My::Config::Delays::SD_CARD_NO_MUSIC_PRESENT_MS);
         }
     }
 
