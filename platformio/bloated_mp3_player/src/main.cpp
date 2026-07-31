@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: main.cpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 18:32:35 30-07-2026
+* LAST Modified: 17:18:24 31-07-2026
 * DESCRIPTION:
 * The main event loop. Spawns FreeRTOS tasks for every subsystem that
 * doesn't absolutely need to run on the same core, and a few that do.
@@ -148,25 +148,30 @@ void setup()
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
         SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
+        delay(My::Config::Delays::ENVIRONMENTAL_INITIALISATION_ISSUE_MS);
     }
 
     // IMU
     if (!IMU::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
         SharedInstances::serial.serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
+        delay(My::Config::Delays::IMU_INITIALISATION_FAILURE_MS);
     }
 
     // SD card (SDMMC 1-bit mode on hardware pins 38/39/40)
     if (!SDCard::begin(My::Config::Pins::SDMMC_CLK, My::Config::Pins::SDMMC_CMD, My::Config::Pins::SDMMC_D0)) {
         SharedInstances::serial.serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
+        delay(My::Config::Delays::SD_CARD_NOT_PRESENT_MESSAGE_MS);
     } else {
         if (!discover_audio_tracks()) {
             SharedInstances::serial.serial_print("WARN: No music found -- ");
+            delay(My::Config::Delays::SD_CARD_NO_MUSIC_PREDSENT_MS);
         }
     }
 
     // Audio
     if (!SharedInstances::audio.open()) {
         SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.");
+        delay(My::Config::Delays::AUDIO_HANDLER_I2S_OPEN_FAILURE_MS);
     }
 
     // Input devices
