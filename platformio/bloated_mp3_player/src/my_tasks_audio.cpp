@@ -39,10 +39,23 @@ namespace My
             const TickType_t freq = pdMS_TO_TICKS(25);
             uint16_t tick_count = 0;
             bool fault_reported = false;
+            Audio::Status last_status = Audio::Stopped;
+            float tone_phase = 0.0f;
             SharedInstances::audio.play();
 
             while (true) {
                 PROFILE_BLOCK("audio_tick");
+
+                Audio::Status status = SharedInstances::audio.getStatus();
+                if (status != last_status) {
+                    SharedInstances::serial.serial_print(
+                        "[Audio] status -> %s",
+                        status == Audio::Playing ? "playing"
+                        : status == Audio::Paused  ? "paused"
+                        :                            "stopped"
+                    );
+                    last_status = status;
+                }
 
                 if (SharedInstances::audio.output_faulted() && !fault_reported) {
                     fault_reported = true;
@@ -61,7 +74,19 @@ namespace My
                 }
                 tick_count++;
 
-                if (SharedInstances::audio.getStatus() == Audio::Playing) {
+                if (status == Audio::Playing && My::Config::Debug::AUDIO_TEST_TONE_ENABLED) {
+                    int16_t tone[2304];
+                    for (int i = 0; i < 1152; i++) {
+                        int16_t v = (int16_t)((float)My::Config::Debug::AUDIO_TEST_TONE_AMPLITUDE * sinf(tone_phase));
+                        tone[i * 2] = v;
+                        tone[i * 2 + 1] = v;
+                        tone_phase += 0.062665f;
+                        if (tone_phase > 6.2831853f) {
+                            tone_phase -= 6.2831853f;
+                        }
+                    }
+                    SharedInstances::audio.write(tone, 2304);
+                } else if (status == Audio::Playing) {
                     if (SharedInstances::player.is_loaded()) {
                         int tick_r = SharedInstances::player.tick();
                         if (tick_r <= 0) {

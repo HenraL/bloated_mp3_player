@@ -36,6 +36,8 @@ namespace Ultrasonic
         int16_t press_start_cm = 0;
         bool pressed = false;
         uint16_t gesture_cooldown_ms = 500;
+        uint8_t press_confirm_count = 0;
+        uint8_t release_confirm_count = 0;
     };
 
     void begin(uint8_t trig_pin, uint8_t echo_pin);

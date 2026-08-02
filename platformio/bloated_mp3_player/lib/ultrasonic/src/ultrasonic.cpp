@@ -67,26 +67,48 @@ void Ultrasonic::gesture_tick()
     if (now - gesture.last_gesture_ms < gesture.gesture_cooldown_ms)
         return;
 
-    if (d < 10 && !gesture.waiting_for_release)
+    if (d < 10)
     {
-        gesture.waiting_for_release = true;
-        gesture.press_start_cm = d;
-        gesture.pressed = true;
-        gesture.last_gesture_ms = now;
+        if (!gesture.waiting_for_release)
+        {
+            // Debounce: a real press must hold below 10cm for 3 consecutive
+            // readings (~90ms). A single noisy echo must not toggle anything.
+            gesture.press_confirm_count++;
+            if (gesture.press_confirm_count >= 3)
+            {
+                gesture.waiting_for_release = true;
+                gesture.press_start_cm = d;
+                gesture.pressed = true;
+                gesture.last_gesture_ms = now;
+            }
+        }
+        else
+        {
+            gesture.release_confirm_count = 0;
+        }
         return;
     }
 
     if (d >= 10 && gesture.waiting_for_release)
     {
-        gesture.waiting_for_release = false;
-        gesture.pressed = false;
-        int16_t delta = gesture.press_start_cm - d;
-        if (delta > 5)      gesture.swipe_dir = 1;
-        else if (delta < -5) gesture.swipe_dir = -1;
-        else                 gesture.swipe_dir = 0;
-        gesture.last_gesture_ms = now;
+        // Debounce the release too: 2 consecutive readings >= 10cm (~60ms).
+        gesture.release_confirm_count++;
+        if (gesture.release_confirm_count >= 2)
+        {
+            gesture.waiting_for_release = false;
+            gesture.pressed = false;
+            gesture.press_confirm_count = 0;
+            gesture.release_confirm_count = 0;
+            int16_t delta = gesture.press_start_cm - d;
+            if (delta > 5)      gesture.swipe_dir = 1;
+            else if (delta < -5) gesture.swipe_dir = -1;
+            else                 gesture.swipe_dir = 0;
+            gesture.last_gesture_ms = now;
+        }
         return;
     }
+
+    gesture.press_confirm_count = 0;
 
     if (d >= 30)
     {
