@@ -649,7 +649,7 @@
         "uuid": "0f0043d3-9467-400d-886a-57a73f910f34"
       }
     ],
-    "used_designators": "D1,C1-8,#PWR1-40,LS1-2,LED1,R1-16,LCD1,U1-6,SW1-5,J1-2",
+    "used_designators": "L1-6,D1,C1-16,#PWR1-40,LS1-2,LED1,R1-17,LCD1,U1-7,SW1-5,J1-2",
     "variants": []
   },
   "sheets": [
@@ -660,6 +660,14 @@
     [
       "68afa0b0-fbce-4e06-b0d1-6752d3bde468",
       "ESP power"
+    ],
+    [
+      "a50beffe-a239-4916-9845-73f6497a511a",
+      "MAX98357"
+    ],
+    [
+      "4f719e08-a5fd-46cb-a375-4f681db4c0e1",
+      "MAX98357"
     ]
   ],
   "text_variables": {},

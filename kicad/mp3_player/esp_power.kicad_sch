@@ -2378,7 +2378,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "03ff0787-9f0a-42c4-9ca8-b30b57e48282")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR017"
 			(at 43.18 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -2438,7 +2438,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR019")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -2538,7 +2538,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5ccc3da2-7204-4288-b8c2-26bf26d7c9ce")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR018"
 			(at 73.66 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -2598,7 +2598,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR020")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -2697,7 +2697,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "97295fe6-f5de-45c3-bea4-41795c64bc77")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR020"
 			(at 74.93 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -2757,7 +2757,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR022")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -2774,7 +2774,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9acd6d0d-928d-4aaf-9d34-c8ac4625fa50")
-		(property "Reference" "C4"
+		(property "Reference" "C2"
 			(at 54.61 77.47 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2836,7 +2836,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "C4")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -3066,7 +3066,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bd4c753f-8cf4-41dc-b804-e74ce0c438b2")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR021"
 			(at 74.93 59.69 0)
 			(hide yes)
 			(show_name no)
@@ -3126,7 +3126,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR023")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -3145,7 +3145,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bf56d9aa-1ba7-4f40-a4d4-ba5d245bf14c")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR022"
 			(at 85.09 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -3205,7 +3205,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR024")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -3223,7 +3223,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bfd36b07-b128-41e3-8589-9cc679824edf")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR023"
 			(at 105.41 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -3283,7 +3283,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR025")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -3300,7 +3300,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c0000001-0001-4000-c000-000000000001")
-		(property "Reference" "C5"
+		(property "Reference" "C3"
 			(at 77.47 40.64 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3364,7 +3364,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "C5")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -3381,7 +3381,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c0000002-0002-4000-c000-000000000002")
-		(property "Reference" "C8"
+		(property "Reference" "C6"
 			(at 101.6 54.61 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3445,7 +3445,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "C8")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -3462,7 +3462,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c0000003-0003-4000-c000-000000000003")
-		(property "Reference" "C7"
+		(property "Reference" "C5"
 			(at 97.79 67.31 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3526,7 +3526,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "C7")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -3543,7 +3543,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c0000004-0004-4000-c000-000000000004")
-		(property "Reference" "C6"
+		(property "Reference" "C4"
 			(at 88.9 67.31 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3607,7 +3607,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "C6")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -3869,7 +3869,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fc9a09f8-afbb-47f4-a53c-3589680fb4f2")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR019"
 			(at 73.66 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -3929,7 +3929,7 @@
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34/68afa0b0-fbce-4e06-b0d1-6752d3bde468"
-					(reference "#PWR021")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
