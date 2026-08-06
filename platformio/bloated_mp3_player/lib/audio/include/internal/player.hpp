@@ -39,12 +39,14 @@ namespace Audio
         int  tick();
 
         bool is_loaded() const;
+        bool track_finished() const;
         const char* last_diag() const;
 
     private:
         Audio      &_audio;
         Decoder    *_decoder;
         volatile bool _loading;
+        bool        _finished;
         int16_t     _tick_buf[PLAYER_MAX_FRAMES * 2];
         char        _last_diag[256];
     };

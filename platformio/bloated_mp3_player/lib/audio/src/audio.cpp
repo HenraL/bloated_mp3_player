@@ -110,6 +110,13 @@ namespace Audio
         if (_status == Playing) return;
         _status = Playing;
 
+        if (_i2s_installed)
+        {
+            i2s_start(_i2s_port);
+        }
+        _output_fault = false;
+        _stall_count = 0;
+
         if (!_output_task)
         {
             xTaskCreatePinnedToCore(
@@ -138,6 +145,13 @@ namespace Audio
         {
             i2s_stop(_i2s_port);
             i2s_zero_dma_buffer(_i2s_port);
+        }
+
+        if (_ring)
+        {
+            memset(_ring, 0, RING_CAPACITY * sizeof(int16_t));
+            _ring_wp = 0;
+            _ring_rp = 0;
         }
     }
 

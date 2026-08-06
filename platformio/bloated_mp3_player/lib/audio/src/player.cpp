@@ -10,6 +10,7 @@ namespace Audio
         : _audio(audio)
         , _decoder(nullptr)
         , _loading(false)
+        , _finished(false)
     {
     }
 
@@ -48,6 +49,7 @@ namespace Audio
     bool Player::load(const char *path)
     {
         _loading = true;
+        _finished = false;
         unload();
 
         if (has_extension(path, ".mp3"))
@@ -107,6 +109,7 @@ namespace Audio
 
         if (frames == 0)
         {
+            _finished = true;
             _audio.stop();
             unload();
             return 0;
@@ -128,6 +131,7 @@ namespace Audio
 
         if (_decoder->eof())
         {
+            _finished = true;
             _audio.stop();
             unload();
         }
@@ -138,6 +142,11 @@ namespace Audio
     bool Player::is_loaded() const
     {
         return _decoder && _decoder->is_open();
+    }
+
+    bool Player::track_finished() const
+    {
+        return _finished;
     }
 
     const char* Player::last_diag() const

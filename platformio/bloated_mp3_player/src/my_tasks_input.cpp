@@ -140,6 +140,13 @@ namespace My
                 handle_ultrasonic_press();
                 handle_ultrasonic_swipe();
 
+                if (SharedInstances::player.track_finished()) {
+                    SharedInstances::serial.serial_print("[INPUT] Track finished, advancing to the next track.");
+                    total_track_count = SDCard::total_tracks();
+                    track_index = (track_index + 1) % total_track_count;
+                    play_track(&track_index);
+                }
+
                 vTaskDelayUntil(&xLastWake, freq);
             }
         }
