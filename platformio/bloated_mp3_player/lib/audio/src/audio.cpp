@@ -196,8 +196,10 @@ namespace Audio
 
         while (written < frames)
         {
-            size_t space = _ring_space();
-            if (space == 0)
+            // _ring_space() counts samples; the ring is written in
+            // stereo frames (2 samples), so cap the chunk in frames.
+            size_t space_frames = _ring_space() / 2;
+            if (space_frames == 0)
             {
                 // Yield to IDLE (and the output task on the other core).
                 // taskYIELD() at priority 3 would starve IDLE0 and trip
@@ -207,9 +209,9 @@ namespace Audio
             }
 
             size_t chunk = frames - written;
-            if (chunk > space)
+            if (chunk > space_frames)
             {
-                chunk = space;
+                chunk = space_frames;
             }
 
             int16_t mix_buf[512];

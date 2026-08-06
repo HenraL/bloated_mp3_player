@@ -7,7 +7,7 @@
 
 namespace Audio
 {
-    static const size_t RING_CAPACITY = 65536;
+    static const size_t RING_CAPACITY = 262144;
 
     enum Status
     {

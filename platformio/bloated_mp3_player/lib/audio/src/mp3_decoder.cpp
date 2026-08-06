@@ -234,18 +234,21 @@ namespace Audio
             return 0;
         }
 
-        // Refill: keep ring ≥ 75% full, fill to 100% when we do refill
+        // Refill: keep ring ≥ 75% full. Bound the burst so a single
+        // producer tick is never blocked for a long SD/decode stall.
         size_t refill_threshold = (_ring_cap * 3) / 4;
+        size_t refilled = 0;
         if (_ring_frames < refill_threshold && !_eof)
         {
-            do
+            while (!_eof && refilled < MP3_REFILL_MAX_FRAMES)
             {
                 if (!_decode_one_frame())
                 {
                     break;
                 }
+                refilled++;
                 vTaskDelay(1);
-            } while (_ring_frames < _ring_cap && !_eof);
+            }
         }
 
         size_t to_copy = (max_frames < _ring_frames) ? max_frames : _ring_frames;
