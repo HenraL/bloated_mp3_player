@@ -42,6 +42,9 @@ namespace My
             static const bool UART_STICK_PRESSED = true;
             static const bool UART_STICK_VOLUME = true;
 
+            // ─── Serial profiling ─────────────────────────────────────────
+            static const bool UART_PROFILING_ENABLED = false;
+
             // |- Ultrasonic
             static const bool UART_ULTRASONIC_PRESSED = false;
             static const bool UART_ULTRASONIC_SWIPED = false;

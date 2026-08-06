@@ -36,12 +36,14 @@ public:
     static void     trace_end(uint16_t slot);
     static void     dump_task_stats();
     static void     set_output(output_func_t func);
+    static void     set_enabled(bool en);
 
 private:
     Profiler() = delete;
     static ProfilerData::TaskStack _task_stacks[ProfilerConstants::MAX_TRACKED_TASKS];
     static uint16_t _task_count;
     static output_func_t _output;
+    static bool _enabled;
 
     static ProfilerData::TaskStack* _get_task_stack();
 };

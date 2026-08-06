@@ -30,10 +30,16 @@
 ProfilerData::TaskStack Profiler::_task_stacks[ProfilerConstants::MAX_TRACKED_TASKS];
 uint16_t Profiler::_task_count = 0;
 Profiler::output_func_t Profiler::_output = nullptr;
+bool Profiler::_enabled = true;
 
 void Profiler::set_output(output_func_t func)
 {
     _output = func;
+}
+
+void Profiler::set_enabled(bool en)
+{
+    _enabled = en;
 }
 
 ProfilerData::TaskStack *Profiler::_get_task_stack()
@@ -56,6 +62,7 @@ ProfilerData::TaskStack *Profiler::_get_task_stack()
 
 uint16_t Profiler::trace_begin(const char *name)
 {
+    if (!_enabled) return UINT16_MAX;
     ProfilerData::TaskStack *ts = _get_task_stack();
     if (ts == nullptr) return UINT16_MAX;
     if (ts->depth >= ProfilerConstants::MAX_DEPTH) return UINT16_MAX;
@@ -68,6 +75,7 @@ uint16_t Profiler::trace_begin(const char *name)
 
 void Profiler::trace_end(uint16_t slot)
 {
+    if (!_enabled) return;
     if (slot >= ProfilerConstants::MAX_DEPTH) return;
     ProfilerData::TaskStack *ts = _get_task_stack();
     if (ts == nullptr) return;

@@ -111,7 +111,10 @@ void setup()
     // order.  It also means tasks never block waiting for UART DMA.
 
     // Route profiler output through the queue-based serial
-    Profiler::set_output(profiling_output);
+    if (My::Config::Debug::UART_PROFILING_ENABLED) {
+        Profiler::set_output(profiling_output);
+    }
+    Profiler::set_enabled(My::Config::Debug::UART_PROFILING_ENABLED);
 
     // Display boot message
     SharedInstances::serial.serial_print("Bloated MP3 Player -- DON'T PANIC");
@@ -193,7 +196,9 @@ void setup()
     SharedInstances::my_threads.initialise_input();
 
     SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
-    Profiler::dump_task_stats();
+    if (My::Config::Debug::UART_PROFILING_ENABLED) {
+        Profiler::dump_task_stats();
+    }
 }
 
 void loop()
