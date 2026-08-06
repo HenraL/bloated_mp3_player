@@ -73,13 +73,13 @@ namespace My
             static const uint8_t SDMMC_CMD = 38;
             static const uint8_t SDMMC_D0  = 40;
 
-            // ─── Audio out (2 speakers direct to ESP pins) ─────────────────
-            // Speakers are connected positive-pin-only through coupling caps
-            // to GPIOs 17 (LS1) and 18 (LS2). No I2S DAC, no amplifier —
-            // just the ESP's internal DAC or LEDC PWM doing the heavy lifting.
-            // The audio quality is best described as "aggressively charming."
-            static const uint8_t SPEAKER_PIN_1 = 17;
-            static const uint8_t SPEAKER_PIN_2 = 18;
+            // ─── Audio out (2x MAX98357A I2S class-D amps) ─────────────────
+            // Standard I2S: the two boards share BCLK + LRCK, each gets its
+            // own DIN. IO16 = BCLK, IO47 = LRCK, IO17/IO18 = DIN per speaker.
+            static const uint8_t I2S_BCLK_PIN = 16;
+            static const uint8_t I2S_WS_PIN   = 47;
+            static const uint8_t I2S_DIN_PIN  = 17;
+            static const uint8_t I2S_DIN2_PIN = 18;
 
             // ─── Rotary encoder (Alps EC11E, Prusa-style) ─────────────────────────
             // Use this to navigate the UI. Turn left to go back, turn right to go

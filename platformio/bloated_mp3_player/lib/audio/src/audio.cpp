@@ -4,10 +4,13 @@ namespace Audio
 {
 
     Audio::Audio(
-        uint8_t speaker_pin_1, uint8_t speaker_pin_2,
+        uint8_t bck_pin, uint8_t ws_pin,
+        uint8_t data_pin, uint8_t data2_pin,
         uint8_t dma_buf_count, uint16_t dma_buf_len)
-        : _speaker_pin(speaker_pin_1)
-        , _mirror_pin(speaker_pin_2)
+        : _bck_pin(bck_pin)
+        , _ws_pin(ws_pin)
+        , _data_pin(data_pin)
+        , _data2_pin(data2_pin)
         , _dma_buf_count(dma_buf_count)
         , _dma_buf_len(dma_buf_len)
         , _i2s_port(I2S_NUM_0)
@@ -54,10 +57,10 @@ namespace Audio
         }
 
         i2s_config_t cfg = {};
-        cfg.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_PDM);
+        cfg.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
         cfg.sample_rate = _sr;
         cfg.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
-        cfg.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
+        cfg.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT;
         cfg.communication_format = I2S_COMM_FORMAT_STAND_I2S;
         cfg.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
         cfg.dma_buf_count = _dma_buf_count;
@@ -76,9 +79,9 @@ namespace Audio
         _i2s_installed = true;
 
         i2s_pin_config_t pins = {};
-        pins.bck_io_num = I2S_PIN_NO_CHANGE;
-        pins.ws_io_num = I2S_PIN_NO_CHANGE;
-        pins.data_out_num = _speaker_pin;
+        pins.bck_io_num = _bck_pin;
+        pins.ws_io_num = _ws_pin;
+        pins.data_out_num = _data_pin;
         pins.data_in_num = I2S_PIN_NO_CHANGE;
 
         if (i2s_set_pin(_i2s_port, &pins) != ESP_OK)
@@ -89,11 +92,11 @@ namespace Audio
             return false;
         }
 
-        if (_speaker_pin != _mirror_pin)
+        if (_data2_pin != _data_pin)
         {
-            pinMode(_mirror_pin, OUTPUT);
+            pinMode(_data2_pin, OUTPUT);
             gpio_matrix_out(
-                _mirror_pin,
+                _data2_pin,
                 i2s_periph_signal[_i2s_port].data_out_sig,
                 false, false
             );
@@ -143,7 +146,7 @@ namespace Audio
         _sr = sr;
         if (_i2s_installed)
         {
-            i2s_set_clk(_i2s_port, _sr, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
+            i2s_set_clk(_i2s_port, _sr, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_STEREO);
         }
     }
 
@@ -210,7 +213,7 @@ namespace Audio
             }
 
             int16_t mix_buf[512];
-            size_t mix_chunk = chunk > 512 ? 512 : chunk;
+            size_t mix_chunk = chunk > 256 ? 256 : chunk;
             if (mix_chunk < chunk)
             {
                 chunk = mix_chunk;
@@ -219,13 +222,11 @@ namespace Audio
             for (size_t i = 0; i < chunk; i++)
             {
                 size_t idx = (written + i) * 2;
-                int32_t l = samples[idx];
-                int32_t r = samples[idx + 1];
-                int32_t m = ((int32_t)((l + r) >> 1) * _volume) >> VOLUME_SHIFT;
-                mix_buf[i] = (int16_t)m;
+                mix_buf[i * 2] = (int16_t)(((int32_t)samples[idx] * _volume) >> VOLUME_SHIFT);
+                mix_buf[i * 2 + 1] = (int16_t)(((int32_t)samples[idx + 1] * _volume) >> VOLUME_SHIFT);
             }
 
-            _ring_write(mix_buf, chunk);
+            _ring_write(mix_buf, chunk * 2);
             written += chunk;
         }
 

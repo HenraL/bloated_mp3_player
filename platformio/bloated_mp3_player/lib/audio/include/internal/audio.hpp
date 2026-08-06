@@ -19,7 +19,8 @@ namespace Audio
     class Audio
     {
     public:
-        Audio(uint8_t speaker_pin_1, uint8_t speaker_pin_2,
+        Audio(uint8_t bck_pin, uint8_t ws_pin,
+              uint8_t data_pin, uint8_t data2_pin,
               uint8_t dma_buf_count, uint16_t dma_buf_len);
         ~Audio();
 
@@ -39,8 +40,10 @@ namespace Audio
         uint32_t    last_error() const { return _last_error; }
 
     private:
-        uint8_t      _speaker_pin;
-        uint8_t      _mirror_pin; // unused, kept for API compat
+        uint8_t      _bck_pin;
+        uint8_t      _ws_pin;
+        uint8_t      _data_pin;
+        uint8_t      _data2_pin;
         uint8_t      _dma_buf_count;
         uint16_t     _dma_buf_len;
         Status       _status    = Stopped;

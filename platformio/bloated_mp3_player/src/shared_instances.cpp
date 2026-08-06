@@ -38,8 +38,10 @@ namespace SharedInstances
         My::Config::Delays::ENVIRONMENTAL_POLL_INTERVAL_MS
     );
     Audio::Audio audio(
-        My::Config::Pins::SPEAKER_PIN_1,
-        My::Config::Pins::SPEAKER_PIN_2,
+        My::Config::Pins::I2S_BCLK_PIN,
+        My::Config::Pins::I2S_WS_PIN,
+        My::Config::Pins::I2S_DIN_PIN,
+        My::Config::Pins::I2S_DIN2_PIN,
         8, 256
     );
     Audio::Player player(audio);
