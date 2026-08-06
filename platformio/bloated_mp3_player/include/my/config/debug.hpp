@@ -66,8 +66,8 @@ namespace My
             static const bool UART_AUDIO_STACK_HIGH_WATER = true;
 
             // When true, the audio task synthesises a 440Hz tone instead of
-            // decoding tracks (used to test the PWM output stage in isolation).
-            static const bool AUDIO_TEST_TONE_ENABLED = true;
+            // decoding tracks (used to test the I2S output stage in isolation).
+            static const bool AUDIO_TEST_TONE_ENABLED = false;
 
             // Test-tone peak amplitude (0..32767). Keep well below full
             // scale: the RC-filtered PWM drives the LM386 modules directly,
