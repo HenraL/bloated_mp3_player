@@ -5489,10 +5489,6 @@
 		(uuid "d66f774b-e342-4acd-8308-9a791964ae3f")
 	)
 	(no_connect
-		(at 176.53 104.14)
-		(uuid "da6d5190-1e0f-439d-8fae-590a22db755c")
-	)
-	(no_connect
 		(at 248.92 34.29)
 		(uuid "dc6558eb-32a0-459b-8f7a-5dcf7b74885b")
 	)
@@ -5943,6 +5939,16 @@
 			(type default)
 		)
 		(uuid "3b926650-bbcb-4094-9ce3-84766fc980f6")
+	)
+	(wire
+		(pts
+			(xy 176.53 101.6) (xy 176.53 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3bd22be6-3830-4e2a-8d55-b9b1485c7c8a")
 	)
 	(wire
 		(pts
@@ -10081,6 +10087,84 @@
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34"
 					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_SparkFun-PowerSymbol:GND")
+		(at 176.53 101.6 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "aaba9214-b483-4988-ab33-58840adfafbc")
+		(property "Reference" "#PWR036"
+			(at 176.53 95.25 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 176.53 97.79 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 176.53 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 176.53 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "346ba479-e5b2-463d-89e0-c70585eacd34")
+		)
+		(instances
+			(project "mp3_player"
+				(path "/0f0043d3-9467-400d-886a-57a73f910f34"
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
