@@ -55,7 +55,8 @@ namespace My
         static const BakedFonts::FontHandle *const FONT_TITLE = &BakedFonts::tiny5_10pt_handle;
         static const BakedFonts::FontHandle *const FONT_BODY = &BakedFonts::tiny5_8pt_handle;
         static const BakedFonts::FontHandle *const FONT_INFO = &BakedFonts::tiny5_8pt_handle;
-        static const uint8_t DISPLAY_CONTRAST = 200;
+        static const uint8_t DISPLAY_CONTRAST = 255;
+        static const uint32_t DISPLAY_SPI_CLOCK_HZ = 1000000;
 
         // ─── Matrix Setup ───────────────────────────────────────────────────────
         static const uint16_t MATRIX_LED_COUNT_HORIZONTAL = 16;

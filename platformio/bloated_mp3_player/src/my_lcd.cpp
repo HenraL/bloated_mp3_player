@@ -23,7 +23,7 @@
 */
 #include <SPI.h>
 #include "my/lcd.hpp"
-#include "my/config/pins.hpp"
+#include "my/config.hpp"
 
 static const uint8_t BAYER_4x4[16] = {
      0,  8,  2, 10,
@@ -59,6 +59,7 @@ void My::LCD::Display::initialise()
 
 void My::LCD::Display::begin(const uint8_t contrast)
 {
+    _u8g2.setBusClock(My::Config::DISPLAY_SPI_CLOCK_HZ);
     _u8g2.begin();
     _u8g2.setContrast(contrast);
 }

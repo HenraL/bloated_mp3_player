@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 23:31:47 06-08-2026
+* LAST Modified: 0:33:3 07-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -36,13 +36,13 @@ namespace My
 
             // Input debug lines
             // |- Clicky potentiometer
-            static const bool UART_STICK_DIRECTION = true;
+            static const bool UART_STICK_DIRECTION = false;
             static const bool UART_STICK_DIRECTION_ZERO = false;
-            static const bool UART_STICK_TRACK_INDEX = true;
-            static const bool UART_STICK_PRESSED = true;
-            static const bool UART_STICK_VOLUME = true;
-            static const bool UART_STICK_RAW = true;
-            static const bool UART_STICK_RAW_SW = true;
+            static const bool UART_STICK_TRACK_INDEX = false;
+            static const bool UART_STICK_PRESSED = false;
+            static const bool UART_STICK_VOLUME = false;
+            static const bool UART_STICK_RAW = false;
+            static const bool UART_STICK_RAW_SW = false;
 
             // ─── Serial profiling ─────────────────────────────────────────
             static const bool UART_PROFILING_ENABLED = false;
@@ -82,6 +82,11 @@ namespace My
 
             // LED stack usage
             static const bool UART_LED_STACK_HIGH_WATER = true;
+
+            // When true, the UI task draws a single static frame and then
+            // stops repainting. Used to distinguish display flicker caused by
+            // code (continuous refresh) from flicker caused by wiring.
+            static const bool LCD_ONESHOT_TEST_ENABLED = true;
 
         } // namespace Debug
 

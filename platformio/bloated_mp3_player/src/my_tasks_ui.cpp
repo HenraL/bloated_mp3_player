@@ -75,7 +75,7 @@ namespace My
             bool read = false;
             uint32_t last_poll = 0;
 
-            while (true) {
+while (true) {
                 PROFILE_BLOCK("ui_tick");
                 SharedInstances::lcd.clear();
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
@@ -96,6 +96,13 @@ namespace My
                 SharedInstances::lcd.fillRect(My::Config::DisplayLayout::RECTANGLE_FILL_X, My::Config::DisplayLayout::RECTANGLE_FILL_Y, ((millis() / 100) % 100) * 124 / 100, My::Config::DisplayLayout::RECTANGLE_FILL_H);
 
                 SharedInstances::lcd.display();
+                if (My::Config::Debug::LCD_ONESHOT_TEST_ENABLED) {
+                    // Static one-shot screen: draw once, then idle forever so
+                    // any flicker observed is from wiring, not software.
+                    while (true) {
+                        vTaskDelay(pdMS_TO_TICKS(1000));
+                    }
+                }
                 vTaskDelayUntil(&xLastWake, freq);
             }
         }
