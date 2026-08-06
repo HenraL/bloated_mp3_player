@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_tasks_input.cpp
 * CREATION DATE: 22-07-2026
-* LAST Modified: 15:17:51 23-07-2026
+* LAST Modified: 23:40:19 06-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -60,6 +60,23 @@ namespace My
                 // appends seamlessly, without an unreliable restart cycle.
                 SharedInstances::player.load(ti->path);
                 SharedInstances::audio.play();
+            }
+        }
+
+        static void handle_rotary_raw(void)
+        {
+            uint8_t a = 0;
+            uint8_t b = 0;
+            uint8_t sw = 0;
+            if (Rotary::raw_changed(a, b, sw)) {
+                SharedInstances::serial.serial_debug(
+                    My::Config::Debug::UART_STICK_RAW,
+                    "[INPUT] RAW A=%u B=%u", a, b
+                );
+                SharedInstances::serial.serial_debug(
+                    My::Config::Debug::UART_STICK_RAW_SW,
+                    "[INPUT] RAW SW=%u", sw
+                );
             }
         }
 
@@ -138,6 +155,7 @@ namespace My
                 Rotary::tick();
                 Ultrasonic::gesture_tick();
 
+                handle_rotary_raw();
                 handle_rotary_volume();
                 handle_audio_play_pause();
                 handle_ultrasonic_press();

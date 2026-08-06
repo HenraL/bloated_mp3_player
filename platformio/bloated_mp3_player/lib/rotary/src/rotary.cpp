@@ -36,6 +36,7 @@ static uint32_t sw_press_ms = 0;
 static bool sw_was_pressed = false;
 static bool sw_long_reported = false;
 static const uint16_t DEBOUNCE_US = 1000;
+static uint8_t last_raw_bits = 0xFF;
 
 void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
 {
@@ -86,6 +87,30 @@ int8_t Rotary::get_direction()
     int8_t d = last_dir;
     last_dir = 0;
     return d;
+}
+
+void Rotary::read_raw(uint8_t &a, uint8_t &b)
+{
+    a = digitalRead(pinA);
+    b = digitalRead(pinB);
+}
+
+uint8_t Rotary::read_sw()
+{
+    return digitalRead(pinSW);
+}
+
+bool Rotary::raw_changed(uint8_t &a, uint8_t &b, uint8_t &sw)
+{
+    a = digitalRead(pinA);
+    b = digitalRead(pinB);
+    sw = digitalRead(pinSW);
+    uint8_t bits = (a << 2) | (b << 1) | (sw & 1);
+    if (bits == last_raw_bits) {
+        return false;
+    }
+    last_raw_bits = bits;
+    return true;
 }
 
 bool Rotary::was_pressed()

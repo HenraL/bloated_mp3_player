@@ -29,6 +29,9 @@ namespace Rotary
 {
     void begin(uint8_t pin_a, uint8_t pin_b, uint8_t pin_sw);
     void tick();
+    void read_raw(uint8_t &a, uint8_t &b);
+    uint8_t read_sw();
+    bool raw_changed(uint8_t &a, uint8_t &b, uint8_t &sw);
     int8_t get_direction();
     bool was_pressed();
     bool was_long_pressed(uint32_t hold_ms = 1000);
