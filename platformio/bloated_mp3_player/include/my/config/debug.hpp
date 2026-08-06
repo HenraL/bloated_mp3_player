@@ -40,6 +40,7 @@ namespace My
             static const bool UART_STICK_DIRECTION_ZERO = false;
             static const bool UART_STICK_TRACK_INDEX = true;
             static const bool UART_STICK_PRESSED = true;
+            static const bool UART_STICK_VOLUME = true;
 
             // |- Ultrasonic
             static const bool UART_ULTRASONIC_PRESSED = true;

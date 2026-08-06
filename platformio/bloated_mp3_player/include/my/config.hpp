@@ -61,5 +61,11 @@ namespace My
         static const uint16_t MATRIX_LED_COUNT_HORIZONTAL = 16;
         static const uint16_t MATRIX_LED_COUNT_VERTICAL = 16;
 
+        // ─── Audio ─────────────────────────────────────────────────────────────
+        static const uint8_t AUDIO_VOLUME_STEP = 4;
+        static const uint8_t AUDIO_VOLUME_MAX = 255;
+        static const uint8_t AUDIO_VOLUME_MIN = 0;
+        static const uint8_t AUDIO_VOLUME_DEFAULT = 128;
+
     } // namespace Config
 } // namespace My

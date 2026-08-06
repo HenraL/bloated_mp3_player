@@ -61,26 +61,30 @@ namespace My
             }
         }
 
-        static void handle_rotary_rotation(uint32_t total_track_count, uint32_t *track_index)
+        static void handle_rotary_volume(void)
         {
             int8_t dir = Rotary::get_direction();
             if (dir != 0) {
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, "[INPUT] Clicky potentiometer value: %d", dir);
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_TOTAL_TRACKS, "[INPUT] SD Total tracks: %lu", total_track_count);
-                if (total_track_count > 0) {
-                    if (dir > 0) {
-                        *track_index = (*track_index + 1) % total_track_count;
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRACK_INDEX, "[INPUT] track_index=%lu", *track_index);
-                    } else {
-                        if (*track_index == 0) {
-                            *track_index = total_track_count - 1;
-                        } else {
-                            *track_index -= 1;
+                uint8_t vol = SharedInstances::audio.getVolume();
+                if (dir > 0) {
+                    if (vol < My::Config::AUDIO_VOLUME_MAX) {
+                        vol += My::Config::AUDIO_VOLUME_STEP;
+                        if (vol > My::Config::AUDIO_VOLUME_MAX) {
+                            vol = My::Config::AUDIO_VOLUME_MAX;
                         }
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRACK_INDEX, "[INPUT] track_index=%lu", *track_index);
                     }
-                    play_track(track_index);
+                } else {
+                    if (vol > My::Config::AUDIO_VOLUME_MIN) {
+                        if (vol < My::Config::AUDIO_VOLUME_STEP) {
+                            vol = My::Config::AUDIO_VOLUME_MIN;
+                        } else {
+                            vol -= My::Config::AUDIO_VOLUME_STEP;
+                        }
+                    }
                 }
+                SharedInstances::audio.setVolume(vol);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_VOLUME, "[INPUT] Volume: %u", vol);
             } else {
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION_ZERO, "[INPUT] The clicky pot has not been turned.");
             }
@@ -135,7 +139,7 @@ namespace My
                 Rotary::tick();
                 Ultrasonic::gesture_tick();
 
-                handle_rotary_rotation(total_track_count, &track_index);
+                handle_rotary_volume();
                 handle_audio_play_pause();
                 handle_ultrasonic_press();
                 handle_ultrasonic_swipe();
