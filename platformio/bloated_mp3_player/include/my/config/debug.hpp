@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 19:46:45 31-07-2026
+* LAST Modified: 23:3:32 06-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -43,9 +43,9 @@ namespace My
             static const bool UART_STICK_VOLUME = true;
 
             // |- Ultrasonic
-            static const bool UART_ULTRASONIC_PRESSED = true;
-            static const bool UART_ULTRASONIC_SWIPED = true;
-            static const bool UART_ULTRASONIC_SWIPE_VALUE = true;
+            static const bool UART_ULTRASONIC_PRESSED = false;
+            static const bool UART_ULTRASONIC_SWIPED = false;
+            static const bool UART_ULTRASONIC_SWIPE_VALUE = false;
 
             // SD Card
             static const bool UART_SD_TOTAL_TRACKS = true;

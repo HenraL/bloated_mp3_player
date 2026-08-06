@@ -54,8 +54,10 @@ namespace My
             SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX, "[INPUT] Playing track %lu", *track_index);
             ti = SDCard::get_track(*track_index);
             if (ti) {
-                SharedInstances::audio.stop();
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_AUDIO_PATH, "[INPUT] filepath: %s", ti->path);
+                // Do not stop() here: keep I2S running across track changes so
+                // the previous track's tail drains out and the next track's PCM
+                // appends seamlessly, without an unreliable restart cycle.
                 SharedInstances::player.load(ti->path);
                 SharedInstances::audio.play();
             }
@@ -68,19 +70,16 @@ namespace My
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, "[INPUT] Clicky potentiometer value: %d", dir);
                 uint8_t vol = SharedInstances::audio.getVolume();
                 if (dir > 0) {
-                    if (vol < My::Config::AUDIO_VOLUME_MAX) {
+                    if (vol <= (My::Config::AUDIO_VOLUME_MAX - My::Config::AUDIO_VOLUME_STEP)) {
                         vol += My::Config::AUDIO_VOLUME_STEP;
-                        if (vol > My::Config::AUDIO_VOLUME_MAX) {
-                            vol = My::Config::AUDIO_VOLUME_MAX;
-                        }
+                    } else {
+                        vol = My::Config::AUDIO_VOLUME_MAX;
                     }
                 } else {
-                    if (vol > My::Config::AUDIO_VOLUME_MIN) {
-                        if (vol < My::Config::AUDIO_VOLUME_STEP) {
-                            vol = My::Config::AUDIO_VOLUME_MIN;
-                        } else {
-                            vol -= My::Config::AUDIO_VOLUME_STEP;
-                        }
+                    if (vol >= My::Config::AUDIO_VOLUME_STEP) {
+                        vol -= My::Config::AUDIO_VOLUME_STEP;
+                    } else {
+                        vol = My::Config::AUDIO_VOLUME_MIN;
                     }
                 }
                 SharedInstances::audio.setVolume(vol);

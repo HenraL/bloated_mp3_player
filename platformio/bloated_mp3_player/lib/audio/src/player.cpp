@@ -109,9 +109,14 @@ namespace Audio
 
         if (frames == 0)
         {
-            _finished = true;
-            _audio.stop();
-            unload();
+            // Only a real end-of-file finishes the track. read() can also
+            // return 0 transiently (SD hiccup, ring momentarily empty), in
+            // which case we must NOT kill the track — retry next tick.
+            if (_decoder->eof())
+            {
+                _finished = true;
+                unload();
+            }
             return 0;
         }
 
@@ -127,13 +132,6 @@ namespace Audio
         else
         {
             _audio.write(_tick_buf, frames * 2);
-        }
-
-        if (_decoder->eof())
-        {
-            _finished = true;
-            _audio.stop();
-            unload();
         }
 
         return frames;
