@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: config.hpp
 * CREATION DATE: 17-07-2026
-* LAST Modified: 23:48:45 06-08-2026
+* LAST Modified: 13:22:18 07-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -66,7 +66,7 @@ namespace My
         static const uint8_t AUDIO_VOLUME_STEP = 4;
         static const uint8_t AUDIO_VOLUME_MAX = 255;
         static const uint8_t AUDIO_VOLUME_MIN = 0;
-        static const uint8_t AUDIO_VOLUME_DEFAULT = 8;
+        static const uint8_t AUDIO_VOLUME_DEFAULT = 100;
 
     } // namespace Config
 } // namespace My

@@ -30,6 +30,7 @@ static volatile int16_t encoder_pos = 0;
 static volatile int8_t last_dir = 0;
 
 static uint8_t last_a = 1, last_b = 1;
+static uint8_t last_state = 3;
 static uint32_t last_a_ms = 0;
 static bool sw_last = true;
 static uint32_t sw_press_ms = 0;
@@ -46,6 +47,7 @@ void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
     pinMode(pinSW, INPUT_PULLUP);
     last_a = digitalRead(pinA);
     last_b = digitalRead(pinB);
+    last_state = (last_a << 1) | last_b;
 }
 
 void Rotary::tick()
@@ -55,16 +57,23 @@ void Rotary::tick()
     uint32_t now = micros();
     bool sw = digitalRead(pinSW);
 
-    if (a != last_a && (now - last_a_ms) > DEBOUNCE_US) {
-        if (b != a) {
-            encoder_pos++;
-            last_dir = 1;
-        } else {
-            encoder_pos--;
-            last_dir = -1;
+    uint8_t state = (a << 1) | b;
+    if (state != last_state && (now - last_a_ms) > DEBOUNCE_US) {
+        // Quadrature transition table: indexed by (old << 2) | new.
+        // Every valid single-step transition maps to +1 or -1; bounces and
+        // skipped double-transitions map to 0 and are ignored.
+        static const int8_t TRANS[16] = {
+            /* 00 -> */  0, -1, 1, 0,
+            /* 01 -> */  1,  0, 0, -1,
+            /* 10 -> */ -1,  0, 0, 1,
+            /* 11 -> */  0,  1, -1, 0,
+        };
+        int8_t dir = TRANS[(last_state << 2) | state];
+        if (dir != 0) {
+            encoder_pos += dir;
+            last_dir = dir;
         }
-        last_a = a;
-        last_b = b;
+        last_state = state;
         last_a_ms = now;
     }
 
