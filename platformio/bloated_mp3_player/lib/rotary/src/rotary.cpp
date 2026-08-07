@@ -34,9 +34,13 @@ static uint8_t last_state = 3;
 static uint32_t last_a_ms = 0;
 static bool sw_last = true;
 static uint32_t sw_press_ms = 0;
-static bool sw_was_pressed = false;
 static bool sw_long_reported = false;
 static const uint16_t DEBOUNCE_US = 1000;
+static const uint32_t DOUBLE_CLICK_WINDOW_MS = 300;
+static uint32_t last_release_ms = 0;
+static bool double_clicked = false;
+static bool single_click_pending = false;
+static uint32_t single_click_ms = 0;
 static uint8_t last_raw_bits = 0xFF;
 
 void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
@@ -78,9 +82,21 @@ void Rotary::tick()
     }
 
     if (sw && !sw_last) {
-        sw_was_pressed = true;
+        // Button released: a press cycle is complete.
+        uint32_t now = millis();
         sw_long_reported = false;
         sw_press_ms = 0;
+        if (last_release_ms != 0 && (now - last_release_ms) <= DOUBLE_CLICK_WINDOW_MS) {
+            // Second release inside the window -> double click. Cancel the
+            // pending single click so it isn't reported as a plain press.
+            double_clicked = true;
+            single_click_pending = false;
+            last_release_ms = 0;
+        } else {
+            last_release_ms = now;
+            single_click_pending = true;
+            single_click_ms = now;
+        }
     }
     if (!sw && sw_last) {
         sw_press_ms = millis();
@@ -124,9 +140,19 @@ bool Rotary::raw_changed(uint8_t &a, uint8_t &b, uint8_t &sw)
 
 bool Rotary::was_pressed()
 {
-    bool p = sw_was_pressed;
-    sw_was_pressed = false;
-    return p;
+    if (single_click_pending && (millis() - single_click_ms) > DOUBLE_CLICK_WINDOW_MS) {
+        single_click_pending = false;
+        last_release_ms = 0;
+        return true;
+    }
+    return false;
+}
+
+bool Rotary::was_double_pressed()
+{
+    bool d = double_clicked;
+    double_clicked = false;
+    return d;
 }
 
 bool Rotary::was_long_pressed(uint32_t hold_ms)
