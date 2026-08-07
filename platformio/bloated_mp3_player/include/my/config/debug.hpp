@@ -46,6 +46,11 @@ namespace My
             static const bool UART_STICK_RAW = false;
             static const bool UART_STICK_RAW_SW = false;
 
+            // When true (default), the rotary decoder uses the full A/B
+            // quadrature state table; when false it falls back to the older
+            // single-edge (A-only) decode. Compare on noisy wiring.
+            static const bool ROTARY_QUADRATURE_DECODE = true;
+
             // ─── Serial profiling ─────────────────────────────────────────
             static const bool UART_PROFILING_ENABLED = false;
 

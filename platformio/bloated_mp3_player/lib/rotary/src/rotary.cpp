@@ -42,6 +42,16 @@ static uint32_t last_release_ms = 0;
 static uint8_t click_count = 0;
 static uint8_t last_raw_bits = 0xFF;
 
+// When true (default), direction is decoded from both A and B using the
+// quadrature transition table; when false, the older single-edge (A-only)
+// decode is used. Toggle to compare behaviour on noisy wiring.
+static bool quadrature_decode = true;
+
+void Rotary::set_quadrature_decode(bool enabled)
+{
+    quadrature_decode = enabled;
+}
+
 void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
 {
     pinA = a; pinB = b; pinSW = sw;
@@ -61,23 +71,39 @@ void Rotary::tick()
     bool sw = digitalRead(pinSW);
 
     uint8_t state = (a << 1) | b;
-    if (state != last_state && (now - last_a_ms) > DEBOUNCE_US) {
-        // Quadrature transition table: indexed by (old << 2) | new.
-        // Every valid single-step transition maps to +1 or -1; bounces and
-        // skipped double-transitions map to 0 and are ignored.
-        static const int8_t TRANS[16] = {
-            /* 00 -> */  0, -1, 1, 0,
-            /* 01 -> */  1,  0, 0, -1,
-            /* 10 -> */ -1,  0, 0, 1,
-            /* 11 -> */  0,  1, -1, 0,
-        };
-        int8_t dir = TRANS[(last_state << 2) | state];
-        if (dir != 0) {
-            encoder_pos += dir;
-            last_dir = dir;
+    if (quadrature_decode) {
+        if (state != last_state && (now - last_a_ms) > DEBOUNCE_US) {
+            // Quadrature transition table: indexed by (old << 2) | new.
+            // Every valid single-step transition maps to +1 or -1; bounces and
+            // skipped double-transitions map to 0 and are ignored.
+            static const int8_t TRANS[16] = {
+                /* 00 -> */  0, -1, 1, 0,
+                /* 01 -> */  1,  0, 0, -1,
+                /* 10 -> */ -1,  0, 0, 1,
+                /* 11 -> */  0,  1, -1, 0,
+            };
+            int8_t dir = TRANS[(last_state << 2) | state];
+            if (dir != 0) {
+                encoder_pos += dir;
+                last_dir = dir;
+            }
+            last_state = state;
+            last_a_ms = now;
         }
-        last_state = state;
-        last_a_ms = now;
+    } else {
+        if (a != last_a && (now - last_a_ms) > DEBOUNCE_US) {
+            if (b != a) {
+                encoder_pos++;
+                last_dir = 1;
+            } else {
+                encoder_pos--;
+                last_dir = -1;
+            }
+            last_a = a;
+            last_b = b;
+            last_state = state;
+            last_a_ms = now;
+        }
     }
 
     if (sw && !sw_last) {

@@ -180,6 +180,7 @@ void setup()
 
     // Input devices
     Rotary::begin(My::Config::Pins::ROTARY_PIN_A, My::Config::Pins::ROTARY_PIN_B, My::Config::Pins::ROTARY_SW_PIN);
+    Rotary::set_quadrature_decode(My::Config::Debug::ROTARY_QUADRATURE_DECODE);
     Ultrasonic::begin(My::Config::Pins::ULTRA_TRIG_PIN, My::Config::Pins::ULTRA_ECHO_PIN);
 
     // Bluetooth
