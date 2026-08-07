@@ -24,6 +24,7 @@
 
 #include "shared_instances.hpp"
 #include "my/config/pins.hpp"
+#include <Wire.h>
 
 namespace SharedInstances
 {
@@ -36,6 +37,18 @@ namespace SharedInstances
         My::Config::Pins::I2C_SDA_PIN,
         My::Config::Pins::I2C_SCL_PIN,
         My::Config::Delays::ENVIRONMENTAL_POLL_INTERVAL_MS
+    );
+    CharLcd::Lcd char_lcd(
+        Wire,
+        My::Config::CHAR_LCD_I2C_ADDR,
+        My::Config::CHAR_LCD_COLS,
+        My::Config::CHAR_LCD_ROWS
+    );
+    CharLcd::Lcd char_lcd_ticker(
+        Wire,
+        My::Config::CHAR_LCD2_I2C_ADDR,
+        My::Config::CHAR_LCD2_COLS,
+        My::Config::CHAR_LCD2_ROWS
     );
     Audio::Audio audio(
         My::Config::Pins::I2S_BCLK_PIN,

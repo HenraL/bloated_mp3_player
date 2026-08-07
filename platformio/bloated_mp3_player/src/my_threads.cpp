@@ -115,5 +115,17 @@ namespace My
             My::Config::Priorities::Serial::X_CORE_ID
         );
     }
+    void Threads::initialise_ticker()
+    {
+        xTaskCreatePinnedToCore(
+            My::Tasks::ticker,
+            My::Config::Priorities::Ticker::PROCESS_NAME,
+            My::Config::Priorities::Ticker::US_STACK_DEPTH,
+            NULL,
+            My::Config::Priorities::Ticker::TASK_PRIORITY,
+            &_handle_ticker,
+            My::Config::Priorities::Ticker::X_CORE_ID
+        );
+    }
 
 }

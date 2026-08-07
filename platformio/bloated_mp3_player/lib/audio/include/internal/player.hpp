@@ -41,6 +41,7 @@ namespace Audio
         bool is_loaded() const;
         bool track_finished() const;
         const char* last_diag() const;
+        const char* track_name() const;
 
     private:
         Audio      &_audio;
@@ -49,6 +50,7 @@ namespace Audio
         bool        _finished;
         int16_t     _tick_buf[PLAYER_MAX_FRAMES * 2];
         char        _last_diag[256];
+        char        _track_name[128];
     };
 
 }

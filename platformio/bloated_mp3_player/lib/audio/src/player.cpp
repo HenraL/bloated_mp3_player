@@ -69,6 +69,15 @@ namespace Audio
             return false;
         }
 
+        // Remember the human-friendly filename for the UI (strip any
+        // leading path components so a 16x2 has a chance of seeing it).
+        {
+            const char *slash = std::strrchr(path, '/');
+            const char *base = slash ? slash + 1 : path;
+            std::strncpy(_track_name, base, sizeof(_track_name) - 1);
+            _track_name[sizeof(_track_name) - 1] = '\0';
+        }
+
         _audio.setSampleRate(_decoder->sample_rate());
         _loading = false;
         return true;
@@ -82,6 +91,7 @@ namespace Audio
             delete _decoder;
             _decoder = nullptr;
         }
+        _track_name[0] = '\0';
     }
 
     int Player::tick()
@@ -150,6 +160,11 @@ namespace Audio
     const char* Player::last_diag() const
     {
         return _last_diag;
+    }
+
+    const char* Player::track_name() const
+    {
+        return _track_name;
     }
 
 }

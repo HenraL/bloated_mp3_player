@@ -90,6 +90,15 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace Serial
+            // Vogon ticker (second 1602A). Does its own slow thing on card 1,
+            // the same core as the LED and UI so the I2C traffic is audio/free.
+            namespace Ticker
+            {
+                static const char PROCESS_NAME[] = "VogonPanel";
+                static const uint32_t US_STACK_DEPTH = 2048;
+                static const UBaseType_t TASK_PRIORITY = 1;
+                static const BaseType_t X_CORE_ID = 1;
+            } // namespace Ticker
         } // namespace Priorities
     } // namespace Config
 } // namespace My

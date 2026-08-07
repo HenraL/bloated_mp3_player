@@ -148,6 +148,16 @@ void setup()
     // I2C sensors 
     Wire.begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN);
 
+    // Character LCD (PCF8574 backpack on the same I2C bus) -- boot notice
+    SharedInstances::char_lcd.begin();
+    SharedInstances::char_lcd.backlight(true);
+    SharedInstances::char_lcd.print_at(0, 0, "Bloated MP3");
+    SharedInstances::char_lcd.print_at(0, 1, "DON'T PANIC");
+
+    // Second 1602A: the ticker panel, brought online with its own motto.
+    SharedInstances::char_lcd_ticker.begin();
+    SharedInstances::char_lcd_ticker.backlight(true);
+
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
         SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
@@ -197,6 +207,7 @@ void setup()
     SharedInstances::my_threads.initialise_led();
     // SharedInstances::my_threads.initialise_matrix();
     SharedInstances::my_threads.initialise_input();
+    SharedInstances::my_threads.initialise_ticker();
 
     SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
     if (My::Config::Debug::UART_PROFILING_ENABLED) {

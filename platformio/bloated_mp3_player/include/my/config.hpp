@@ -68,5 +68,20 @@ namespace My
         static const uint8_t AUDIO_VOLUME_MIN = 0;
         static const uint8_t AUDIO_VOLUME_DEFAULT = 100;
 
+        // ─── Character LCD (PCF8574 backpack, HD44780) ─────────────────────────
+        // Info panel: 2004A (4 rows x 20 cols) at the default 0x27.
+        static const uint8_t CHAR_LCD_I2C_ADDR = 0x27;
+        static const uint8_t CHAR_LCD_COLS = 20;
+        static const uint8_t CHAR_LCD_ROWS = 4;
+        static const uint32_t CHAR_LCD_REFRESH_MS = 500;
+
+        // Fun panel: 1602A (2 rows x 16 cols). All backpacks ship at 0x27;
+        // bridge the A0 pad on this one so it becomes 0x26 and both can
+        // share the same I2C bus (PCF8574A would instead bridge to 0x3E).
+        static const uint8_t CHAR_LCD2_I2C_ADDR = 0x26;
+        static const uint8_t CHAR_LCD2_COLS = 16;
+        static const uint8_t CHAR_LCD2_ROWS = 2;
+        static const uint32_t CHAR_LCD2_REFRESH_MS = 400;
+
     } // namespace Config
 } // namespace My

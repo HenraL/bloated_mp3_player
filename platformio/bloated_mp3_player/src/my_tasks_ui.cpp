@@ -64,6 +64,34 @@ namespace My
             }
         }
 
+        // ─── Character LCD (cash-register display) ─────────────────────────
+        static void refresh_char_lcd(const Environmental::Reading *env, bool read, uint32_t *last_refresh)
+        {
+            uint32_t now = millis();
+            if (now - *last_refresh < My::Config::CHAR_LCD_REFRESH_MS) {
+                return;
+            }
+            *last_refresh = now;
+
+            const char *track = SharedInstances::player.track_name();
+            if (track && track[0]) {
+                SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", track);
+            } else {
+                SharedInstances::char_lcd.print_at(0, 0, "%-20s", "No track");
+            }
+
+            if (read) {
+                SharedInstances::char_lcd.print_at(0, 1, "T:%.1f H:%.0f%%", env->temperature, env->humidity);
+                SharedInstances::char_lcd.print_at(0, 2, "P:%.0fhPa", env->pressure);
+            } else {
+                SharedInstances::char_lcd.print_at(0, 1, "No sensor data");
+            }
+
+SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%lus",
+                (unsigned long)(SharedInstances::audio.getVolume() * 100 / My::Config::AUDIO_VOLUME_MAX),
+                (unsigned long)(millis() / 1000));
+        }
+
         // ─── UI Task ──────────────────────────────────────────────────────────
         void ui(void *pvParameters)
         {
@@ -74,6 +102,7 @@ namespace My
             Environmental::Reading env;
             bool read = false;
             uint32_t last_poll = 0;
+            uint32_t last_char_lcd = 0;
 
 while (true) {
                 PROFILE_BLOCK("ui_tick");
@@ -83,6 +112,7 @@ while (true) {
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
 
                 refresh_environemental_values(&env, &read, &last_poll);
+                refresh_char_lcd(&env, read, &last_char_lcd);
 
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::UPTIME_X, My::Config::DisplayLayout::UPTIME_Y, "Uptime: %lus", millis() / 1000);
 

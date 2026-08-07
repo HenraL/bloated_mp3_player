@@ -24,6 +24,7 @@
 
 #pragma once
 #include <audio.hpp>
+#include <char_lcd.hpp>
 #include <environmental.hpp>
 #include <leds.hpp>
 #include <uimatrix.hpp>
@@ -39,6 +40,8 @@ namespace SharedInstances
     extern My::Serial serial;
     extern My::Threads my_threads;
     extern Environmental::Environmental environmental;
+    extern CharLcd::Lcd char_lcd;
+    extern CharLcd::Lcd char_lcd_ticker;
     extern Audio::Audio audio;
     extern Audio::Player player;
 }
