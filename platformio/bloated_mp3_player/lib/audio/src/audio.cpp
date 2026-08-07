@@ -238,8 +238,8 @@ namespace Audio
             for (size_t i = 0; i < chunk; i++)
             {
                 size_t idx = (written + i) * 2;
-                mix_buf[i * 2] = (int16_t)(((int32_t)samples[idx] * _volume) >> VOLUME_SHIFT);
-                mix_buf[i * 2 + 1] = (int16_t)(((int32_t)samples[idx + 1] * _volume) >> VOLUME_SHIFT);
+                mix_buf[i * 2] = samples[idx];
+                mix_buf[i * 2 + 1] = samples[idx + 1];
             }
 
             _ring_write(mix_buf, chunk * 2);
@@ -271,6 +271,12 @@ namespace Audio
             size_t chunk = avail > 512 ? 512 : avail;
             size_t n = _ring_read(out_buf, chunk);
             if (n == 0) continue;
+
+            uint8_t vol = _volume;
+            for (size_t i = 0; i < n; i++)
+            {
+                out_buf[i] = (int16_t)(((int32_t)out_buf[i] * vol) >> VOLUME_SHIFT);
+            }
 
             size_t to_send = n * sizeof(int16_t);
             uint8_t *ptr = (uint8_t *)out_buf;
