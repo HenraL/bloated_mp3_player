@@ -31,6 +31,20 @@ This is a multithreaded embedded project that started life as a humble MP3 playe
 
 It runs on an ESP32-S3 (the electronic equivalent of an Infinite Improbability Drive, only slightly less likely to turn you into a potted plant or a philosophical whale), uses FreeRTOS under the hood (courtesy of the Arduino framework), and demonstrates that you can, in fact, teach concurrency by strapping seventeen unrelated sensors to a single I²C bus and hoping for the best.
 
+## Contents
+
+> *"Please read the signs before panic."*
+
+- [About](#about) — why a Vogon would raise an eyebrow
+- [Disclaimer](#disclaimer) — we tried to warn you
+- [Dependencies](#dependencies) — the unhealthy soil it all grows in
+- [Components Used](#components-used) — the BOM of doomed hardware
+- [Divorce proceedings](#divorce-proceedings) — a strained peripheral marriage
+- [How to Flash](#how-to-flash) — the very real thermonuclear toolchain
+- [How to Use](#how-to-use) — but there is no off switch
+- [Bonus Tools](#bonus-tools) — flamegraphs & baked fonts
+- [License](#license) — so long, and thanks for all the fish
+
 ## About
 
 > *"The ships hung in the sky in much the same way that bricks don't."*
@@ -99,6 +113,8 @@ The following have been sacrificed on the altar of concurrency:
 |---------|------|-----------|----------|------|
 | :brain: The brains | Freenove ESP32-S3-WROOM CAM — Dual-core 32-bit 240 MHz | 20.19 | 1 | [AliExpress](https://aliexpress.com/item/1005004960637276.html) |
 | :tv: Display | Lcd12864 12864-06D — COG dot matrix, SPI, with Chinese font | 6.19 | 1 | [AliExpress](https://aliexpress.com/item/1005009024477658.html) |
+| :receipt: Cash-register display | TZT LCD2004+I2C — 2004A 20x4 HD44780 char LCD with I2C adapter soldered on the back | 4.85 | 1 | [AliExpress](https://aliexpress.com/item/1005004726086089.html) |
+| :scroll: Vogon ticker | LCD1602+I2C Module — 16x2 HD44780 char LCD, PCF8574T IIC interface, 5 V (blue, I2C soldered on the back) | 2.63 | 1 | [AliExpress](https://aliexpress.com/item/1005006170395488.html) |
 | :thermometer: Weather station | AHT20+BMP280 — Temperature, humidity & air pressure | 1.20 | 1 | [AliExpress](https://aliexpress.com/item/1005007702473893.html) |
 | :triangular_ruler: Distance | HC-SR04 — Ultrasonic "how far is the wall" sensor | 1.41 | 1 | [AliExpress](https://aliexpress.com/item/1005007849944952.html) |
 | :arrows_counterclockwise: User input | EC11 Rotary Encoder with switch — 20 positions, knob shaft | 3.49 | 1 | [AliExpress](https://aliexpress.com/item/1005004908084537.html) |
@@ -107,9 +123,19 @@ The following have been sacrificed on the altar of concurrency:
 | :flashlight: Light show | WS2812B 16×16 RGB LED matrix — individually addressable chaos | 14.39 | 1 | [AliExpress](https://aliexpress.com/item/1005005394534715.html) |
 | :floppy_disk: Storage | Micro SD Card Module — SPI level-shifted | 1.24 | 1 | [AliExpress](https://aliexpress.com/item/1005010653353565.html) |
 
-**Total carnage:** ~€52.58 plus fuses, caps, and whatever else you inevitably forgot.
+**Total carnage:** ~€62.06 plus fuses, caps, and whatever else you inevitably forgot.
+
+The two character displays (2004A + 1602A) arrive with their I2C adapter boards pre-soldered on the back, so no extra PCF8574 wiring is needed — just VCC/GND/SDA/SCL to the bus. Mind the addresses though: they ship defaulted to 0x27, so the second one needs the A0 pad bridged (0x26) to live on the same bus as the first.
 
 For fuses, capacitors, resistors, and the 5 V → 3.3 V regulators, see the schematic. You probably have them in a drawer somewhere. The author assumes no responsibility for the state of that drawer.
+
+### Divorce proceedings
+
+> *"I am the President of the Galaxy. I'm not in the mood for a diplomatic relationship."*
+
+Despite our best efforts, the development prototype has filed for divorce with two of its peripherals: the STN 128×64 LCD and the WS2812B matrix have gone silent (presumably due to wiring disagreements). Whether the separation is permanent or a trial separation pending re-cabling remains to be seen — a second round of arbitration will be scheduled once the new I2C character LCDs are in place.
+
+There is, however, a sliver of hope: the firmware driving both of them is still running, faithfully poking the pins every task tick — so if the wiring ever is reconciled, the LCD and matrix may snap back to life like nothing happened. No firmware update required. Just cable therapy. If a reconciliation is announced, this entry will be updated accordingly.
 
 ## How to Flash
 
