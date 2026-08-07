@@ -35,6 +35,7 @@ namespace Rotary
     int8_t get_direction();
     bool was_pressed();
     bool was_double_pressed();
+    bool was_triple_pressed();
     bool was_long_pressed(uint32_t hold_ms = 1000);
     int16_t get_position();
     void set_position(int16_t pos);

@@ -129,6 +129,17 @@ namespace My
             }
         }
 
+        static void handle_rotary_triple_click(uint32_t *track_index, uint32_t *total_track_count)
+        {
+            if (Rotary::was_triple_pressed()) {
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, "[INPUT] Rotated switch was triple pressed, going back a track.");
+                if (*total_track_count > 0) {
+                    *track_index = (*track_index + *total_track_count - 1) % *total_track_count;
+                    play_track(track_index);
+                }
+            }
+        }
+
         static void handle_ultrasonic_press(void)
         {
             if (Ultrasonic::is_pressed()) {
@@ -170,6 +181,7 @@ namespace My
                 handle_rotary_volume();
                 handle_audio_play_pause();
                 handle_rotary_double_click(&track_index, &total_track_count);
+                handle_rotary_triple_click(&track_index, &total_track_count);
                 handle_ultrasonic_press();
                 handle_ultrasonic_swipe();
 

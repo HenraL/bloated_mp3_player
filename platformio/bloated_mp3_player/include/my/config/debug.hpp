@@ -41,6 +41,7 @@ namespace My
             static const bool UART_STICK_TRACK_INDEX = false;
             static const bool UART_STICK_PRESSED = false;
             static const bool UART_STICK_DOUBLE_PRESSED = false;
+            static const bool UART_STICK_TRIPLE_PRESSED = false;
             static const bool UART_STICK_VOLUME = true;
             static const bool UART_STICK_RAW = false;
             static const bool UART_STICK_RAW_SW = false;

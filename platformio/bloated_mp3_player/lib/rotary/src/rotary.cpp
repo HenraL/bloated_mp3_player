@@ -35,12 +35,11 @@ static uint32_t last_a_ms = 0;
 static bool sw_last = true;
 static uint32_t sw_press_ms = 0;
 static bool sw_long_reported = false;
+static bool sw_was_long_hold = false;
 static const uint16_t DEBOUNCE_US = 1000;
-static const uint32_t DOUBLE_CLICK_WINDOW_MS = 300;
+static const uint32_t CLICK_WINDOW_MS = 300;
 static uint32_t last_release_ms = 0;
-static bool double_clicked = false;
-static bool single_click_pending = false;
-static uint32_t single_click_ms = 0;
+static uint8_t click_count = 0;
 static uint8_t last_raw_bits = 0xFF;
 
 void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
@@ -86,16 +85,22 @@ void Rotary::tick()
         uint32_t now = millis();
         sw_long_reported = false;
         sw_press_ms = 0;
-        if (last_release_ms != 0 && (now - last_release_ms) <= DOUBLE_CLICK_WINDOW_MS) {
-            // Second release inside the window -> double click. Cancel the
-            // pending single click so it isn't reported as a plain press.
-            double_clicked = true;
-            single_click_pending = false;
+        if (sw_was_long_hold) {
+            // Long hold, not a click sequence.
+            sw_was_long_hold = false;
+            click_count = 0;
             last_release_ms = 0;
-        } else {
+        } else if (click_count == 0 || (now - last_release_ms) > CLICK_WINDOW_MS) {
+            // First click of a new sequence.
+            click_count = 1;
             last_release_ms = now;
-            single_click_pending = true;
-            single_click_ms = now;
+        } else {
+            // Another click inside the window: count it (cap at 3, anything
+            // beyond the third in a single sequence is treated as a comma).
+            if (click_count < 3) {
+                click_count++;
+            }
+            last_release_ms = now;
         }
     }
     if (!sw && sw_last) {
@@ -103,6 +108,7 @@ void Rotary::tick()
     }
     if (!sw && !sw_last && sw_press_ms > 0 && (millis() - sw_press_ms) > 1000 && !sw_long_reported) {
         sw_long_reported = true;
+        sw_was_long_hold = true;
     }
     sw_last = sw;
 }
@@ -138,11 +144,23 @@ bool Rotary::raw_changed(uint8_t &a, uint8_t &b, uint8_t &sw)
     return true;
 }
 
+static uint8_t pending_click_count()
+{
+    if (click_count == 0) return 0;
+    if ((millis() - last_release_ms) <= CLICK_WINDOW_MS) return 0;
+    return click_count;
+}
+
+static void clear_clicks()
+{
+    click_count = 0;
+    last_release_ms = 0;
+}
+
 bool Rotary::was_pressed()
 {
-    if (single_click_pending && (millis() - single_click_ms) > DOUBLE_CLICK_WINDOW_MS) {
-        single_click_pending = false;
-        last_release_ms = 0;
+    if (pending_click_count() == 1) {
+        clear_clicks();
         return true;
     }
     return false;
@@ -150,9 +168,20 @@ bool Rotary::was_pressed()
 
 bool Rotary::was_double_pressed()
 {
-    bool d = double_clicked;
-    double_clicked = false;
-    return d;
+    if (pending_click_count() == 2) {
+        clear_clicks();
+        return true;
+    }
+    return false;
+}
+
+bool Rotary::was_triple_pressed()
+{
+    if (pending_click_count() == 3) {
+        clear_clicks();
+        return true;
+    }
+    return false;
 }
 
 bool Rotary::was_long_pressed(uint32_t hold_ms)
