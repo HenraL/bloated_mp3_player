@@ -47,9 +47,20 @@ static uint8_t last_raw_bits = 0xFF;
 // decode is used. Toggle to compare behaviour on noisy wiring.
 static bool quadrature_decode = true;
 
+// When true, the decoded direction is inverted. Wiring-dependent: with the
+// pot's A/B swapped (or reversed), the encoder's sense is flipped against
+// human logic, so this lets you swap the direction in one line instead of
+// rewiring. Default false; set from the application config at init.
+static bool direction_inverted = false;
+
 void Rotary::set_quadrature_decode(bool enabled)
 {
     quadrature_decode = enabled;
+}
+
+void Rotary::set_direction_inverted(bool inverted)
+{
+    direction_inverted = inverted;
 }
 
 void Rotary::begin(uint8_t a, uint8_t b, uint8_t sw)
@@ -142,6 +153,10 @@ void Rotary::tick()
 int8_t Rotary::get_direction()
 {
     int8_t d = last_dir;
+    if (direction_inverted && d != 0)
+    {
+        d = (int8_t)-d;
+    }
     last_dir = 0;
     return d;
 }

@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 13:29:47 07-08-2026
+* LAST Modified: 20:14:33 07-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -50,6 +50,11 @@ namespace My
             // quadrature state table; when false it falls back to the older
             // single-edge (A-only) decode. Compare on noisy wiring.
             static const bool ROTARY_QUADRATURE_DECODE = true;
+
+            // When true, the pot direction is inverted. Use this if turning
+            // the knob clockwise lowers the volume (A/B swapped or reversed
+            // in your wiring) — set true and reflash instead of rewiring.
+            static const bool ROTARY_DIRECTION_INVERTED = true;
 
             // ─── Serial profiling ─────────────────────────────────────────
             static const bool UART_PROFILING_ENABLED = false;
