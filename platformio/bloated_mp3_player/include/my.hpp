@@ -28,3 +28,4 @@
 #include "my/config.hpp"
 #include "my/serial.hpp"
 #include "my/threads.hpp"
+#include "my/infos.hpp"

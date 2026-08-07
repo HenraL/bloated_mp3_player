@@ -12,6 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: my_config_vogon_panel.cpp
 * CREATION DATE: 07-08-2026
+* LAST Modified: 1:36:23 08-08-2026
 * DESCRIPTION:
 * The Vogon ticker banner table. Each banner is a run of "frames": a
 * scrolling text frame plus a dwell. The task walks this list exactly
@@ -90,10 +91,10 @@ static const My::Config::Structures::TickerStep banner_42[] PROGMEM =
 // ─────────────────────────────────────────────────────────────────────────
 // The banner sequence. Ends with a {nullptr, 0} sentinel.
 const My::Config::Structures::TickerMessage My::Config::ticker_messages[] PROGMEM = {
-    { banner_ships,     sizeof(banner_ships)     / sizeof(banner_ships[0])     },
-    { banner_towel,     sizeof(banner_towel)     / sizeof(banner_towel[0])     },
-    { banner_universe,  sizeof(banner_universe)  / sizeof(banner_universe[0])  },
-    { banner_42,        sizeof(banner_42)        / sizeof(banner_42[0])        },
+    { banner_ships,     sizeof(banner_ships) / sizeof(banner_ships[0])     },
+    { banner_towel,     sizeof(banner_towel) / sizeof(banner_towel[0])     },
+    { banner_universe,  sizeof(banner_universe) / sizeof(banner_universe[0])  },
+    { banner_42,        sizeof(banner_42) / sizeof(banner_42[0])        },
 
     { nullptr, 0 }
 };

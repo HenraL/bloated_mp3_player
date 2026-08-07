@@ -23,6 +23,7 @@
 */
 
 #include "my/tasks.hpp"
+#include "my/infos.hpp"
 #include "shared_instances.hpp"
 #include <matrix.hpp>
 
@@ -36,7 +37,7 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(50);
-            SharedInstances::serial.serial_print("[MATRIX] The array of lights that burn twice as bright...");
+            SharedInstances::serial.serial_print(My::Infos::matrix_light_twice_bright);
 
             while (true) {
                 Matrix::tick();

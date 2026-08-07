@@ -24,6 +24,7 @@
 #include <audio.hpp>
 #include <profiling.hpp>
 #include "my/tasks.hpp"
+#include "my/infos.hpp"
 #include "shared_instances.hpp"
 
 namespace My
@@ -33,7 +34,7 @@ namespace My
 
         void audio(void *pvParameters)
         {
-            SharedInstances::serial.serial_print("[Audio] So long, and thanks for all the fish.");
+            SharedInstances::serial.serial_print(My::Infos::audio_so_long_fish);
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(25);
@@ -49,7 +50,7 @@ namespace My
                 Audio::Status status = SharedInstances::audio.getStatus();
                 if (status != last_status) {
                     SharedInstances::serial.serial_print(
-                        "[Audio] status -> %s",
+                        My::Infos::audio_status_change,
                         status == Audio::Playing ? "playing"
                         : status == Audio::Paused  ? "paused"
                         :                            "stopped"
@@ -60,7 +61,7 @@ namespace My
                 if (SharedInstances::audio.output_faulted() && !fault_reported) {
                     fault_reported = true;
                     SharedInstances::serial.serial_print(
-                        "[Audio] I2S output stalled (err 0x%lx) -- DMA not draining, no sound",
+                        My::Infos::audio_i2s_stalled,
                         (unsigned long)SharedInstances::audio.last_error()
                     );
                 }
@@ -68,7 +69,7 @@ namespace My
                 if (tick_count % 50 == 0) {
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_AUDIO_STACK_HIGH_WATER,
-                        "[Audio] Stack high-water mark: %u bytes free",
+                        My::Infos::audio_stack_hwm,
                         (unsigned int)uxTaskGetStackHighWaterMark(NULL)
                     );
                 }
@@ -90,13 +91,13 @@ namespace My
                     if (SharedInstances::player.is_loaded()) {
                         int tick_r = SharedInstances::player.tick();
                         if (tick_r <= 0) {
-                            SharedInstances::serial.serial_print("[Audio] tick=%d [%s]", tick_r, SharedInstances::player.last_diag());
+                            SharedInstances::serial.serial_print(My::Infos::audio_tick_failed, tick_r, SharedInstances::player.last_diag());
                         }
                     } else {
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_NOT_LOADED, "[Audio] No players are loaded.");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_NOT_LOADED, My::Infos::audio_no_player);
                     }
                 } else {
-                    SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_NOT_PLAYING, "[Audio] Audio is not playing.");
+                    SharedInstances::serial.serial_debug(My::Config::Debug::UART_AUDIO_NOT_PLAYING, My::Infos::audio_not_playing);
                 }
 
                 vTaskDelayUntil(&xLastWake, freq);

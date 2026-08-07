@@ -100,6 +100,15 @@ namespace My
             // code (continuous refresh) from flicker caused by wiring.
             static const bool LCD_ONESHOT_TEST_ENABLED = true;
 
+            // Character LCD (PCF8574 info panel) debug lines
+            static const bool UART_CHAR_LCD_REFRESH = false;
+            static const bool UART_CHAR_LCD_I2C_ERROR = true;
+
+            // Vogon ticker (second character LCD) debug lines
+            static const bool UART_TICKER_STANZA_SWITCH = false;
+            static const bool UART_TICKER_EOM_ENTER = false;
+            static const bool UART_TICKER_I2C_ERROR = true;
+
         } // namespace Debug
 
     } // namespace Config

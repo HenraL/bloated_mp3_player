@@ -26,6 +26,7 @@
 #include <ultrasonic.hpp>
 #include <profiling.hpp>
 #include "my/tasks.hpp"
+#include "my/infos.hpp"
 #include "shared_instances.hpp"
 
 namespace My
@@ -39,22 +40,22 @@ namespace My
             const SDCard::TrackInfo *ti = NULL;
 
             if (!SDCard::is_mounted()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_MOUNTED, "[INPUT] sd card is not mounted.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_MOUNTED, My::Infos::input_sd_not_mounted);
                 return;
             }
             n = SDCard::total_tracks();
             if (n == 0) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_NO_TRACKS, "[INPUT] There are no tracks to play.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_NO_TRACKS, My::Infos::input_no_tracks);
                 return;
             }
             if (*track_index >= n) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_ALL_TRACKS_PLAYED, "[INPUT] we have played all the tracks and will reset the current track index.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_ALL_TRACKS_PLAYED, My::Infos::input_all_tracks_played);
                 *track_index = 0;
             }
-            SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX, "[INPUT] Playing track %lu", *track_index);
+            SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX, My::Infos::input_playing_track, *track_index);
             ti = SDCard::get_track(*track_index);
             if (ti) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_AUDIO_PATH, "[INPUT] filepath: %s", ti->path);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_AUDIO_PATH, My::Infos::input_filepath, ti->path);
                 // Do not stop() here: keep I2S running across track changes so
                 // the previous track's tail drains out and the next track's PCM
                 // appends seamlessly, without an unreliable restart cycle.
@@ -68,14 +69,14 @@ namespace My
             uint8_t a = 0;
             uint8_t b = 0;
             uint8_t sw = 0;
-            if (Rotary::raw_changed(a, b, sw)) {
+if (Rotary::raw_changed(a, b, sw)) {
                 SharedInstances::serial.serial_debug(
                     My::Config::Debug::UART_STICK_RAW,
-                    "[INPUT] RAW A=%u B=%u", a, b
+                    My::Infos::input_raw_a_b, a, b
                 );
                 SharedInstances::serial.serial_debug(
                     My::Config::Debug::UART_STICK_RAW_SW,
-                    "[INPUT] RAW SW=%u", sw
+                    My::Infos::input_raw_sw, sw
                 );
             }
         }
@@ -84,7 +85,7 @@ namespace My
         {
             int8_t dir = Rotary::get_direction();
             if (dir != 0) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, "[INPUT] Clicky potentiometer value: %d", dir);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, My::Infos::input_clicky_value, dir);
                 uint8_t vol = SharedInstances::audio.getVolume();
                 if (dir > 0) {
                     if (vol <= (My::Config::AUDIO_VOLUME_MAX - My::Config::AUDIO_VOLUME_STEP)) {
@@ -99,17 +100,17 @@ namespace My
                         vol = My::Config::AUDIO_VOLUME_MIN;
                     }
                 }
-                SharedInstances::audio.setVolume(vol);
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_VOLUME, "[INPUT] Volume: %u", vol);
+SharedInstances::audio.setVolume(vol);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_VOLUME, My::Infos::input_volume, vol);
             } else {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION_ZERO, "[INPUT] The clicky pot has not been turned.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION_ZERO, My::Infos::input_clicky_zero);
             }
         }
 
         static void handle_audio_play_pause(void)
         {
             if (Rotary::was_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_PRESSED, "[INPUT] The rotary switch was pressed.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_PRESSED, My::Infos::input_switch_pressed);
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     SharedInstances::audio.pause();
                 } else {
@@ -121,7 +122,7 @@ namespace My
         static void handle_rotary_double_click(uint32_t *track_index, uint32_t *total_track_count)
         {
             if (Rotary::was_double_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DOUBLE_PRESSED, "[INPUT] The rotary switch was double pressed, skipping track.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DOUBLE_PRESSED, My::Infos::input_double_pressed);
                 if (*total_track_count > 0) {
                     *track_index = (*track_index + 1) % *total_track_count;
                     play_track(track_index);
@@ -132,7 +133,7 @@ namespace My
         static void handle_rotary_triple_click(uint32_t *track_index, uint32_t *total_track_count)
         {
             if (Rotary::was_triple_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, "[INPUT] Rotated switch was triple pressed, going back a track.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, My::Infos::input_triple_pressed);
                 if (*total_track_count > 0) {
                     *track_index = (*track_index + *total_track_count - 1) % *total_track_count;
                     play_track(track_index);
@@ -143,7 +144,7 @@ namespace My
         static void handle_ultrasonic_press(void)
         {
             if (Ultrasonic::is_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_PRESSED, "[INPUT] ultrasonic is pressed.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_PRESSED, My::Infos::input_ultrasonic_pressed);
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     SharedInstances::audio.pause();
                 } else {
@@ -155,9 +156,9 @@ namespace My
         static void handle_ultrasonic_swipe(void)
         {
             int8_t swipe = Ultrasonic::get_swipe_dir();
-            SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPE_VALUE, "[INPUT] Ultrasonic swipe value: %d", swipe);
+            SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPE_VALUE, My::Infos::input_swipe_value, swipe);
             if (swipe > 0) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPED, "[INPUT] Ultrasonic was swiped.");
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPED, My::Infos::input_swiped);
                 SharedInstances::audio.stop();
             }
         }
@@ -169,7 +170,7 @@ namespace My
             uint32_t total_track_count = SDCard::total_tracks();
             uint32_t track_index = 0;
 
-            SharedInstances::serial.serial_print("[INPUT] Don't Panic.");
+            SharedInstances::serial.serial_print(My::Infos::input_dont_panic);
             play_track(&track_index);
 
             while (true) {
@@ -186,7 +187,7 @@ namespace My
                 handle_ultrasonic_swipe();
 
                 if (SharedInstances::player.track_finished()) {
-                    SharedInstances::serial.serial_print("[INPUT] Track finished, advancing to the next track.");
+                    SharedInstances::serial.serial_print(My::Infos::input_track_finished);
                     total_track_count = SDCard::total_tracks();
                     track_index = (track_index + 1) % total_track_count;
                     play_track(&track_index);

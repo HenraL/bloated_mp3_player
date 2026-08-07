@@ -38,6 +38,7 @@ namespace CharLcd
         , _row(0)
         , _display_control(0)
         , _function_set(0)
+        , _last_i2c_error(0)
     {
     }
 
@@ -58,9 +59,11 @@ namespace CharLcd
 
     void Lcd::_pulse_enable(uint8_t data)
     {
+        uint8_t write_error = 0;
+        _last_i2c_error = 0;
         _wire->beginTransmission(_addr);
         _wire->write(data | CharLcd::LCD_EN_BIT);
-        _wire->endTransmission();
+        write_error = _wire->endTransmission();
         delayMicroseconds(CharLcd::PULSE_US);
         if (CharLcd::EN_HOLD_MS > 0)
         {
@@ -68,7 +71,18 @@ namespace CharLcd
         }
         _wire->beginTransmission(_addr);
         _wire->write(data);
-        _wire->endTransmission();
+        if (write_error == 0)
+        {
+            write_error = _wire->endTransmission();
+        }
+        else
+        {
+            _wire->endTransmission();
+        }
+        if (write_error != 0)
+        {
+            _last_i2c_error = write_error;
+        }
     }
 
     void Lcd::_send(uint8_t value, uint8_t mode)

@@ -26,6 +26,7 @@
 #include <audio.hpp>
 #include <profiling.hpp>
 #include "my/tasks.hpp"
+#include "my/infos.hpp"
 #include "shared_instances.hpp"
 
 
@@ -39,7 +40,7 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(200);
-            SharedInstances::serial.serial_print("[Sensor] Time is an illusion. Lunchtime doubly so.");
+            SharedInstances::serial.serial_print(My::Infos::sensor_time_illusion);
 
             while (true) {
                 PROFILE_BLOCK("sensor_tick");
@@ -50,16 +51,16 @@ namespace My
 
                 switch (g) {
                     case IMU::Gesture::Shake:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_SHAKE, "[Sensor] Shake");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_SHAKE, My::Infos::sensor_shake);
                         // Audio::stop();
                         // Audio::play_raw(nullptr, 0);
                         break;
                     case IMU::Gesture::TiltLeft:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_LEFT, "[Sensor] TiltLeft");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_LEFT, My::Infos::sensor_tilt_left);
                         // Audio::pause();
                         break;
                     case IMU::Gesture::TiltRight:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_RIGHT, "[Sensor] TiltRight");
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_RIGHT, My::Infos::sensor_tilt_right);
                         // Audio::resume();
                         break;
                     default:

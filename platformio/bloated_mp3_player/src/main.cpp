@@ -83,7 +83,7 @@ void boot_screen()
 bool discover_audio_tracks()
 {
     if (!SDCard::is_mounted()) {
-        SharedInstances::serial.serial_print("WARN: SD card not mounted, not scanning for audio tracks.");
+        SharedInstances::serial.serial_print(My::Infos::warn_sd_not_mounted);
         return false;
     }
     SharedInstances::lcd.clear();
@@ -91,9 +91,9 @@ bool discover_audio_tracks()
     SharedInstances::lcd.printAt("Booting...", My::Config::DisplayLayout::BOOTING_X, My::Config::DisplayLayout::BOOTING_Y);
     SharedInstances::lcd.printAt("Discovering music...", My::Config::DisplayLayout::AUDIO_DISCOVERING_X, My::Config::DisplayLayout::AUDIO_DISCOVERING_Y);
     SharedInstances::lcd.display();
-    SharedInstances::serial.serial_print("[SD] Scanning for audio tracks...");
+    SharedInstances::serial.serial_print(My::Infos::sd_scanning);
     bool ok = SDCard::scan_tracks("/");
-    SharedInstances::serial.serial_print("[SD] Found %lu tracks.", SDCard::total_tracks());
+    SharedInstances::serial.serial_print(My::Infos::sd_found, SDCard::total_tracks());
     return ok;
 }
 
@@ -117,8 +117,8 @@ void setup()
     Profiler::set_enabled(My::Config::Debug::UART_PROFILING_ENABLED);
 
     // Display boot message
-    SharedInstances::serial.serial_print("Bloated MP3 Player -- DON'T PANIC");
-    SharedInstances::serial.serial_print("The ships hung in the sky in much the same way that bricks don't.");
+    SharedInstances::serial.serial_print(My::Infos::boot_title);
+    SharedInstances::serial.serial_print(My::Infos::quote_ships_bricks);
 
     // Onboard LED – init first, then colour
     SharedInstances::onboard.init();
@@ -160,30 +160,30 @@ void setup()
 
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
-        SharedInstances::serial.serial_print("WARN: AHT20+BMP280 -- the answer is 42, but the sensor is 0. Gone where the Vogons would send a badly-written poem.");
+        SharedInstances::serial.serial_print(My::Infos::warn_environmental);
         delay(My::Config::Delays::ENVIRONMENTAL_INITIALISATION_ISSUE_MS);
     }
 
     // IMU
     if (!IMU::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
-        SharedInstances::serial.serial_print("WARN: MPU6050 -- we apologize for the inconvenience.");
+        SharedInstances::serial.serial_print(My::Infos::warn_imu);
         delay(My::Config::Delays::IMU_INITIALISATION_FAILURE_MS);
     }
 
     // SD card (SDMMC 1-bit mode on hardware pins 38/39/40)
     if (!SDCard::begin(My::Config::Pins::SDMMC_CLK, My::Config::Pins::SDMMC_CMD, My::Config::Pins::SDMMC_D0)) {
-        SharedInstances::serial.serial_print("WARN: SD card -- a common mistake that people make when trying to design something completely foolproof is to underestimate the ingenuity of complete fools.");
+        SharedInstances::serial.serial_print(My::Infos::warn_sd_card);
         delay(My::Config::Delays::SD_CARD_NOT_PRESENT_MESSAGE_MS);
     } else {
         if (!discover_audio_tracks()) {
-            SharedInstances::serial.serial_print("WARN: No music found -- ");
+            SharedInstances::serial.serial_print(My::Infos::warn_no_music);
             delay(My::Config::Delays::SD_CARD_NO_MUSIC_PRESENT_MS);
         }
     }
 
     // Audio
     if (!SharedInstances::audio.open()) {
-        SharedInstances::serial.serial_print("WARN: I2S -- in the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move. (err 0x%lx)", (unsigned long)SharedInstances::audio.last_error());
+        SharedInstances::serial.serial_print(My::Infos::warn_i2s, (unsigned long)SharedInstances::audio.last_error());
         delay(My::Config::Delays::AUDIO_HANDLER_I2S_OPEN_FAILURE_MS);
     }
     SharedInstances::audio.setVolume(My::Config::AUDIO_VOLUME_DEFAULT);
@@ -209,7 +209,7 @@ void setup()
     SharedInstances::my_threads.initialise_input();
     SharedInstances::my_threads.initialise_ticker();
 
-    SharedInstances::serial.serial_print("All tasks spawned. Entering the infinite improbability loop.");
+    SharedInstances::serial.serial_print(My::Infos::all_tasks_spawned);
     if (My::Config::Debug::UART_PROFILING_ENABLED) {
         Profiler::dump_task_stats();
     }

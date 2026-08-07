@@ -65,6 +65,9 @@ namespace CharLcd
         uint8_t cols() const { return _cols; }
         uint8_t rows() const { return _rows; }
 
+        /** Last I2C write error code (0 = OK, nonzero = Wire err). */
+        uint8_t last_i2c_error() const { return _last_i2c_error; }
+
         private:
             TwoWire *_wire;
             uint8_t  _addr;
@@ -75,6 +78,7 @@ namespace CharLcd
             uint8_t  _row;
             uint8_t  _display_control;
             uint8_t  _function_set;
+            uint8_t  _last_i2c_error;
 
             void _write_nibble(uint8_t nibble, uint8_t mode);
             void _pulse_enable(uint8_t data);

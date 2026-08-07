@@ -112,6 +112,8 @@ other command that alters repository state. Only read-only inspection (`git stat
 - **Braces — control flow** (`if`/`for`/`while`): K&R (same line)
 - **Include guards**: `#pragma once` everywhere
 - **File headers**: ASCII-art banner block (see existing files for template)
+- **Variable declarations**: declare all local variables at the top of the
+  function body — never in the middle of the function or inside loop bodies
 
 ### Namespace layout
 
