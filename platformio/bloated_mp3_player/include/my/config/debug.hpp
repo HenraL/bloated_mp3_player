@@ -104,10 +104,10 @@ namespace My
             static const bool UART_CHAR_LCD_REFRESH = false;
             static const bool UART_CHAR_LCD_I2C_ERROR = true;
 
-            // Vogon ticker (second character LCD) debug lines
-            static const bool UART_TICKER_STANZA_SWITCH = false;
-            static const bool UART_TICKER_EOM_ENTER = false;
-            static const bool UART_TICKER_I2C_ERROR = true;
+            // Vogon panel (second character LCD) debug lines
+            static const bool UART_VOGON_STANZA_SWITCH = false;
+            static const bool UART_VOGON_EOM_ENTER = false;
+            static const bool UART_VOGON_I2C_ERROR = true;
 
         } // namespace Debug
 

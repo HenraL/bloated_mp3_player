@@ -115,16 +115,16 @@ namespace My
             My::Config::Priorities::Serial::X_CORE_ID
         );
     }
-    void Threads::initialise_ticker()
+    void Threads::initialise_vogon_panel()
     {
         xTaskCreatePinnedToCore(
-            My::Tasks::ticker,
-            My::Config::Priorities::Ticker::PROCESS_NAME,
-            My::Config::Priorities::Ticker::US_STACK_DEPTH,
+            My::Tasks::vogon_panel,
+            My::Config::Priorities::VogonPanel::PROCESS_NAME,
+            My::Config::Priorities::VogonPanel::US_STACK_DEPTH,
             NULL,
-            My::Config::Priorities::Ticker::TASK_PRIORITY,
-            &_handle_ticker,
-            My::Config::Priorities::Ticker::X_CORE_ID
+            My::Config::Priorities::VogonPanel::TASK_PRIORITY,
+            &_handle_vogon_panel,
+            My::Config::Priorities::VogonPanel::X_CORE_ID
         );
     }
 

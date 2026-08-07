@@ -154,9 +154,9 @@ void setup()
     SharedInstances::char_lcd.print_at(0, 0, "Bloated MP3");
     SharedInstances::char_lcd.print_at(0, 1, "DON'T PANIC");
 
-    // Second 1602A: the ticker panel, brought online with its own motto.
-    SharedInstances::char_lcd_ticker.begin();
-    SharedInstances::char_lcd_ticker.backlight(true);
+    // Second 1602A: the Vogon panel, brought online with its own motto.
+    SharedInstances::char_lcd_vogon.begin();
+    SharedInstances::char_lcd_vogon.backlight(true);
 
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
@@ -207,7 +207,7 @@ void setup()
     SharedInstances::my_threads.initialise_led();
     // SharedInstances::my_threads.initialise_matrix();
     SharedInstances::my_threads.initialise_input();
-    SharedInstances::my_threads.initialise_ticker();
+    SharedInstances::my_threads.initialise_vogon_panel();
 
     SharedInstances::serial.serial_print(My::Infos::all_tasks_spawned);
     if (My::Config::Debug::UART_PROFILING_ENABLED) {

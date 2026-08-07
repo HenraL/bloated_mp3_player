@@ -44,7 +44,7 @@ namespace SharedInstances
         My::Config::CHAR_LCD_COLS,
         My::Config::CHAR_LCD_ROWS
     );
-    CharLcd::Lcd char_lcd_ticker(
+    CharLcd::Lcd char_lcd_vogon(
         Wire,
         My::Config::CHAR_LCD2_I2C_ADDR,
         My::Config::CHAR_LCD2_COLS,

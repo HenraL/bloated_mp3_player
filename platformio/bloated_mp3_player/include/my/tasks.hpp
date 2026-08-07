@@ -53,7 +53,7 @@ namespace My
         // ─── Serial Task ───────────────────────────────────────────────────────
         void serial(void *pvParameters);
 
-        // ─── Vogon Ticker Task ────────────────────────────────────────────────
-        void ticker(void *pvParameters);
+        // ─── Vogon Panel Task ────────────────────────────────────────────────
+        void vogon_panel(void *pvParameters);
     } // namespace Tasks
 } // namespace My

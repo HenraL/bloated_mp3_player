@@ -41,7 +41,7 @@ namespace SharedInstances
     extern My::Threads my_threads;
     extern Environmental::Environmental environmental;
     extern CharLcd::Lcd char_lcd;
-    extern CharLcd::Lcd char_lcd_ticker;
+    extern CharLcd::Lcd char_lcd_vogon;
     extern Audio::Audio audio;
     extern Audio::Player player;
 }

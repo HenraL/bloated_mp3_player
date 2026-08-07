@@ -91,11 +91,11 @@ namespace My
         static const char input_swiped[] = "[INPUT] Gesto ultrasonico rilevato.";
         static const char input_track_finished[] = "[INPUT] Traccia terminata, passo alla successiva.";
 
-        // ─── Vogon ticker task ─────────────────────────────────────────────────────
+        // ─── Vogon panel task ─────────────────────────────────────────────────────
         static const char vogon_quote[] = "[VOGON] %s";
-        static const char ticker_eom_enter[] = "[VOGON] Strofa di fine poesia";
-        static const char ticker_stanza_switch[] = "[VOGON] Cambio strofa, prossima strofa %u";
-        static const char ticker_i2c_error[] = "[TICKER] Errore I2C %u (indirizzo 0x%02X)";
+        static const char vogon_eom_enter[] = "[VOGON] Strofa di fine poesia";
+        static const char vogon_stanza_switch[] = "[VOGON] Cambio strofa, prossima strofa %u";
+        static const char vogon_i2c_error[] = "[VOGON] Errore I2C %u (indirizzo 0x%02X)";
 
         // ─── Character LCD (info panel) ────────────────────────────────────────────
         static const char char_lcd_refresh[] = "[CHAR] Aggiornamento: '%s'";

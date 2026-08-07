@@ -46,18 +46,18 @@ namespace My
             // Type used for the duration of an led colour
             typedef uint16_t duration_ms_t;
 
-            // ─── Vogon ticker panel (second 1602A) ───────────────────────────────
+            // ─── Vogon panel (second 1602A) ───────────────────────────────
             // A step shows one text frame on the panel for the given dwell.
             // text may point anywhere; the config table below stores PROGMEM.
-            struct TickerStep {
+            struct VogonStep {
                 const char *text;
                 uint16_t    dwell_ms;
             };
 
             // A message is a run of steps. The message list is terminated
             // with a {nullptr, 0} entry, same choreography as the LED.
-            struct TickerMessage {
-                const TickerStep *steps;
+            struct VogonMessage {
+                const VogonStep *steps;
                 const uint16_t    length;
             };
         } // namespace Structures

@@ -43,7 +43,7 @@ namespace My
         void initialise_matrix();
         void initialise_input();
         void initialise_serial();
-        void initialise_ticker();
+        void initialise_vogon_panel();
         private:
         // ─── FreeRTOS task handles ────────────────────────────────────────────
         TaskHandle_t _handle_ui = nullptr;
@@ -53,6 +53,6 @@ namespace My
         TaskHandle_t _handle_matrix = nullptr;
         TaskHandle_t _handle_input = nullptr;
         TaskHandle_t _handle_serial = nullptr;
-        TaskHandle_t _handle_ticker = nullptr;
+        TaskHandle_t _handle_vogon_panel = nullptr;
     };
 }
