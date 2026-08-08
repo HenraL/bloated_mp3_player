@@ -29,6 +29,7 @@ namespace My
 {
     TrackBrowser::TrackBrowser()
         : _browsing(false)
+        , _in_track_stage(false)
         , _folder_index(0)
         , _track_offset(0)
     {
@@ -37,6 +38,7 @@ namespace My
     void TrackBrowser::begin()
     {
         _browsing = true;
+        _in_track_stage = false;
         _folder_index = 0;
         _track_offset = 0;
         if (folder_count() == 0) {
@@ -47,6 +49,16 @@ namespace My
     bool TrackBrowser::is_browsing() const
     {
         return _browsing;
+    }
+
+    bool TrackBrowser::in_folder_stage() const
+    {
+        return _browsing && !_in_track_stage;
+    }
+
+    bool TrackBrowser::in_track_stage() const
+    {
+        return _browsing && _in_track_stage;
     }
 
     void TrackBrowser::move_folder(int dir)
@@ -60,6 +72,21 @@ namespace My
         } else if (dir < 0) {
             _folder_index = (_folder_index + n - 1) % n;
         }
+        _track_offset = 0;
+    }
+
+    void TrackBrowser::enter_folder()
+    {
+        const SDCard::FolderInfo *fi = SDCard::get_folder(_folder_index);
+        if (fi && fi->track_count > 0) {
+            _in_track_stage = true;
+            _track_offset = 0;
+        }
+    }
+
+    void TrackBrowser::back_to_folders(void)
+    {
+        _in_track_stage = false;
         _track_offset = 0;
     }
 
@@ -81,6 +108,12 @@ namespace My
         }
         int32_t offset = (int32_t)_track_offset + dir;
         if (offset < 0) {
+            if (_in_track_stage) {
+                // Clamp at the start of the album while browsing tracks;
+                // the user exits with the double-click, not by wrapping.
+                _track_offset = 0;
+                return;
+            }
             // Back over the folder boundary: last track of the previous
             // folder (wrap around the folder table).
             uint32_t n = folder_count();
@@ -90,6 +123,11 @@ namespace My
                 _track_offset = fi->track_count - 1;
             }
         } else if (offset >= (int32_t)fi->track_count) {
+            if (_in_track_stage) {
+                // Clamp at the end of the album while browsing tracks.
+                _track_offset = fi->track_count - 1;
+                return;
+            }
             // Forward over the boundary: first track of the next folder.
             uint32_t n = folder_count();
             _folder_index = (_folder_index + 1) % n;
@@ -135,6 +173,6 @@ namespace My
     void TrackBrowser::picked()
     {
         _browsing = false;
-        _track_offset = 0;
+        _in_track_stage = false;
     }
 } // namespace My

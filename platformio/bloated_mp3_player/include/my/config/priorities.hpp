@@ -49,11 +49,12 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 3;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Audio
-            // Sensor
+            // Sensor (2048 → 4096 — serial_debug with %a.1f floats pulls in
+            // newlib _dtoa_r + malloc, which blew the canary at 2K)
             namespace Sensor
             {
                 static const char PROCESS_NAME[] = "Sensors";
-                static const uint32_t US_STACK_DEPTH = 2048;
+                static const uint32_t US_STACK_DEPTH = 4096;
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Sensor
@@ -92,10 +93,12 @@ namespace My
             } // namespace Serial
             // Vogon panel (second 1602A). Does its own slow thing on card 1,
             // the same core as the LED and UI so the I2C traffic is audio/free.
+            // (2048 → 4096 — the IMU-angle print_at passes %5.1f floats
+            // through vsnprintf + _dtoa_r + malloc, which blew the canary at 2K)
             namespace VogonPanel
             {
                 static const char PROCESS_NAME[] = "VogonPanel";
-                static const uint32_t US_STACK_DEPTH = 2048;
+                static const uint32_t US_STACK_DEPTH = 4096;
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace VogonPanel

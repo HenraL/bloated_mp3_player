@@ -37,9 +37,13 @@ namespace My
         // ─── Mode ──────────────────────────────────────────────────────────
         void begin();                      // reset to browsing, folder 0
         bool is_browsing() const;
+        bool in_folder_stage() const;      // walking the album list
+        bool in_track_stage() const;       // walking the tracks of an album
 
         // ─── Browsing ──────────────────────────────────────────────────────
         void move_folder(int dir);         // walk the folder table (wrap)
+        void enter_folder();               // folder stage -> track stage
+        void back_to_folders(void);        // track stage -> folder stage
         uint32_t folder_index() const;
         uint32_t folder_count() const;
 
@@ -53,11 +57,12 @@ namespace My
         const char *track_name() const;
         const char *folder_name() const;   // the album the track sits in
 
-        // Confirm the browser choice: play first audio of the folder.
+        // Confirm the browser choice: play the selected track.
         void picked();
 
         private:
         bool     _browsing;
+        bool     _in_track_stage;
         uint32_t _folder_index;
         uint32_t _track_offset;
     };

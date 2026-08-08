@@ -58,7 +58,11 @@ namespace My
             uint8_t cur_i2c_error = 0;
             uint8_t last_i2c_error = 0;
             bool in_eom = false;
+            uint32_t next_imu_ms = 0;
+            uint32_t imu_until_ms = 0;
+            uint32_t now_ms = 0;
             SharedInstances::serial.serial_print(My::Infos::vogon_quote, My::Infos::quote_ships_bricks);
+            next_imu_ms = millis() + My::Config::vogon_imu_interval_ms;
 
             // Static title; the banner scroll animates on the bottom row.
             SharedInstances::char_lcd_vogon.print_at(0, 0, "VOGON POETRY");
@@ -66,7 +70,41 @@ namespace My
             while (true) {
                 PROFILE_BLOCK("vogon_tick");
                 duration_ms = 0;
+                now_ms = millis();
                 xLastWake = xTaskGetTickCount();
+
+                // The IMU readout window: show the angles for vogon_imu_hold_ms
+                // every vogon_imu_interval_ms, then hand control back to the
+                // poem. The banner state is untouched while it is hidden, so
+                // the stanza resumes exactly where it stopped.
+                if (next_imu_ms != 0 && now_ms >= next_imu_ms) {
+                    imu_until_ms = now_ms + My::Config::vogon_imu_hold_ms;
+                    next_imu_ms = 0;
+                }
+                if (imu_until_ms != 0) {
+                    if (now_ms >= imu_until_ms) {
+                        imu_until_ms = 0;
+                        next_imu_ms = now_ms + My::Config::vogon_imu_interval_ms;
+                        SharedInstances::char_lcd_vogon.print_at(0, 0, "VOGON POETRY");
+                    } else {
+                        SharedInstances::char_lcd_vogon.print_at(
+                            0,
+                            0,
+                            "Tilt R:%5.1f P:%5.1f",
+                            SharedInstances::imu_orientation.roll,
+                            SharedInstances::imu_orientation.pitch
+                        );
+                        SharedInstances::char_lcd_vogon.print_at(
+                            0,
+                            1,
+                            "Yaw %5.1f     ",
+                            SharedInstances::imu_orientation.yaw
+                        );
+                        duration_ms = 100;
+                        vTaskDelayUntil(&xLastWake, pdMS_TO_TICKS(duration_ms));
+                        continue;
+                    }
+                }
 
                 if (in_eom) {
                     // Briefly unroll the interlude, then get back to the stanza.

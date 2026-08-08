@@ -38,6 +38,8 @@ namespace Ultrasonic
         uint16_t gesture_cooldown_ms = 500;
         uint8_t press_confirm_count = 0;
         uint8_t release_confirm_count = 0;
+        uint32_t last_press_ms = 0;
+        bool double_press = false;
     };
 
     void begin(uint8_t trig_pin, uint8_t echo_pin);
@@ -45,6 +47,7 @@ namespace Ultrasonic
     float read_inches();
     void gesture_tick();
     bool is_pressed();
+    bool is_double_pressed();
     int8_t get_swipe_dir();
     void set_cooldown(uint16_t ms);
 }

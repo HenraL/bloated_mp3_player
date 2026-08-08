@@ -63,6 +63,7 @@ namespace My
             static const bool UART_ULTRASONIC_PRESSED = false;
             static const bool UART_ULTRASONIC_SWIPED = false;
             static const bool UART_ULTRASONIC_SWIPE_VALUE = false;
+            static const bool UART_ULTRASONIC_DOUBLE_WAVED = true;
 
             // SD Card
             static const bool UART_SD_TOTAL_TRACKS = true;
@@ -76,6 +77,7 @@ namespace My
             static const bool UART_ANGLE_SENSOR_SHAKE = true;
             static const bool UART_ANGLE_SENSOR_TILT_LEFT = true;
             static const bool UART_ANGLE_SENSOR_TILT_RIGHT = true;
+            static const bool UART_ANGLE_SENSOR_ORIENTATION = true;
 
             // Audio
             static const bool UART_AUDIO_NOT_PLAYING = true;

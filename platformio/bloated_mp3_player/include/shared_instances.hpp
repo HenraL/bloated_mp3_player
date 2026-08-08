@@ -26,6 +26,7 @@
 #include <audio.hpp>
 #include <char_lcd.hpp>
 #include <environmental.hpp>
+#include <imu.hpp>
 #include <leds.hpp>
 #include <uimatrix.hpp>
 #include "my/lcd.hpp"
@@ -52,6 +53,16 @@ namespace SharedInstances
      * the char-LCD panel read it every frame.
      */
     extern My::TrackBrowser track_browser;
+
+    /**
+     * @brief Latest IMU orientation, produced by the sensor task.
+     *
+     * The sensor task recomputes roll/pitch/yaw from the accelerometer each
+     * tick; the Vogon panel task and the UART logger read this value. It is
+     * a small struct written from one task and read from others — plenty
+     * atomic for a display target.
+     */
+    extern IMU::Orientation imu_orientation;
 
     extern My::LCD::Display lcd;
     extern MatrixCanvas matrix_cvs;

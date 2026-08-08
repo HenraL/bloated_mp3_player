@@ -75,16 +75,26 @@ namespace My
                 folder = SharedInstances::player.track_folder();
 
                 if (SharedInstances::track_browser.is_browsing()) {
-                    // Folder browser: the highlighted album + its position.
+                    // Two-stage browser: album list first, then the tracks
+                    // inside the highlighted album.
                     uint32_t total = SharedInstances::track_browser.folder_count();
                     SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", SharedInstances::track_browser.folder_name());
-                    SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", SharedInstances::track_browser.track_name());
-                    SharedInstances::char_lcd.print_at(0, 2, "Sel %lu/%lu  press=play",
-                        (unsigned long)SharedInstances::track_browser.folder_index() + 1,
-                        (unsigned long)total);
-                    SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%lus",
+                    if (SharedInstances::track_browser.in_track_stage()) {
+                        SharedInstances::char_lcd.print_at(0, 1, "> %-18.18s", SharedInstances::track_browser.track_name());
+                        SharedInstances::char_lcd.print_at(0, 2, "Track %lu/%lu press=play",
+                            (unsigned long)SharedInstances::track_browser.folder_track_count() == 0 ? 0 : (unsigned long)(SharedInstances::track_browser.track_index() - SDCard::get_folder(SharedInstances::track_browser.folder_index())->first_track) + 1,
+                            (unsigned long)SharedInstances::track_browser.folder_track_count());
+                    } else {
+                        SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", SharedInstances::track_browser.track_name());
+                        SharedInstances::char_lcd.print_at(0, 2, "Sel %lu/%lu press=enter",
+                            (unsigned long)SharedInstances::track_browser.folder_index() + 1,
+                            (unsigned long)total);
+                    }
+                    SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%02lu:%02lu:%02lu",
                         (unsigned long)(SharedInstances::audio.getVolume() * 100 / My::Config::AUDIO_VOLUME_MAX),
-                        (unsigned long)(millis() / 1000));
+                        (unsigned long)(millis() / 1000 / 3600),
+                        (unsigned long)((millis() / 1000 / 60) % 60),
+                        (unsigned long)(millis() / 1000 % 60));
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_CHAR_LCD_REFRESH,
                         My::Infos::char_lcd_refresh,
@@ -109,9 +119,11 @@ namespace My
                     SharedInstances::char_lcd.print_at(0, 2, "%-20s", "No sensor data");
                 }
 
-                SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%lus",
+                SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%02lu:%02lu:%02lu",
                     (unsigned long)(SharedInstances::audio.getVolume() * 100 / My::Config::AUDIO_VOLUME_MAX),
-                    (unsigned long)(millis() / 1000));
+                    (unsigned long)(millis() / 1000 / 3600),
+                    (unsigned long)((millis() / 1000 / 60) % 60),
+                    (unsigned long)(millis() / 1000 % 60));
 
                 // Report I2C trouble with the info panel only when it appears
                 // or changes, so a dead bus yields one line, not spam.

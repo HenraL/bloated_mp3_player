@@ -54,6 +54,7 @@ namespace My
         static const char sensor_shake[] = "[Sensor] Scuotito";
         static const char sensor_tilt_left[] = "[Sensor] InclinatoSx";
         static const char sensor_tilt_right[] = "[Sensor] InclinatoDe";
+        static const char sensor_orientation[] = "[Sensor] Rollio: %.1f Beccheggio: %.1f Imbardata: %.1f";
 
         // ─── LED task ──────────────────────────────────────────────────────────────
         static const char led_light_twice_bright[] = "[LED] La luce che brucia due volte più forte...";
@@ -87,6 +88,8 @@ namespace My
         static const char input_double_pressed[] = "[INPUT] Doppia pressione, salto di traccia.";
         static const char input_triple_pressed[] = "[INPUT] Tripla pressione, torna alla traccia precedente.";
         static const char input_ultrasonic_pressed[] = "[INPUT] ultrasonico premuto.";
+        static const char input_ultrasonic_double_waved[] = "[INPUT] Doppia onda ultrasonica, ritorno al menu.";
+        static const char input_going_back_to_menu[] = "[INPUT] Menu (scelta album).";
         static const char input_swipe_value[] = "[INPUT] Valore gesto ultrasonico: %d";
         static const char input_swiped[] = "[INPUT] Gesto ultrasonico rilevato.";
         static const char input_track_finished[] = "[INPUT] Traccia terminata, passo alla successiva.";

@@ -40,19 +40,38 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(200);
+            uint8_t orientation_log_countdown = 0;
+            IMU::Vec3 accel;
+            IMU::Gesture g;
             SharedInstances::serial.serial_print(My::Infos::sensor_time_illusion);
 
             while (true) {
                 PROFILE_BLOCK("sensor_tick");
 
-                IMU::Vec3 accel;
                 if (SharedInstances::i2c_bus_lock != nullptr) {
                     xSemaphoreTake(SharedInstances::i2c_bus_lock, portMAX_DELAY);
                 }
                 IMU::read_accel(accel);
-                IMU::Gesture g = IMU::gesture_tick();
+                g = IMU::gesture_tick();
                 if (SharedInstances::i2c_bus_lock != nullptr) {
                     xSemaphoreGive(SharedInstances::i2c_bus_lock);
+                }
+
+                // Publish the latest orientation for the Vogon panel and log
+                // it to UART on a sensible cadence (once per second, the
+                // task ticks every 200ms).
+                SharedInstances::imu_orientation = IMU::compute_orientation(accel);
+                if (orientation_log_countdown == 0) {
+                    orientation_log_countdown = 5;
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_ANGLE_SENSOR_ORIENTATION,
+                        My::Infos::sensor_orientation,
+                        SharedInstances::imu_orientation.roll,
+                        SharedInstances::imu_orientation.pitch,
+                        SharedInstances::imu_orientation.yaw
+                    );
+                } else {
+                    orientation_log_countdown--;
                 }
 
                 switch (g) {

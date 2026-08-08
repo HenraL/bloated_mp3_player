@@ -80,11 +80,40 @@ namespace My
             uint32_t first = 0;
             uint32_t i = 0;
             uint32_t idx = 0;
+            uint32_t base = 0;
             const SDCard::FolderInfo *fi = nullptr;
+            const SDCard::TrackInfo *ti = nullptr;
             const char *name = nullptr;
 
             if (total == 0) {
                 SharedInstances::lcd.printAt(0, My::Config::DisplayLayout::ENVIRONEMENT_POSITION_Y, "No folders");
+                return;
+            }
+            if (SharedInstances::track_browser.in_track_stage()) {
+                // Second stage: the tracks of the highlighted album.
+                fi = SDCard::get_folder(sel);
+                total = fi ? fi->track_count : 0;
+                base = fi ? fi->first_track : 0;
+                SharedInstances::lcd.printAt(My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y, "%-16.16s", SharedInstances::track_browser.folder_name());
+                if (SharedInstances::track_browser.folder_track_count() > 2) {
+                    first = SharedInstances::track_browser.track_index() - base > 2
+                            ? SharedInstances::track_browser.track_index() - base - 2 : 0;
+                }
+                for (i = 0; i < 5 && (first + i) < total; i++) {
+                    idx = base + first + i;
+                    ti = SDCard::get_track(idx);
+                    name = ti ? ti->filename : "?";
+                    SharedInstances::lcd.printAt(
+                        My::Config::DisplayLayout::TEMPERATURE_X,
+                        My::Config::DisplayLayout::ENVIRONEMENT_POSITION_Y + (int16_t)(i * 9),
+                        "%s %-15.15s", idx == SharedInstances::track_browser.track_index() ? ">" : " ", name
+                    );
+                }
+                SharedInstances::lcd.printAt(
+                    My::Config::DisplayLayout::UPTIME_X,
+                    My::Config::DisplayLayout::UPTIME_Y,
+                    "Rotate:tr Press:pl"
+                );
                 return;
             }
             if (sel > 2) {
@@ -104,7 +133,7 @@ namespace My
             SharedInstances::lcd.printAt(
                 My::Config::DisplayLayout::UPTIME_X,
                 My::Config::DisplayLayout::UPTIME_Y,
-                "Rotate:sel  Press:play"
+                "Rotate:sel  Press:enter"
             );
         }
 
@@ -140,7 +169,14 @@ while (true) {
 
                 refresh_environemental_values(&env, &read, &last_poll);
 
-                SharedInstances::lcd.printAt(My::Config::DisplayLayout::UPTIME_X, My::Config::DisplayLayout::UPTIME_Y, "Uptime: %lus", millis() / 1000);
+                SharedInstances::lcd.printAt(
+                    My::Config::DisplayLayout::UPTIME_X,
+                    My::Config::DisplayLayout::UPTIME_Y,
+                    "Up: %02lu:%02lu:%02lu",
+                    (unsigned long)(millis() / 1000 / 3600),
+                    (unsigned long)((millis() / 1000 / 60) % 60),
+                    (unsigned long)(millis() / 1000 % 60)
+                );
 
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     SharedInstances::lcd.printAt(My::Config::DisplayLayout::AUDIO_STATUS_X, My::Config::DisplayLayout::AUDIO_STATUS_Y, "|| PAUSE");

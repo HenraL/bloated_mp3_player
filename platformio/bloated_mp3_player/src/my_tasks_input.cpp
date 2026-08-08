@@ -65,14 +65,25 @@ namespace My
             int8_t dir = Rotary::get_direction();
             if (dir != 0) {
                 if (SharedInstances::track_browser.is_browsing()) {
-                    // While browsing, the knob walks the folder list.
-                    SharedInstances::track_browser.move_folder(dir);
-                    SharedInstances::serial.serial_debug(
-                        My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
-                        My::Infos::input_select_moved,
-                        (unsigned long)SharedInstances::track_browser.folder_index() + 1,
-                        (unsigned long)SharedInstances::track_browser.folder_count()
-                    );
+                    // While browsing, the knob walks the folder list or the
+                    // track list, depending on the selection stage.
+                    if (SharedInstances::track_browser.in_track_stage()) {
+                        SharedInstances::track_browser.move_track(dir);
+                        SharedInstances::serial.serial_debug(
+                            My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
+                            My::Infos::input_select_moved,
+                            (unsigned long)SharedInstances::track_browser.track_index() + 1,
+                            (unsigned long)SharedInstances::track_browser.folder_track_count()
+                        );
+                    } else {
+                        SharedInstances::track_browser.move_folder(dir);
+                        SharedInstances::serial.serial_debug(
+                            My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
+                            My::Infos::input_select_moved,
+                            (unsigned long)SharedInstances::track_browser.folder_index() + 1,
+                            (unsigned long)SharedInstances::track_browser.folder_count()
+                        );
+                    }
                     return;
                 }
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, My::Infos::input_clicky_value, dir);
@@ -99,8 +110,16 @@ namespace My
         {
             if (Rotary::was_pressed()) {
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_PRESSED, My::Infos::input_switch_pressed);
-                if (SharedInstances::track_browser.is_browsing()) {
-                    // The initial choice: play the first audio of the folder.
+                if (SharedInstances::track_browser.in_folder_stage()) {
+                    // First click: step into the selected folder to browse
+                    // its tracks.
+                    SharedInstances::track_browser.enter_folder();
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
+                        My::Infos::input_select_start
+                    );
+                } else if (SharedInstances::track_browser.in_track_stage()) {
+                    // Second click: play the highlighted track of the album.
                     SharedInstances::track_browser.picked();
                     play_browser_position();
                 } else if (SharedInstances::audio.getStatus() == Audio::Playing) {
@@ -115,7 +134,10 @@ namespace My
         {
             if (Rotary::was_double_pressed()) {
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DOUBLE_PRESSED, My::Infos::input_double_pressed);
-                if (SharedInstances::track_browser.is_browsing()) {
+                if (SharedInstances::track_browser.in_track_stage()) {
+                    // Double click inside a folder: back to the albums.
+                    SharedInstances::track_browser.back_to_folders();
+                } else if (SharedInstances::track_browser.in_folder_stage()) {
                     SharedInstances::track_browser.move_folder(1);
                 } else {
                     SharedInstances::track_browser.move_track(1);
@@ -128,7 +150,9 @@ namespace My
         {
             if (Rotary::was_triple_pressed()) {
                 SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, My::Infos::input_triple_pressed);
-                if (SharedInstances::track_browser.is_browsing()) {
+                if (SharedInstances::track_browser.in_track_stage()) {
+                    SharedInstances::track_browser.back_to_folders();
+                } else if (SharedInstances::track_browser.in_folder_stage()) {
                     SharedInstances::track_browser.move_folder(-1);
                 } else {
                     SharedInstances::track_browser.move_track(-1);
@@ -146,6 +170,21 @@ namespace My
                 } else {
                     SharedInstances::audio.play();
                 }
+            }
+        }
+
+        static void handle_ultrasonic_double_wave(void)
+        {
+            if (Ultrasonic::is_double_pressed()) {
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_DOUBLE_WAVED, My::Infos::input_ultrasonic_double_waved);
+                // Two quick waves: back to the menu (browse the albums) no
+                // matter what the player was doing.
+                SharedInstances::audio.stop();
+                SharedInstances::track_browser.begin();
+                SharedInstances::serial.serial_debug(
+                    My::Config::Debug::UART_ULTRASONIC_DOUBLE_WAVED,
+                    My::Infos::input_going_back_to_menu
+                );
             }
         }
 
@@ -183,6 +222,7 @@ namespace My
                 handle_rotary_double_click();
                 handle_rotary_triple_click();
                 handle_ultrasonic_press();
+                handle_ultrasonic_double_wave();
                 handle_ultrasonic_swipe();
 
                 if (SharedInstances::player.track_finished()) {

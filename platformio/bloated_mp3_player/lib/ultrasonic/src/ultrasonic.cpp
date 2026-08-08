@@ -80,6 +80,14 @@ void Ultrasonic::gesture_tick()
                 gesture.press_start_cm = d;
                 gesture.pressed = true;
                 gesture.last_gesture_ms = now;
+                // Two waves with a short pause between them (a "double wave")
+                // means "back to the menu" in the input task. Anything older
+                // than 600ms is a fresh gesture, not a double.
+                if (now - gesture.last_press_ms < 600)
+                {
+                    gesture.double_press = true;
+                }
+                gesture.last_press_ms = now;
             }
         }
         else
@@ -122,6 +130,13 @@ bool Ultrasonic::is_pressed()
     bool p = gesture.pressed;
     gesture.pressed = false;
     return p;
+}
+
+bool Ultrasonic::is_double_pressed()
+{
+    bool d = gesture.double_press;
+    gesture.double_press = false;
+    return d;
 }
 
 int8_t Ultrasonic::get_swipe_dir()
