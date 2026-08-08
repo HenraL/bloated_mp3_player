@@ -26,6 +26,7 @@
 #include <audio.hpp>
 #include <environmental.hpp>
 #include <profiling.hpp>
+#include <sdcard.hpp>
 #include "my/tasks.hpp"
 #include "my/config.hpp"
 #include "my/infos.hpp"
@@ -73,7 +74,23 @@ namespace My
                 track = SharedInstances::player.track_name();
                 folder = SharedInstances::player.track_folder();
 
-                if (track && track[0]) {
+                if (SharedInstances::track_browser.is_browsing()) {
+                    // Folder browser: the highlighted album + its position.
+                    uint32_t total = SharedInstances::track_browser.folder_count();
+                    SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", SharedInstances::track_browser.folder_name());
+                    SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", SharedInstances::track_browser.track_name());
+                    SharedInstances::char_lcd.print_at(0, 2, "Sel %lu/%lu  press=play",
+                        (unsigned long)SharedInstances::track_browser.folder_index() + 1,
+                        (unsigned long)total);
+                    SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%lus",
+                        (unsigned long)(SharedInstances::audio.getVolume() * 100 / My::Config::AUDIO_VOLUME_MAX),
+                        (unsigned long)(millis() / 1000));
+                    SharedInstances::serial.serial_debug(
+                        My::Config::Debug::UART_CHAR_LCD_REFRESH,
+                        My::Infos::char_lcd_refresh,
+                        SharedInstances::track_browser.folder_name()
+                    );
+                } else if (track && track[0]) {
                     SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", track);
                     SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", folder && folder[0] ? folder : "");
                 } else {

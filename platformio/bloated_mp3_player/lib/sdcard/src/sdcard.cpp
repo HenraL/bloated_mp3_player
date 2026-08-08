@@ -27,6 +27,8 @@
 static bool mounted = false;
 static SDCard::TrackInfo track_list[SDCard::MAX_TRACKS];
 static size_t track_count = 0;
+static SDCard::FolderInfo folder_list[SDCard::MAX_FOLDERS];
+static size_t folder_count = 0;
 static const char *audio_ext[] = { ".wav", ".WAV", ".mp3", ".MP3" };
 
 bool SDCard::begin(uint8_t clk, uint8_t cmd, uint8_t d0, bool format_if_fail)
@@ -175,6 +177,27 @@ static void scan_dir(const char *dir)
             ti.size = file.size();
             ti.is_wav = strstr(file.name(), ".wav") || strstr(file.name(), ".WAV");
             track_count++;
+
+            // Register (or extend) the folder this track lives in, keeping
+            // tracks grouped by folder so the browser can walk folder order.
+            {
+                bool found = false;
+                for (size_t f = 0; f < folder_count; f++) {
+                    if (strcmp(folder_list[f].folder, ti.folder) == 0) {
+                        folder_list[f].track_count++;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && folder_count < SDCard::MAX_FOLDERS) {
+                    SDCard::FolderInfo &fi = folder_list[folder_count];
+                    strncpy(fi.folder, ti.folder, sizeof(fi.folder));
+                    fi.folder[sizeof(fi.folder) - 1] = '\0';
+                    fi.first_track = (uint32_t)(track_count - 1);
+                    fi.track_count = 1;
+                    folder_count++;
+                }
+            }
         }
         file.close();
     }
@@ -182,14 +205,15 @@ static void scan_dir(const char *dir)
 }
 
 bool SDCard::scan_tracks(const char *dir)
-{
-    if (!mounted) {
-        return false;
+    {
+        if (!mounted) {
+            return false;
+        }
+        track_count = 0;
+        folder_count = 0;
+        scan_dir(dir);
+        return track_count > 0;
     }
-    track_count = 0;
-    scan_dir(dir);
-    return track_count > 0;
-}
 
 size_t SDCard::list_dir(const char *path, DirEntry *entries, size_t max_entries)
 {
@@ -225,4 +249,17 @@ const SDCard::TrackInfo *SDCard::get_track(uint32_t index)
         return nullptr;
     }
     return &track_list[index];
+}
+
+uint32_t SDCard::total_folders()
+{
+    return folder_count;
+}
+
+const SDCard::FolderInfo *SDCard::get_folder(uint32_t index)
+{
+    if (index >= folder_count) {
+        return nullptr;
+    }
+    return &folder_list[index];
 }

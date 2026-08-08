@@ -25,6 +25,7 @@
 #include <audio.hpp>
 #include <environmental.hpp>
 #include <profiling.hpp>
+#include <sdcard.hpp>
 #include "my/tasks.hpp"
 #include "my/config.hpp"
 #include "my/infos.hpp"
@@ -71,6 +72,42 @@ namespace My
             }
         }
 
+        // ─── Track browser (shown while browsing) ───────────────────────────────
+        static void draw_track_browser(void)
+        {
+            uint32_t total = SharedInstances::track_browser.folder_count();
+            uint32_t sel = SharedInstances::track_browser.folder_index();
+            uint32_t first = 0;
+            uint32_t i = 0;
+            uint32_t idx = 0;
+            const SDCard::FolderInfo *fi = nullptr;
+            const char *name = nullptr;
+
+            if (total == 0) {
+                SharedInstances::lcd.printAt(0, My::Config::DisplayLayout::ENVIRONEMENT_POSITION_Y, "No folders");
+                return;
+            }
+            if (sel > 2) {
+                first = sel - 2;
+            }
+            SharedInstances::lcd.printAt(My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y, "Select folder:");
+            for (i = 0; i < 5 && (first + i) < total; i++) {
+                idx = first + i;
+                fi = SDCard::get_folder(idx);
+                name = fi ? fi->folder : "?";
+                SharedInstances::lcd.printAt(
+                    My::Config::DisplayLayout::TEMPERATURE_X,
+                    My::Config::DisplayLayout::ENVIRONEMENT_POSITION_Y + (int16_t)(i * 9),
+                    "%s %-15.15s", idx == sel ? ">" : " ", name
+                );
+            }
+            SharedInstances::lcd.printAt(
+                My::Config::DisplayLayout::UPTIME_X,
+                My::Config::DisplayLayout::UPTIME_Y,
+                "Rotate:sel  Press:play"
+            );
+        }
+
         // ─── UI Task ──────────────────────────────────────────────────────────
         void ui(void *pvParameters)
         {
@@ -88,6 +125,18 @@ while (true) {
                 SharedInstances::lcd.setFont(My::Config::FONT_TITLE);
                 SharedInstances::lcd.printAt("Bloated MP3 v1\u25e60", My::Config::DisplayLayout::TITLE_X, My::Config::DisplayLayout::TITLE_Y);
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
+
+                if (SharedInstances::track_browser.is_browsing()) {
+                    draw_track_browser();
+                    SharedInstances::lcd.display();
+                    if (My::Config::Debug::LCD_ONESHOT_TEST_ENABLED) {
+                        while (true) {
+                            vTaskDelay(pdMS_TO_TICKS(1000));
+                        }
+                    }
+                    vTaskDelayUntil(&xLastWake, freq);
+                    continue;
+                }
 
                 refresh_environemental_values(&env, &read, &last_poll);
 

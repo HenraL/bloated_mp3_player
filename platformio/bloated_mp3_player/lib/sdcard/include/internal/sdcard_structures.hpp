@@ -36,6 +36,13 @@ namespace SDCard
         bool is_wav;
     };
 
+    struct FolderInfo
+    {
+        char folder[TRACK_FOLDER_LEN];
+        uint32_t first_track;
+        uint32_t track_count;
+    };
+
     struct DirEntry
     {
         char name[DIR_ENTRY_NAME_LEN];

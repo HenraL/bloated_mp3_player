@@ -30,6 +30,7 @@ namespace SharedInstances
 {
     SemaphoreHandle_t i2c_bus_lock = nullptr;
 
+    My::TrackBrowser track_browser;
     My::LCD::Display lcd;
     MatrixCanvas matrix_cvs;
     My::LED::LED onboard(1, My::Config::Pins::ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800, My::LED::white_colour, My::LED::black_colour, My::LED::white_colour, 0, 50);

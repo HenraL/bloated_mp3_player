@@ -27,6 +27,7 @@
 namespace SDCard
 {
     static const size_t MAX_TRACKS = 256;
+    static const size_t MAX_FOLDERS = 128;
     static const size_t MAX_DIR_ENTRIES = 128;
     static const size_t TRACK_PATH_LEN = 160;
     static const size_t TRACK_FOLDER_LEN = 96;

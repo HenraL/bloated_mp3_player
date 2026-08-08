@@ -47,5 +47,8 @@ namespace SDCard
     uint32_t total_tracks();
     const TrackInfo *get_track(uint32_t index);
 
+    uint32_t total_folders();
+    const FolderInfo *get_folder(uint32_t index);
+
     size_t list_dir(const char *path, DirEntry *entries, size_t max_entries);
 }

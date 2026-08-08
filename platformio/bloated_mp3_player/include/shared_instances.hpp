@@ -31,6 +31,7 @@
 #include "my/lcd.hpp"
 #include "my/serial.hpp"
 #include "my/threads.hpp"
+#include "my/track_browser.hpp"
 
 namespace SharedInstances
 {
@@ -42,6 +43,15 @@ namespace SharedInstances
      * after Wire.begin(); every task that touches Wire holds this lock.
      */
     extern SemaphoreHandle_t i2c_bus_lock;
+
+    /**
+     * @brief Track browser state.
+     *
+     * At boot nothing plays: the user browses the folder list (rotary
+     * knob) and presses to start. The input task drives it, the UI and
+     * the char-LCD panel read it every frame.
+     */
+    extern My::TrackBrowser track_browser;
 
     extern My::LCD::Display lcd;
     extern MatrixCanvas matrix_cvs;

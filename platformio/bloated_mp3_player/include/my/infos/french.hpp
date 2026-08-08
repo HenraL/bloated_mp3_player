@@ -90,6 +90,9 @@ namespace My
         static const char input_swipe_value[] = "[INPUT] Valeur du geste ultrason : %d";
         static const char input_swiped[] = "[INPUT] Geste ultrasonique détecté.";
         static const char input_track_finished[] = "[INPUT] Piste terminée, passage à la suivante.";
+        static const char input_select_start[] = "[INPUT] Parcours des pistes : tournez pour choisir, appuyez pour jouer.";
+        static const char input_select_moved[] = "[INPUT] Sélection : %lu/%lu";
+        static const char input_select_play[] = "[INPUT] Lecture de la piste sélectionnée %lu.";
 
         // ─── Vogon panel task ─────────────────────────────────────────────────────
         static const char vogon_quote[] = "[VOGON] %s";
