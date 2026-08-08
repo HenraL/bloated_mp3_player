@@ -43,6 +43,7 @@ namespace SDCard
 
     bool scan_tracks(const char *dir);
     bool is_audio_file(const char *path);
+    bool is_printable(const char *str, size_t len);
     uint32_t total_tracks();
     const TrackInfo *get_track(uint32_t index);
 

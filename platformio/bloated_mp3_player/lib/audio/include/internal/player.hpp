@@ -42,6 +42,7 @@ namespace Audio
         bool track_finished() const;
         const char* last_diag() const;
         const char* track_name() const;
+        const char* track_folder() const;
 
     private:
         Audio      &_audio;
@@ -51,6 +52,7 @@ namespace Audio
         int16_t     _tick_buf[PLAYER_MAX_FRAMES * 2];
         char        _last_diag[256];
         char        _track_name[128];
+        char        _track_folder[64];
     };
 
 }

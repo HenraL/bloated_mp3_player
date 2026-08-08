@@ -127,5 +127,17 @@ namespace My
             My::Config::Priorities::VogonPanel::X_CORE_ID
         );
     }
+    void Threads::initialise_char_lcd()
+    {
+        xTaskCreatePinnedToCore(
+            My::Tasks::char_lcd,
+            My::Config::Priorities::CharLcd::PROCESS_NAME,
+            My::Config::Priorities::CharLcd::US_STACK_DEPTH,
+            NULL,
+            My::Config::Priorities::CharLcd::TASK_PRIORITY,
+            &_handle_char_lcd,
+            My::Config::Priorities::CharLcd::X_CORE_ID
+        );
+    }
 
 }

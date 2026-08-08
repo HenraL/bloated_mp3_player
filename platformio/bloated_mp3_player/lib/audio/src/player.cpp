@@ -70,12 +70,24 @@ namespace Audio
         }
 
         // Remember the human-friendly filename for the UI (strip any
-        // leading path components so a 16x2 has a chance of seeing it).
+        // leading path components so a 16x2 has a chance of seeing it),
+        // plus its parent folder (the user keeps albums in folders).
         {
             const char *slash = std::strrchr(path, '/');
             const char *base = slash ? slash + 1 : path;
             std::strncpy(_track_name, base, sizeof(_track_name) - 1);
             _track_name[sizeof(_track_name) - 1] = '\0';
+            if (slash) {
+                size_t folder_len = (size_t)(slash - path);
+                if (folder_len > 0 && folder_len < sizeof(_track_folder)) {
+                    std::strncpy(_track_folder, path, folder_len);
+                    _track_folder[folder_len] = '\0';
+                } else {
+                    _track_folder[0] = '\0';
+                }
+            } else {
+                _track_folder[0] = '\0';
+            }
         }
 
         _audio.setSampleRate(_decoder->sample_rate());
@@ -92,6 +104,7 @@ namespace Audio
             _decoder = nullptr;
         }
         _track_name[0] = '\0';
+        _track_folder[0] = '\0';
     }
 
     int Player::tick()
@@ -165,6 +178,11 @@ namespace Audio
     const char* Player::track_name() const
     {
         return _track_name;
+    }
+
+    const char* Player::track_folder() const
+    {
+        return _track_folder;
     }
 
 }

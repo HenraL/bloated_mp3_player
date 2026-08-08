@@ -71,55 +71,6 @@ namespace My
             }
         }
 
-        // ─── Character LCD (cash-register display) ─────────────────────────
-        static void refresh_char_lcd(const Environmental::Reading *env, bool read, uint32_t *last_refresh, uint8_t *last_i2c_error)
-        {
-            uint32_t now = millis();
-            const char *track = SharedInstances::player.track_name();
-            uint8_t cur_i2c_error = 0;
-            if (now - *last_refresh < My::Config::CHAR_LCD_REFRESH_MS) {
-                return;
-            }
-            *last_refresh = now;
-
-            if (track && track[0]) {
-                SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", track);
-            } else {
-                SharedInstances::char_lcd.print_at(0, 0, "%-20s", "No track");
-            }
-            SharedInstances::serial.serial_debug(
-                My::Config::Debug::UART_CHAR_LCD_REFRESH,
-                My::Infos::char_lcd_refresh,
-                track && track[0] ? track : "No track"
-            );
-
-            if (read) {
-                SharedInstances::char_lcd.print_at(0, 1, "T:%.1f H:%.0f%%", env->temperature, env->humidity);
-                SharedInstances::char_lcd.print_at(0, 2, "P:%.0fhPa", env->pressure);
-            } else {
-                SharedInstances::char_lcd.print_at(0, 1, "No sensor data");
-            }
-
-            SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%lus",
-                (unsigned long)(SharedInstances::audio.getVolume() * 100 / My::Config::AUDIO_VOLUME_MAX),
-                (unsigned long)(millis() / 1000));
-
-            // Report I2C trouble with the info panel only when it appears
-            // or changes, so a dead bus yields one line, not spam.
-            cur_i2c_error = SharedInstances::char_lcd.last_i2c_error();
-            if (cur_i2c_error != *last_i2c_error) {
-                *last_i2c_error = cur_i2c_error;
-                if (cur_i2c_error != 0) {
-                    SharedInstances::serial.serial_debug(
-                        My::Config::Debug::UART_CHAR_LCD_I2C_ERROR,
-                        My::Infos::char_lcd_i2c_error,
-                        cur_i2c_error,
-                        (unsigned int)My::Config::CHAR_LCD_I2C_ADDR
-                    );
-                }
-            }
-        }
-
         // ─── UI Task ──────────────────────────────────────────────────────────
         void ui(void *pvParameters)
         {
@@ -130,8 +81,6 @@ namespace My
             Environmental::Reading env;
             bool read = false;
             uint32_t last_poll = 0;
-            uint32_t last_char_lcd = 0;
-            uint8_t last_char_lcd_i2c_error = 0;
 
 while (true) {
                 PROFILE_BLOCK("ui_tick");
@@ -141,7 +90,6 @@ while (true) {
                 SharedInstances::lcd.setFont(My::Config::FONT_BODY);
 
                 refresh_environemental_values(&env, &read, &last_poll);
-                refresh_char_lcd(&env, read, &last_char_lcd, &last_char_lcd_i2c_error);
 
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::UPTIME_X, My::Config::DisplayLayout::UPTIME_Y, "Uptime: %lus", millis() / 1000);
 

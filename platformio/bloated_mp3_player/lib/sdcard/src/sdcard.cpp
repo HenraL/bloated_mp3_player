@@ -108,6 +108,16 @@ bool SDCard::is_audio_file(const char *path)
     return false;
 }
 
+bool SDCard::is_printable(const char *str, size_t len)
+{
+    for (size_t i = 0; i < len; i++) {
+        if (str[i] < 0x20 || str[i] > 0x7E) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static void scan_dir(const char *dir)
 {
     if (track_count >= SDCard::MAX_TRACKS) {
@@ -132,9 +142,36 @@ static void scan_dir(const char *dir)
             }
             scan_dir(sub);
         } else if (SDCard::is_audio_file(file.name())) {
+            const char *full_path = file.path();
+            const char *fname = file.name();
+            size_t path_len = strlen(full_path);
+            size_t fname_len = strlen(fname);
+
+            // Over-long or non-printable (corrupt) names: skip, never truncate.
+            // A truncated path without a NUL terminator leaks adjacent memory
+            // into every open() call and shows up as garbage in Serial/logs.
+            if (path_len >= SDCard::TRACK_PATH_LEN
+                || fname_len >= SDCard::TRACK_FILENAME_LEN
+                || !SDCard::is_printable(full_path, path_len)) {
+                continue;
+            }
             SDCard::TrackInfo &ti = track_list[track_count];
-            strncpy(ti.path, file.path(), sizeof(ti.path));
-            strncpy(ti.filename, file.name(), sizeof(ti.filename));
+            strncpy(ti.path, full_path, sizeof(ti.path));
+            ti.path[sizeof(ti.path) - 1] = '\0';
+            strncpy(ti.filename, fname, sizeof(ti.filename));
+            ti.filename[sizeof(ti.filename) - 1] = '\0';
+
+            // Keep the parent folder so the UI can group tracks by album.
+            {
+                const char *slash = strrchr(ti.path, '/');
+                size_t folder_len = slash ? (size_t)(slash - ti.path) : 0;
+                if (folder_len > 0 && folder_len < sizeof(ti.folder)) {
+                    strncpy(ti.folder, ti.path, folder_len);
+                    ti.folder[folder_len] = '\0';
+                } else {
+                    ti.folder[0] = '\0';
+                }
+            }
             ti.size = file.size();
             ti.is_wav = strstr(file.name(), ".wav") || strstr(file.name(), ".WAV");
             track_count++;

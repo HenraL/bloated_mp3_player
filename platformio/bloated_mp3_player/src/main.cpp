@@ -219,6 +219,7 @@ void setup()
     // SharedInstances::my_threads.initialise_matrix();
     SharedInstances::my_threads.initialise_input();
     SharedInstances::my_threads.initialise_vogon_panel();
+    SharedInstances::my_threads.initialise_char_lcd();
 
     SharedInstances::serial.serial_print(My::Infos::all_tasks_spawned);
     if (My::Config::Debug::UART_PROFILING_ENABLED) {

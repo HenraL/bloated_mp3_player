@@ -99,6 +99,15 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace VogonPanel
+            // Character LCD (2004A info panel). Own slow task so the HD44780
+            // writes never stall the 33ms UI refresh of the SPI screen.
+            namespace CharLcd
+            {
+                static const char PROCESS_NAME[] = "CharLCDPanel";
+                static const uint32_t US_STACK_DEPTH = 4096;
+                static const UBaseType_t TASK_PRIORITY = 1;
+                static const BaseType_t X_CORE_ID = 1;
+            } // namespace CharLcd
         } // namespace Priorities
     } // namespace Config
 } // namespace My

@@ -53,6 +53,9 @@ namespace My
         // ─── Serial Task ───────────────────────────────────────────────────────
         void serial(void *pvParameters);
 
+        // ─── Character LCD Task ──────────────────────────────────────────────
+        void char_lcd(void *pvParameters);
+
         // ─── Vogon Panel Task ────────────────────────────────────────────────
         void vogon_panel(void *pvParameters);
     } // namespace Tasks

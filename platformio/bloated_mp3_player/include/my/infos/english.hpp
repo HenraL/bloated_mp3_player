@@ -99,6 +99,7 @@ namespace My
         static const char vogon_i2c_error[] = "[VOGON] I2C write error %u (addr 0x%02X)";
 
         // ─── Character LCD (info panel) ────────────────────────────────────────────
+        static const char char_lcd_task_start[] = "[CHAR] Info panel is running on its own task.";
         static const char char_lcd_refresh[] = "[CHAR] Refresh: '%s'";
         static const char char_lcd_i2c_error[] = "[CHAR] I2C write error %u (addr 0x%02X)";
     } // namespace Infos

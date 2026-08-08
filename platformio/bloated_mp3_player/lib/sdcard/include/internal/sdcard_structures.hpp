@@ -30,6 +30,7 @@ namespace SDCard
     struct TrackInfo
     {
         char path[TRACK_PATH_LEN];
+        char folder[TRACK_FOLDER_LEN];
         char filename[TRACK_FILENAME_LEN];
         uint32_t size;
         bool is_wav;
