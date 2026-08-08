@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: debug.hpp
 * CREATION DATE: 23-07-2026
-* LAST Modified: 20:14:33 07-08-2026
+* LAST Modified: 17:31:50 08-08-2026
 * DESCRIPTION:
 * This is the code in charge of making the bloated player come to life.
 * /STOP
@@ -98,7 +98,7 @@ namespace My
             // When true, the UI task draws a single static frame and then
             // stops repainting. Used to distinguish display flicker caused by
             // code (continuous refresh) from flicker caused by wiring.
-            static const bool LCD_ONESHOT_TEST_ENABLED = true;
+            static const bool LCD_ONESHOT_TEST_ENABLED = false;
 
             // Character LCD (PCF8574 info panel) debug lines
             static const bool UART_CHAR_LCD_REFRESH = false;

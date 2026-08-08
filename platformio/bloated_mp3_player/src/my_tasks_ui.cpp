@@ -40,7 +40,13 @@ namespace My
             uint32_t now = millis();
             if (now - *last_poll >= My::Config::Delays::ENVIRONMENTAL_POLL_INTERVAL_MS) {
                 *last_poll = now;
+                if (SharedInstances::i2c_bus_lock != nullptr) {
+                    xSemaphoreTake(SharedInstances::i2c_bus_lock, portMAX_DELAY);
+                }
                 *read = SharedInstances::environmental.read(*env);
+                if (SharedInstances::i2c_bus_lock != nullptr) {
+                    xSemaphoreGive(SharedInstances::i2c_bus_lock);
+                }
                 if (!*read) {
                     SharedInstances::serial.serial_print(My::Infos::ui_failed_environmental);
                 }

@@ -37,6 +37,11 @@ namespace My
             // How often to poll the AHT20+BMP280 environmental sensor (milliseconds)
             static const uint32_t ENVIRONMENTAL_POLL_INTERVAL_MS = 5000; //ms
 
+            // Wire.setTimeout() value: bounds how long a single I2C transaction
+            // may stall (e.g. a missing device holding SCL) before aborted.
+            // 0 = no timeout (default). Small values unstick a hung bus.
+            static const uint32_t I2C_TRANSACTION_TIMEOUT_MS = 50; //ms
+
             // Environemental sensor initialisation issue, delay so the message can be read
             static const uint32_t ENVIRONMENTAL_INITIALISATION_ISSUE_MS = 5000; //ms
 

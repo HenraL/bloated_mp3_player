@@ -147,6 +147,17 @@ void setup()
 
     // I2C sensors 
     Wire.begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN);
+    Wire.setTimeout(My::Config::Delays::I2C_TRANSACTION_TIMEOUT_MS);
+
+    // Shared I2C bus mutex: the two PCF8574 LCD backpacks, the AHT20/BMP280
+    // and the MPU6050 share one Wire bus driven from different FreeRTOS
+    // tasks. Without this lock, interleaved beginTransmission/endTransmission
+    // sequences corrupt each other (garbled characters, stuck I2C).
+    SharedInstances::i2c_bus_lock = xSemaphoreCreateMutex();
+    if (SharedInstances::i2c_bus_lock != nullptr) {
+        SharedInstances::char_lcd.set_bus_lock(SharedInstances::i2c_bus_lock);
+        SharedInstances::char_lcd_vogon.set_bus_lock(SharedInstances::i2c_bus_lock);
+    }
 
     // Character LCD (PCF8574 backpack on the same I2C bus) -- boot notice
     SharedInstances::char_lcd.begin();

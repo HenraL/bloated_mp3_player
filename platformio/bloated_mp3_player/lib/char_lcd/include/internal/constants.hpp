@@ -54,7 +54,9 @@ namespace CharLcd
     static const uint8_t DDRAM_BASE = 0x80;
 
     // Row start addresses: {row0, row1, row2, row3}
-    static const uint8_t ROW_DDRAM[4] = {0x00, 0x40, 0x10, 0x50};
+    // 20x4 panels: each line occupies 20 DDRAM slots starting at these.
+    // 16x2 panels only ever use row0/row1, so the mapping still holds.
+    static const uint8_t ROW_DDRAM[4] = {0x00, 0x40, 0x14, 0x54};
 
     // Default I2C address for the PCF8574 backpack (A0/A2 tied low is 0x27).
     static const uint8_t DEFAULT_I2C_ADDR = 0x27;
@@ -63,6 +65,6 @@ namespace CharLcd
     static const uint16_t INIT_DELAY_US = 4500;      // power-up wake-up
     static const uint16_t INIT_SETTLE_US = 150;      // post-wake settle
     static const uint16_t PULSE_US = 1;              // EN pulse width
-    static const uint8_t  EN_HOLD_MS = 2;            // time EN stays low
+    static const uint8_t  EN_HOLD_MS = 0;            // extra EN-low hold (the I2C transactions already provide the inter-byte pause)
     static const uint8_t  CLEAR_HOLD_MS = 2;         // after command/clear
 }

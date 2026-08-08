@@ -12,7 +12,7 @@
 * PROJECT: Bloated MP3 Player
 * FILE: pins.hpp
 * CREATION DATE: 15-07-2026
-* LAST Modified: 17:23:7 21-07-2026
+* LAST Modified: 18:7:33 08-08-2026
 * DESCRIPTION:
 * Central pin assignment header. If the universe ever decides to rearrange
 * its wiring, you only need to change things here. The rest of the code will
@@ -62,6 +62,9 @@ namespace My
             // how warm it is inside your pocket.
             static const uint8_t I2C_SDA_PIN = 2;//old: 5; 
             static const uint8_t I2C_SCL_PIN = 1;//old: 15;
+            // In case it gets swapped in hardware, uncomment the section bellow to test
+            // static const uint8_t I2C_SDA_PIN = 1;//old: 5; 
+            // static const uint8_t I2C_SCL_PIN = 2;//old: 15;
 
             // ─── SD Card (SDMMC 1-bit mode on Freenove hardware pins) ──────────────
             // The card sits on the ESP32‑S3 dedicated SDMMC pins:
@@ -71,14 +74,14 @@ namespace My
             // No CS pin is needed in SDMMC mode.
             static const uint8_t SDMMC_CLK = 39;
             static const uint8_t SDMMC_CMD = 38;
-            static const uint8_t SDMMC_D0  = 40;
+            static const uint8_t SDMMC_D0 = 40;
 
             // ─── Audio out (2x MAX98357A I2S class-D amps) ─────────────────
             // Standard I2S: the two boards share BCLK + LRCK, each gets its
             // own DIN. IO16 = BCLK, IO47 = LRCK, IO17/IO18 = DIN per speaker.
             static const uint8_t I2S_BCLK_PIN = 16;
-            static const uint8_t I2S_WS_PIN   = 47;
-            static const uint8_t I2S_DIN_PIN  = 17;
+            static const uint8_t I2S_WS_PIN = 47;
+            static const uint8_t I2S_DIN_PIN = 17;
             static const uint8_t I2S_DIN2_PIN = 18;
 
             // ─── Rotary encoder (Alps EC11E, Prusa-style) ─────────────────────────

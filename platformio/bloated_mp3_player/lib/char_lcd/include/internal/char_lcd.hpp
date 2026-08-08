@@ -25,6 +25,8 @@
 #pragma once
 #include <Arduino.h>
 #include <Wire.h>
+#include <FreeRTOS.h>
+#include <semphr.h>
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -43,6 +45,16 @@ namespace CharLcd
          */
         Lcd(TwoWire &wire, uint8_t i2c_addr = CharLcd::DEFAULT_I2C_ADDR,
             uint8_t cols = 16, uint8_t rows = 2);
+
+        /**
+         * @brief Attach the shared I2C bus mutex.
+         *
+         * The PCF8574 backpack, the AHT20/BMP280 and the MPU6050 share one
+         * Wire bus; two tasks writing to it at once corrupt each other's
+         * bytes (garbled characters). Call once with a FreeRTOS mutex that
+         * guards the whole bus.
+         */
+        void set_bus_lock(SemaphoreHandle_t mutex);
 
         /** Initialise the controller into 4-bit nibble mode and clear. */
         void begin();
@@ -79,6 +91,7 @@ namespace CharLcd
             uint8_t  _display_control;
             uint8_t  _function_set;
             uint8_t  _last_i2c_error;
+            SemaphoreHandle_t _bus_lock;
 
             void _write_nibble(uint8_t nibble, uint8_t mode);
             void _pulse_enable(uint8_t data);

@@ -34,6 +34,15 @@
 
 namespace SharedInstances
 {
+    /**
+     * @brief Mutex guarding the shared I2C bus.
+     *
+     * The PCF8574 LCD backpacks, the AHT20/BMP280 and the MPU6050 all share
+     * one Wire bus driven from different FreeRTOS tasks. Created in setup()
+     * after Wire.begin(); every task that touches Wire holds this lock.
+     */
+    extern SemaphoreHandle_t i2c_bus_lock;
+
     extern My::LCD::Display lcd;
     extern MatrixCanvas matrix_cvs;
     extern My::LED::LED onboard;

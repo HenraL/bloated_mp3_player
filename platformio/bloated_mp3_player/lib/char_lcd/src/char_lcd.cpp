@@ -39,7 +39,13 @@ namespace CharLcd
         , _display_control(0)
         , _function_set(0)
         , _last_i2c_error(0)
+        , _bus_lock(nullptr)
     {
+    }
+
+    void Lcd::set_bus_lock(SemaphoreHandle_t mutex)
+    {
+        _bus_lock = mutex;
     }
 
     void Lcd::_write_nibble(uint8_t nibble, uint8_t mode)
@@ -60,6 +66,10 @@ namespace CharLcd
     void Lcd::_pulse_enable(uint8_t data)
     {
         uint8_t write_error = 0;
+        if (_bus_lock != nullptr)
+        {
+            xSemaphoreTake(_bus_lock, portMAX_DELAY);
+        }
         _last_i2c_error = 0;
         _wire->beginTransmission(_addr);
         _wire->write(data | CharLcd::LCD_EN_BIT);
@@ -78,6 +88,10 @@ namespace CharLcd
         else
         {
             _wire->endTransmission();
+        }
+        if (_bus_lock != nullptr)
+        {
+            xSemaphoreGive(_bus_lock);
         }
         if (write_error != 0)
         {

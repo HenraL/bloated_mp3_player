@@ -46,8 +46,14 @@ namespace My
                 PROFILE_BLOCK("sensor_tick");
 
                 IMU::Vec3 accel;
+                if (SharedInstances::i2c_bus_lock != nullptr) {
+                    xSemaphoreTake(SharedInstances::i2c_bus_lock, portMAX_DELAY);
+                }
                 IMU::read_accel(accel);
                 IMU::Gesture g = IMU::gesture_tick();
+                if (SharedInstances::i2c_bus_lock != nullptr) {
+                    xSemaphoreGive(SharedInstances::i2c_bus_lock);
+                }
 
                 switch (g) {
                     case IMU::Gesture::Shake:
