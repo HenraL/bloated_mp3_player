@@ -8056,6 +8056,16 @@
 	)
 	(wire
 		(pts
+			(xy 265.43 196.85) (xy 267.97 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "82b16a36-8177-4310-a4d9-ee5a608855f6")
+	)
+	(wire
+		(pts
 			(xy 44.45 102.87) (xy 44.45 110.49)
 		)
 		(stroke
@@ -8243,6 +8253,16 @@
 			(type default)
 		)
 		(uuid "8d944549-145e-4d92-9853-a3483b73de76")
+	)
+	(wire
+		(pts
+			(xy 265.43 199.39) (xy 267.97 199.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9071ed01-23cf-472f-bee9-32e03afbad81")
 	)
 	(wire
 		(pts
@@ -8473,6 +8493,16 @@
 			(type default)
 		)
 		(uuid "9c0ea792-64e9-4822-b1e5-8828e7b19719")
+	)
+	(wire
+		(pts
+			(xy 267.97 196.85) (xy 267.97 199.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9c907d3f-dcb1-4f7a-82d2-47f7da52fcb4")
 	)
 	(wire
 		(pts
@@ -14520,6 +14550,66 @@
 				(justify left)
 			)
 		)
+		(pin "A0(1)" input
+			(at 351.79 199.39 0)
+			(uuid "c2626ec6-c8d7-4ed0-86f8-5608308b847f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A0(2)" input
+			(at 351.79 201.93 0)
+			(uuid "7e472ef3-e807-4421-a802-617648f05d9e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A1(1)" input
+			(at 351.79 205.74 0)
+			(uuid "fa2370f0-483c-4e0a-9ec0-2507f4813cdd")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A1(2)" input
+			(at 351.79 208.28 0)
+			(uuid "e7b8634c-c1ca-4518-b8c0-f2ab4a960cd3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A2(1)" input
+			(at 351.79 213.36 0)
+			(uuid "6994abc9-f13b-40a7-8583-e01ba3627e67")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A2(2)" input
+			(at 351.79 215.9 0)
+			(uuid "c56b4e4f-b0b7-481e-b582-eb077f346c74")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "mp3_player"
 				(path "/0f0043d3-9467-400d-886a-57a73f910f34"
@@ -15019,6 +15109,66 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+		(pin "A0(1)" input
+			(at 265.43 196.85 0)
+			(uuid "715ca454-ca20-403f-92cd-e3a24f0d1599")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A0(2)" input
+			(at 265.43 199.39 0)
+			(uuid "cad8b648-89e5-4621-9d60-3df48588d514")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A1(1)" input
+			(at 265.43 203.2 0)
+			(uuid "4cefac13-402a-48be-b9fe-165e56b22fca")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A1(2)" input
+			(at 265.43 205.74 0)
+			(uuid "ce8c515e-9222-4937-aab2-9a19cda677ad")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A2(1)" input
+			(at 265.43 209.55 0)
+			(uuid "aa76c6a2-0be3-4c4c-81f7-e9bcc6264919")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A2(2)" input
+			(at 265.43 212.09 0)
+			(uuid "aa26bc31-8a0c-48c8-be1a-4487e4aaa98c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances
