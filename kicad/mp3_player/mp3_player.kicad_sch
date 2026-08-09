@@ -5790,7 +5790,7 @@
 	)
 	(text "Orientation sensor"
 		(exclude_from_sim no)
-		(at 54.356 93.726 0)
+		(at 56.388 88.392 0)
 		(effects
 			(font
 				(size 1.27 1.27)
