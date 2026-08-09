@@ -12,7 +12,7 @@
 -- PROJECT: Bloated MP3 Player
 -- FILE: README.md
 -- CREATION DATE: 23-07-2026
--- LAST Modified: 15:48:0 23-07-2026
+-- LAST Modified: 18:22:4 09-08-2026
 -- DESCRIPTION:
 -- This is the code in charge of making the bloated player come to life.
 -- /STOP
@@ -25,7 +25,7 @@
 
 ## bloated_mp3_player
 
-**The answer is 42. The question, it turns out, is: "How many peripherals can you bolt onto an ESP32 before the scheduler files for divorce?"**
+> **The answer is 42. The question, it turns out, is: "How many peripherals can you bolt onto an ESP32 before the scheduler files for divorce?"**
 
 This is a multithreaded embedded project that started life as a humble MP3 player and, through a series of unfortunate events vaguely resembling a real-time systems course, accreted so many non-essential components that it now requires a concurrent scheduler just to keep them all arguing fairly for CPU time.
 
@@ -60,7 +60,7 @@ Would Zaphod Beeblebrox approve? Almost certainly, right before stealing it.
 
 ## Disclaimer
 
-- This program is provided **as is**, without warranty of any kind — implied, express, or Vogon-constructed. If your ESP32 achieves sentience and demands a better quality of MP3, that's your problem.
+- This program is provided **as is**, without warranty of any kind — implied, express, or Vogon-constructed. If your ESP32 achieves sentience and demands a better quality MP3 files, that's your problem.
 - This program was written with the assistance of AI. The AI is not responsible for any design decisions, but it did try to talk us out of the 16×16 RGB matrix. We didn't listen.
 - Developed under **Ubuntu 24.04.4 LTS**, where ESP32s tend to materialise on `/dev/ttyACM0` (unless they're feeling contrary, in which case check `dmesg`).
 - Targeted at the **ESP32-S3 WROOM FREENOVE** dev board. Flashed via the PlatformIO extension for VS Code (or however one normally communicates with small, irritable computers).
@@ -72,7 +72,7 @@ Would Zaphod Beeblebrox approve? Almost certainly, right before stealing it.
 The software stack, from bottom to top:
 
 | Layer | What it is | Why it's here |
-|-------|-----------|---------------|
+| ------- | ----------- | --------------- |
 | FreeRTOS | Real-time OS (via Arduino) | So 17 tasks can deadlock each other in style |
 | Arduino ESP32 Core | HAL / framework | Because writing raw ESP-IDF is for people with more patience |
 | [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) | RGB LED control | Makes the matrix glow reassuringly |
@@ -90,13 +90,13 @@ This library lives at `platformio/bloated_mp3_player/lib/arduino-libhelix` and i
 
 To initialise it (and thereby disprove the above quote):
 
-```
+```bash
 git clone --recursive <repository-url>
 ```
 
 If you cloned without `--recursive` (you magnificent fool):
 
-```
+```bash
 git submodule update --init --recursive
 ```
 
@@ -110,7 +110,7 @@ PlatformIO scans `lib/` automatically, so the submodule compiles itself into the
 The following have been sacrificed on the altar of concurrency:
 
 | Purpose | Name | Price (€) | Quantity | Link |
-|---------|------|-----------|----------|------|
+| --------- | ------ | ----------- | ---------- | ------ |
 | :brain: The brains | Freenove ESP32-S3-WROOM CAM — Dual-core 32-bit 240 MHz | 20.19 | 1 | [AliExpress](https://aliexpress.com/item/1005004960637276.html) |
 | :tv: Display | Lcd12864 12864-06D — COG dot matrix, SPI, with Chinese font | 6.19 | 1 | [AliExpress](https://aliexpress.com/item/1005009024477658.html) |
 | :receipt: Cash-register display | TZT LCD2004+I2C — 2004A 20x4 HD44780 char LCD with I2C adapter soldered on the back | 4.85 | 1 | [AliExpress](https://aliexpress.com/item/1005004726086089.html) |
@@ -133,9 +133,9 @@ For fuses, capacitors, resistors, and the 5 V → 3.3 V regulators, see the sche
 
 > *"I am the President of the Galaxy. I'm not in the mood for a diplomatic relationship."*
 
-Despite our best efforts, the development prototype has filed for divorce with two of its peripherals: the STN 128×64 LCD and the WS2812B matrix have gone silent (presumably due to wiring disagreements). Whether the separation is permanent or a trial separation pending re-cabling remains to be seen — a second round of arbitration will be scheduled once the new I2C character LCDs are in place.
+Despite our best efforts, the development prototype has filed for divorce with two of its peripherals: the STN 128×64 LCD and the WS2812B matrix have gone silent (presumably due to wiring disagreements). The firmware driving both of them is still running, faithfully poking the pins every task tick — so if the wiring ever is reconciled, they may snap back to life like nothing happened. No firmware update required. Just cable therapy.
 
-There is, however, a sliver of hope: the firmware driving both of them is still running, faithfully poking the pins every task tick — so if the wiring ever is reconciled, the LCD and matrix may snap back to life like nothing happened. No firmware update required. Just cable therapy. If a reconciliation is announced, this entry will be updated accordingly.
+The I2C character displays, meanwhile, have fully reconciled: the 2004A info panel (folder browser, track names, volume, uptime) and the 1602A Vogon poetry panel (which also breathes IMU orientation readouts between stanzas) are both happily married to the bus. If the big LCD and matrix ever announce a reconciliation, this entry will be updated accordingly.
 
 ## How to Flash
 
@@ -154,7 +154,7 @@ A PlatformIO extra script (`middleware/full_erase.py`) automatically erases the 
 
 It can also be run standalone:
 
-```
+```bash
 python middleware/full_erase.py                          # auto-detect port
 python middleware/full_erase.py --port /dev/ttyUSB0      # explicit port
 ```
@@ -165,7 +165,20 @@ It will find `esptool.py` in your PATH, or tell you to `pip install esptool` if 
 
 > *"In the beginning, the universe was created. This has made a lot of people very angry and been widely regarded as a bad move."*
 
-Turn the rotary encoder to navigate the menu. Press the switch to select. The interface, such as it is, will appear on the LCD. The RGB matrix will do something presumably artistic. The ultrasonic sensor will judge your distance from the board. The MPU-9250 will ponder its orientation in the cosmos. The temperature sensor will inform you that it is, in fact, room temperature.
+Turn the rotary encoder to navigate. Selection is two-stage: rotate to pick a
+folder (album), press once to step inside and browse its tracks, rotate to the
+track you want, press again to play it. Double- or triple-click the knob to skip
+forward/back a track while playing (or to pop back to the album list while
+browsing inside a folder). Wave a hand once past the ultrasonic sensor to pause,
+and wave it twice quickly to abandon the current track and return to the menu.
+
+The interface appears on the SPI LCD and the 2004A info panel, which shows the
+current folder, track, volume and uptime (hh:mm:ss). The 1602A recites Vogon
+poetry and periodically trades buffers with the IMU to show roll/pitch/yaw. The
+RGB matrix will do something presumably artistic if its wiring ever gets talked
+off the ledge. The ultrasonic sensor will judge your distance from the board.
+The MPU-9250 will ponder its orientation in the cosmos. The temperature sensor
+will inform you that it is, in fact, room temperature.
 
 There is no off switch. You have been warned.
 
@@ -180,14 +193,14 @@ The firmware includes a lightweight profiler that can dump task timing traces an
 1. In the firmware, ensure `Profiling::dump_traces()` or `Profiling::dump_task_stats()` is called. The output appears on the serial console (typically 115200 baud) in sections bracketed by `=== PROFILING TRACES ===` / `=== END PROFILING TRACES ===`.
 2. Save that serial output to a file:
 
-   ```
+   ```bash
    platformio device monitor --raw > serial_dump.txt
    ```
 
    Press the reset button to trigger the dump, then hit Ctrl+C to stop.
 3. Generate the flamegraph:
 
-   ```
+   ```bash
    python bonus/extras/flamegraph.py serial_dump.txt
    ```
 
@@ -196,7 +209,7 @@ The firmware includes a lightweight profiler that can dump task timing traces an
 
 **Usage summary:**
 
-```
+```bash
 python bonus/extras/flamegraph.py < serial_dump.txt              # read from stdin
 python bonus/extras/flamegraph.py serial_dump.txt                # read from file
 python bonus/extras/flamegraph.py serial_dump.txt -o output.svg  # custom output
@@ -217,7 +230,7 @@ Use the provided shell scripts — they create their own virtual environment fro
 after themselves. Like a well-mannered Vogon butler.
 
 | If you want to | Run this | It auto-creates venv from |
-|---|---|---|
+| --- | --- | --- |
 | Bake fonts into C | `./bonus/font2c.sh` | `bonus/font2c/requirements.txt` |
 | Bake images into C | `./bonus/img2c.sh` | `bonus/img2c/requirements.txt` |
 
@@ -248,7 +261,7 @@ Pillow rendering approximately 500 glyphs per size per font. Have a towel ready.
 **What you can tweak:**
 
 | Flag | Default | What it does (in plain Galactic) |
-|------|---------|----------------------------------|
+| ------ | --------- | ---------------------------------- |
 | `--size SIZE` | — | Exactly one point size; ignores `--min`/`--max` |
 | `--min MIN` | 8 | Smallest size to generate |
 | `--max MAX` | 20 | Largest size to generate |
@@ -261,7 +274,7 @@ Pillow rendering approximately 500 glyphs per size per font. Have a towel ready.
 
 **What lands in `lib/fonts/`:**
 
-```
+```plaintext
 lib/fonts/
 ├── include/
 │   ├── fonts.hpp              — Master include (include this, get all)
@@ -315,7 +328,7 @@ PlatformIO library. If the images had towels, they'd be packed too.
 **Available levers:**
 
 | Flag | Default | Description |
-|------|---------|-------------|
+| ------ | --------- | ------------- |
 | `-o DIR`, `--output DIR` | — | Where to put the result |
 | `--batch` | — | Process all PNGs in input directory |
 | `--library` | — | Generate `include/` + `src/` PlatformIO structure |
@@ -327,7 +340,7 @@ PlatformIO library. If the images had towels, they'd be packed too.
 
 **Output terrain:**
 
-```
+```plaintext
 lib/images/
 ├── include/
 │   ├── images.hpp                 — Aggregated master header
