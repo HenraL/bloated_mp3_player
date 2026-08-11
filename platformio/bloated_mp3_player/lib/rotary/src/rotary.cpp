@@ -42,6 +42,28 @@ static uint32_t last_release_ms = 0;
 static uint8_t click_count = 0;
 static uint8_t last_raw_bits = 0xFF;
 
+// Detent-aware step accumulator: a detented encoder (e.g. EC11) produces
+// four quadrature transitions (or two A-edges) per physical click. Emitting
+// on every transition makes one click skip several tracks; this instead
+// emits a single step per completed click. A direction reversal resets the
+// phase, so contact bounce cancels out instead of counting.
+static int16_t detent_phase = 0;
+static int8_t detent_dir = 0;
+
+static void accumulate_detent_step(int8_t dir, bool quadrature)
+{
+    if (dir != detent_dir) {
+        detent_dir = dir;
+        detent_phase = 0;
+    }
+    detent_phase++;
+    if (detent_phase >= (quadrature ? 4 : 2)) {
+        detent_phase = 0;
+        encoder_pos += dir;
+        last_dir = dir;
+    }
+}
+
 // When true (default), direction is decoded from both A and B using the
 // quadrature transition table; when false, the older single-edge (A-only)
 // decode is used. Toggle to compare behaviour on noisy wiring.
@@ -95,8 +117,7 @@ void Rotary::tick()
             };
             int8_t dir = TRANS[(last_state << 2) | state];
             if (dir != 0) {
-                encoder_pos += dir;
-                last_dir = dir;
+                accumulate_detent_step(dir, true);
             }
             last_state = state;
             last_a_ms = now;
@@ -104,11 +125,9 @@ void Rotary::tick()
     } else {
         if (a != last_a && (now - last_a_ms) > DEBOUNCE_US) {
             if (b != a) {
-                encoder_pos++;
-                last_dir = 1;
+                accumulate_detent_step(1, false);
             } else {
-                encoder_pos--;
-                last_dir = -1;
+                accumulate_detent_step(-1, false);
             }
             last_a = a;
             last_b = b;
