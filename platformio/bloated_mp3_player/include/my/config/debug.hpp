@@ -102,6 +102,22 @@ namespace My
             // code (continuous refresh) from flicker caused by wiring.
             static const bool LCD_ONESHOT_TEST_ENABLED = false;
 
+            // When true, boot floods the whole RGB matrix white for ~2s as a
+            // hardware sanity check. Off by default: 256 WS2812 LEDs at once
+            // spike the 5V rail hard (brownouts on marginal supplies) and,
+            // with the matrix task disabled, the fill stays lit forever.
+            static const bool MATRIX_BOOT_FILL = false;
+
+            // When true, every UART debug line is mirrored to any Bluetooth
+            // client connected over BLE (nRF UART service — phone/PC
+            // "BLE serial terminal" apps). The mirror is skipped while
+            // nobody is connected, so it costs nothing but a connected()
+            // check per line.
+            static const bool BLUETOOTH_UART_BRIDGE_ENABLED = true;
+
+            // Prints the BLE bridge bring-up result at boot.
+            static const bool UART_BT_BRIDGE = true;
+
             // Character LCD (PCF8574 info panel) debug lines
             static const bool UART_CHAR_LCD_REFRESH = false;
             static const bool UART_CHAR_LCD_I2C_ERROR = true;
