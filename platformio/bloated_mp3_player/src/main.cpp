@@ -83,7 +83,7 @@ void boot_screen()
 bool discover_audio_tracks()
 {
     if (!SDCard::is_mounted()) {
-        SharedInstances::serial.serial_print(My::Infos::warn_sd_not_mounted);
+        SharedInstances::serial.serial_print(My::Infos::UART::warn_sd_not_mounted);
         return false;
     }
     SharedInstances::lcd.clear();
@@ -91,9 +91,9 @@ bool discover_audio_tracks()
     SharedInstances::lcd.printAt("Booting...", My::Config::DisplayLayout::BOOTING_X, My::Config::DisplayLayout::BOOTING_Y);
     SharedInstances::lcd.printAt("Discovering music...", My::Config::DisplayLayout::AUDIO_DISCOVERING_X, My::Config::DisplayLayout::AUDIO_DISCOVERING_Y);
     SharedInstances::lcd.display();
-    SharedInstances::serial.serial_print(My::Infos::sd_scanning);
+    SharedInstances::serial.serial_print(My::Infos::UART::sd_scanning);
     bool ok = SDCard::scan_tracks("/");
-    SharedInstances::serial.serial_print(My::Infos::sd_found, SDCard::total_tracks());
+    SharedInstances::serial.serial_print(My::Infos::UART::sd_found, SDCard::total_tracks());
     return ok;
 }
 
@@ -117,8 +117,8 @@ void setup()
     Profiler::set_enabled(My::Config::Debug::UART_PROFILING_ENABLED);
 
     // Display boot message
-    SharedInstances::serial.serial_print(My::Infos::boot_title);
-    SharedInstances::serial.serial_print(My::Infos::quote_ships_bricks);
+    SharedInstances::serial.serial_print(My::Infos::UART::boot_title);
+    SharedInstances::serial.serial_print(My::Infos::UART::quote_ships_bricks);
 
     // Onboard LED – init first, then colour
     SharedInstances::onboard.init();
@@ -136,12 +136,16 @@ void setup()
         My::Config::Pins::MATRIX_PIN
     );
 
-    // Quick hardware test: light all LEDs white briefly
-    for (uint16_t i = 0; i < (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL); i++) {
-        Matrix::set_pixel(i, My::LED::blue_colour);
+    // Quick hardware test: light all LEDs white briefly (gated off by
+    // default — the 256-LED spike pulls the 5V rail hard during boot and,
+    // with the matrix task disabled, the fill never gets overwritten).
+    if (My::Config::Debug::MATRIX_BOOT_FILL) {
+        for (uint16_t i = 0; i < (My::Config::MATRIX_LED_COUNT_HORIZONTAL * My::Config::MATRIX_LED_COUNT_VERTICAL); i++) {
+            Matrix::set_pixel(i, My::LED::white_colour);
+        }
+        Matrix::show();
+        delay(2100);
     }
-    Matrix::show();
-    delay(2100);
 
     Matrix::set_animation(Matrix::Animation::Rainbow);
 
@@ -162,8 +166,9 @@ void setup()
     // Character LCD (PCF8574 backpack on the same I2C bus) -- boot notice
     SharedInstances::char_lcd.begin();
     SharedInstances::char_lcd.backlight(true);
-    SharedInstances::char_lcd.print_at(0, 0, "Bloated MP3");
-    SharedInstances::char_lcd.print_at(0, 1, "DON'T PANIC");
+    SharedInstances::char_lcd.print_at(0, 0, My::Infos::LCD::boot_name);
+    SharedInstances::char_lcd.print_at(0, 1, My::Infos::LCD::boot_motto);
+    SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::booting_i2c);
 
     // Second 1602A: the Vogon panel, brought online with its own motto.
     SharedInstances::char_lcd_vogon.begin();
@@ -171,31 +176,43 @@ void setup()
 
     // Environmental (AHT20+BMP280)
     if (!SharedInstances::environmental.begin()) {
-        SharedInstances::serial.serial_print(My::Infos::warn_environmental);
+        SharedInstances::serial.serial_print(My::Infos::UART::warn_environmental);
+        SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::i2c_fail);
         delay(My::Config::Delays::ENVIRONMENTAL_INITIALISATION_ISSUE_MS);
+    } else {
+        SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::i2c_ok);
     }
 
     // IMU
     if (!IMU::begin(My::Config::Pins::I2C_SDA_PIN, My::Config::Pins::I2C_SCL_PIN)) {
-        SharedInstances::serial.serial_print(My::Infos::warn_imu);
+        SharedInstances::serial.serial_print(My::Infos::UART::warn_imu);
         delay(My::Config::Delays::IMU_INITIALISATION_FAILURE_MS);
     }
+    SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::booting_sd);
 
     // SD card (SDMMC 1-bit mode on hardware pins 38/39/40)
     if (!SDCard::begin(My::Config::Pins::SDMMC_CLK, My::Config::Pins::SDMMC_CMD, My::Config::Pins::SDMMC_D0)) {
-        SharedInstances::serial.serial_print(My::Infos::warn_sd_card);
+        SharedInstances::serial.serial_print(My::Infos::UART::warn_sd_card);
+        SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::sd_missing);
         delay(My::Config::Delays::SD_CARD_NOT_PRESENT_MESSAGE_MS);
     } else {
         if (!discover_audio_tracks()) {
-            SharedInstances::serial.serial_print(My::Infos::warn_no_music);
+            SharedInstances::serial.serial_print(My::Infos::UART::warn_no_music);
+            SharedInstances::char_lcd.print_at(0, 2, "%-20.20s", My::Infos::LCD::sd_no_music);
             delay(My::Config::Delays::SD_CARD_NO_MUSIC_PRESENT_MS);
+        } else {
+            SharedInstances::char_lcd.print_at(0, 2, My::Infos::LCD::sd_tracks, (unsigned long)SDCard::total_tracks());
         }
     }
+    SharedInstances::char_lcd.print_at(0, 3, "%-20.20s", My::Infos::LCD::booting_audio);
 
     // Audio
     if (!SharedInstances::audio.open()) {
-        SharedInstances::serial.serial_print(My::Infos::warn_i2s, (unsigned long)SharedInstances::audio.last_error());
+        SharedInstances::serial.serial_print(My::Infos::UART::warn_i2s, (unsigned long)SharedInstances::audio.last_error());
+        SharedInstances::char_lcd.print_at(0, 3, "%-20.20s", My::Infos::LCD::audio_fail);
         delay(My::Config::Delays::AUDIO_HANDLER_I2S_OPEN_FAILURE_MS);
+    } else {
+        SharedInstances::char_lcd.print_at(0, 3, "%-20.20s", My::Infos::LCD::audio_ok);
     }
     SharedInstances::audio.setVolume(My::Config::AUDIO_VOLUME_DEFAULT);
 
@@ -205,8 +222,18 @@ void setup()
     Rotary::set_direction_inverted(My::Config::Debug::ROTARY_DIRECTION_INVERTED);
     Ultrasonic::begin(My::Config::Pins::ULTRA_TRIG_PIN, My::Config::Pins::ULTRA_ECHO_PIN);
 
-    // Bluetooth
-    Bluetooth::begin("BloatedMP3");
+    // Bluetooth (BLE UART bridge — classic SPP isn't in the S3 SDK)
+    if (!SharedInstances::bluetooth.begin(My::Config::BT_DEVICE_NAME)) {
+        SharedInstances::serial.serial_debug(
+            My::Config::Debug::UART_BT_BRIDGE,
+            My::Infos::UART::bt_bridge_fail
+        );
+    } else {
+        SharedInstances::serial.serial_debug(
+            My::Config::Debug::UART_BT_BRIDGE,
+            My::Infos::UART::bt_bridge_ready
+        );
+    }
 
     // Artificial delay (to read the initialisaiton issues)
     delay(My::Config::Delays::PRE_THREAD_INITIALISATION_DELAY);
@@ -221,7 +248,7 @@ void setup()
     SharedInstances::my_threads.initialise_vogon_panel();
     SharedInstances::my_threads.initialise_char_lcd();
 
-    SharedInstances::serial.serial_print(My::Infos::all_tasks_spawned);
+    SharedInstances::serial.serial_print(My::Infos::UART::all_tasks_spawned);
     if (My::Config::Debug::UART_PROFILING_ENABLED) {
         Profiler::dump_task_stats();
     }
