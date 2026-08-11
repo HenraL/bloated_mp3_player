@@ -24,6 +24,7 @@
 
 #pragma once
 #include <audio.hpp>
+#include <bluetooth.hpp>
 #include <char_lcd.hpp>
 #include <environmental.hpp>
 #include <imu.hpp>
@@ -74,4 +75,5 @@ namespace SharedInstances
     extern CharLcd::Lcd char_lcd_vogon;
     extern Audio::Audio audio;
     extern Audio::Player player;
+    extern Bluetooth::Bridge bluetooth;
 }
