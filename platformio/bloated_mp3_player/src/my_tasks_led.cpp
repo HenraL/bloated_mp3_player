@@ -72,7 +72,7 @@ namespace My
             uint16_t tick_count = 0;
             bool refresh = true;
             bool special_animation = false;
-            SharedInstances::serial.serial_print(My::Infos::led_light_twice_bright);
+            SharedInstances::serial.serial_print(My::Infos::UART::led_light_twice_bright);
 
             while (true) {
                 PROFILE_BLOCK("led_tick");
@@ -82,7 +82,7 @@ namespace My
                 if (tick_count % 50 == 0) {
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_LED_STACK_HIGH_WATER,
-                        My::Infos::led_stack_hwm,
+                        My::Infos::UART::led_stack_hwm,
                         (unsigned int)uxTaskGetStackHighWaterMark(NULL)
                     );
                 }

@@ -22,7 +22,9 @@
 * +==== END Bloated MP3 Player =================+
 */
 
+#include <bluetooth.hpp>
 #include "my/tasks.hpp"
+#include "my/config.hpp"
 #include "shared_instances.hpp"
 
 namespace My
@@ -36,6 +38,9 @@ namespace My
             while (true) {
                 SharedInstances::serial.get_queue(msg);
                 SharedInstances::serial.dump_to_uart(msg);
+                if (My::Config::Debug::BLUETOOTH_UART_BRIDGE_ENABLED && SharedInstances::bluetooth.uart_connected()) {
+                    SharedInstances::bluetooth.uart_stream(msg);
+                }
             }
         }
     } // namespace Tasks

@@ -43,7 +43,7 @@ namespace My
             uint8_t orientation_log_countdown = 0;
             IMU::Vec3 accel;
             IMU::Gesture g;
-            SharedInstances::serial.serial_print(My::Infos::sensor_time_illusion);
+            SharedInstances::serial.serial_print(My::Infos::UART::sensor_time_illusion);
 
             while (true) {
                 PROFILE_BLOCK("sensor_tick");
@@ -65,7 +65,7 @@ namespace My
                     orientation_log_countdown = 5;
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_ANGLE_SENSOR_ORIENTATION,
-                        My::Infos::sensor_orientation,
+                        My::Infos::UART::sensor_orientation,
                         SharedInstances::imu_orientation.roll,
                         SharedInstances::imu_orientation.pitch,
                         SharedInstances::imu_orientation.yaw
@@ -76,16 +76,16 @@ namespace My
 
                 switch (g) {
                     case IMU::Gesture::Shake:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_SHAKE, My::Infos::sensor_shake);
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_SHAKE, My::Infos::UART::sensor_shake);
                         // Audio::stop();
                         // Audio::play_raw(nullptr, 0);
                         break;
                     case IMU::Gesture::TiltLeft:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_LEFT, My::Infos::sensor_tilt_left);
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_LEFT, My::Infos::UART::sensor_tilt_left);
                         // Audio::pause();
                         break;
                     case IMU::Gesture::TiltRight:
-                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_RIGHT, My::Infos::sensor_tilt_right);
+                        SharedInstances::serial.serial_debug(My::Config::Debug::UART_ANGLE_SENSOR_TILT_RIGHT, My::Infos::UART::sensor_tilt_right);
                         // Audio::resume();
                         break;
                     default:

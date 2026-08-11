@@ -52,7 +52,7 @@ namespace My
             bool read = false;
             Environmental::Reading env;
 
-            SharedInstances::serial.serial_print(My::Infos::char_lcd_task_start);
+            SharedInstances::serial.serial_print(My::Infos::UART::char_lcd_task_start);
 
             while (true) {
                 PROFILE_BLOCK("char_lcd_tick");
@@ -81,12 +81,12 @@ namespace My
                     SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", SharedInstances::track_browser.folder_name());
                     if (SharedInstances::track_browser.in_track_stage()) {
                         SharedInstances::char_lcd.print_at(0, 1, "> %-18.18s", SharedInstances::track_browser.track_name());
-                        SharedInstances::char_lcd.print_at(0, 2, "Track %lu/%lu press=play",
+                        SharedInstances::char_lcd.print_at(0, 2, My::Infos::LCD::track_press_play,
                             (unsigned long)SharedInstances::track_browser.folder_track_count() == 0 ? 0 : (unsigned long)(SharedInstances::track_browser.track_index() - SDCard::get_folder(SharedInstances::track_browser.folder_index())->first_track) + 1,
                             (unsigned long)SharedInstances::track_browser.folder_track_count());
                     } else {
                         SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", SharedInstances::track_browser.track_name());
-                        SharedInstances::char_lcd.print_at(0, 2, "Sel %lu/%lu press=enter",
+                        SharedInstances::char_lcd.print_at(0, 2, My::Infos::LCD::sel_press_enter,
                             (unsigned long)SharedInstances::track_browser.folder_index() + 1,
                             (unsigned long)total);
                     }
@@ -97,26 +97,26 @@ namespace My
                         (unsigned long)(millis() / 1000 % 60));
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_CHAR_LCD_REFRESH,
-                        My::Infos::char_lcd_refresh,
+                        My::Infos::UART::char_lcd_refresh,
                         SharedInstances::track_browser.folder_name()
                     );
                 } else if (track && track[0]) {
                     SharedInstances::char_lcd.print_at(0, 0, "%-20.20s", track);
                     SharedInstances::char_lcd.print_at(0, 1, "%-20.20s", folder && folder[0] ? folder : "");
                 } else {
-                    SharedInstances::char_lcd.print_at(0, 0, "%-20s", "No track");
+                    SharedInstances::char_lcd.print_at(0, 0, "%-20s", My::Infos::LCD::no_track);
                     SharedInstances::char_lcd.print_at(0, 1, "%-20s", "");
                 }
                 SharedInstances::serial.serial_debug(
                     My::Config::Debug::UART_CHAR_LCD_REFRESH,
-                    My::Infos::char_lcd_refresh,
+                    My::Infos::UART::char_lcd_refresh,
                     track && track[0] ? track : "No track"
                 );
 
                 if (read) {
                     SharedInstances::char_lcd.print_at(0, 2, "T:%.1f H:%.0f%% P:%.0fh", env.temperature, env.humidity, env.pressure);
                 } else {
-                    SharedInstances::char_lcd.print_at(0, 2, "%-20s", "No sensor data");
+                    SharedInstances::char_lcd.print_at(0, 2, "%-20s", My::Infos::LCD::no_sensor);
                 }
 
                 SharedInstances::char_lcd.print_at(0, 3, "Vol:%3lu Up:%02lu:%02lu:%02lu",
@@ -133,7 +133,7 @@ namespace My
                     if (cur_i2c_error != 0) {
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_CHAR_LCD_I2C_ERROR,
-                            My::Infos::char_lcd_i2c_error,
+                            My::Infos::UART::char_lcd_i2c_error,
                             cur_i2c_error,
                             (unsigned int)My::Config::CHAR_LCD_I2C_ADDR
                         );

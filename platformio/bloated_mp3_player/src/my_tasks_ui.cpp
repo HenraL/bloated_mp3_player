@@ -49,7 +49,7 @@ namespace My
                     xSemaphoreGive(SharedInstances::i2c_bus_lock);
                 }
                 if (!*read) {
-                    SharedInstances::serial.serial_print(My::Infos::ui_failed_environmental);
+                    SharedInstances::serial.serial_print(My::Infos::UART::ui_failed_environmental);
                 }
             }
             if (*read) {
@@ -57,11 +57,11 @@ namespace My
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::TEMPERATURE_X, My::Config::DisplayLayout::HUMIDITY_Y, "T: %.1f°C", env->temperature);
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::HUMIDITY_X, My::Config::DisplayLayout::HUMIDITY_Y, "H: %.0f%%", env->humidity);
                 SharedInstances::lcd.printAt(My::Config::DisplayLayout::PRESSURE_X, My::Config::DisplayLayout::PRESSURE_Y, "P: %.0fhPa", env->pressure);
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_BMP280_COMPUTED_MODULE_DATA, My::Infos::ui_environmental, env->temperature, env->humidity, env->pressure);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_BMP280_COMPUTED_MODULE_DATA, My::Infos::UART::ui_environmental, env->temperature, env->humidity, env->pressure);
                 if (SharedInstances::environmental.has_bmp280()) {
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_BMP280_RAW_MODULE_DATA,
-                        My::Infos::ui_bmp280_raw,
+                        My::Infos::UART::ui_bmp280_raw,
                         SharedInstances::environmental.get_last_adc_p(),
                         SharedInstances::environmental.get_last_adc_t(),
                         (long long)SharedInstances::environmental.get_last_intermediate_p(),
@@ -143,7 +143,7 @@ namespace My
             (void)pvParameters;
             TickType_t xLastWake = xTaskGetTickCount();
             const TickType_t freq = pdMS_TO_TICKS(33);
-            SharedInstances::serial.serial_print(My::Infos::ui_mostly_harmless);
+            SharedInstances::serial.serial_print(My::Infos::UART::ui_mostly_harmless);
             Environmental::Reading env;
             bool read = false;
             uint32_t last_poll = 0;

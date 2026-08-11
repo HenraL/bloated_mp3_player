@@ -40,19 +40,19 @@ namespace My
         {
             const char *path = SharedInstances::track_browser.track_path();
             if (!SDCard::is_mounted()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_MOUNTED, My::Infos::input_sd_not_mounted);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_MOUNTED, My::Infos::UART::input_sd_not_mounted);
                 return;
             }
             if (!path || !path[0]) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_NO_TRACKS, My::Infos::input_no_tracks);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_NO_TRACKS, My::Infos::UART::input_no_tracks);
                 return;
             }
             SharedInstances::serial.serial_debug(
                 My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
-                My::Infos::input_playing_track,
+                My::Infos::UART::input_playing_track,
                 (unsigned long)SharedInstances::track_browser.track_index() + 1
             );
-            SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_AUDIO_PATH, My::Infos::input_filepath, path);
+            SharedInstances::serial.serial_debug(My::Config::Debug::UART_SD_AUDIO_PATH, My::Infos::UART::input_filepath, path);
             // Do not stop() here: keep I2S running across track changes so
             // the previous track's tail drains out and the next track's PCM
             // appends seamlessly, without an unreliable restart cycle.
@@ -71,7 +71,7 @@ namespace My
                         SharedInstances::track_browser.move_track(dir);
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
-                            My::Infos::input_select_moved,
+                            My::Infos::UART::input_select_moved,
                             (unsigned long)SharedInstances::track_browser.track_index() + 1,
                             (unsigned long)SharedInstances::track_browser.folder_track_count()
                         );
@@ -79,14 +79,14 @@ namespace My
                         SharedInstances::track_browser.move_folder(dir);
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
-                            My::Infos::input_select_moved,
+                            My::Infos::UART::input_select_moved,
                             (unsigned long)SharedInstances::track_browser.folder_index() + 1,
                             (unsigned long)SharedInstances::track_browser.folder_count()
                         );
                     }
                     return;
                 }
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, My::Infos::input_clicky_value, dir);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DIRECTION, My::Infos::UART::input_clicky_value, dir);
                 uint8_t vol = SharedInstances::audio.getVolume();
                 if (dir > 0) {
                     if (vol <= (My::Config::AUDIO_VOLUME_MAX - My::Config::AUDIO_VOLUME_STEP)) {
@@ -102,21 +102,21 @@ namespace My
                     }
                 }
                 SharedInstances::audio.setVolume(vol);
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_VOLUME, My::Infos::input_volume, vol);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_VOLUME, My::Infos::UART::input_volume, vol);
             }
         }
 
         static void handle_audio_play_pause(void)
         {
             if (Rotary::was_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_PRESSED, My::Infos::input_switch_pressed);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_PRESSED, My::Infos::UART::input_switch_pressed);
                 if (SharedInstances::track_browser.in_folder_stage()) {
                     // First click: step into the selected folder to browse
                     // its tracks.
                     SharedInstances::track_browser.enter_folder();
                     SharedInstances::serial.serial_debug(
                         My::Config::Debug::UART_SD_CURRENT_TRACK_INDEX,
-                        My::Infos::input_select_start
+                        My::Infos::UART::input_select_start
                     );
                 } else if (SharedInstances::track_browser.in_track_stage()) {
                     // Second click: play the highlighted track of the album.
@@ -133,7 +133,7 @@ namespace My
         static void handle_rotary_double_click(void)
         {
             if (Rotary::was_double_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DOUBLE_PRESSED, My::Infos::input_double_pressed);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_DOUBLE_PRESSED, My::Infos::UART::input_double_pressed);
                 if (SharedInstances::track_browser.in_track_stage()) {
                     // Double click inside a folder: back to the albums.
                     SharedInstances::track_browser.back_to_folders();
@@ -149,7 +149,7 @@ namespace My
         static void handle_rotary_triple_click(void)
         {
             if (Rotary::was_triple_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, My::Infos::input_triple_pressed);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_STICK_TRIPLE_PRESSED, My::Infos::UART::input_triple_pressed);
                 if (SharedInstances::track_browser.in_track_stage()) {
                     SharedInstances::track_browser.back_to_folders();
                 } else if (SharedInstances::track_browser.in_folder_stage()) {
@@ -164,7 +164,7 @@ namespace My
         static void handle_ultrasonic_press(void)
         {
             if (Ultrasonic::is_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_PRESSED, My::Infos::input_ultrasonic_pressed);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_PRESSED, My::Infos::UART::input_ultrasonic_pressed);
                 if (SharedInstances::audio.getStatus() == Audio::Playing) {
                     SharedInstances::audio.pause();
                 } else {
@@ -176,14 +176,14 @@ namespace My
         static void handle_ultrasonic_double_wave(void)
         {
             if (Ultrasonic::is_double_pressed()) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_DOUBLE_WAVED, My::Infos::input_ultrasonic_double_waved);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_DOUBLE_WAVED, My::Infos::UART::input_ultrasonic_double_waved);
                 // Two quick waves: back to the menu (browse the albums) no
                 // matter what the player was doing.
                 SharedInstances::audio.stop();
                 SharedInstances::track_browser.begin();
                 SharedInstances::serial.serial_debug(
                     My::Config::Debug::UART_ULTRASONIC_DOUBLE_WAVED,
-                    My::Infos::input_going_back_to_menu
+                    My::Infos::UART::input_going_back_to_menu
                 );
             }
         }
@@ -191,9 +191,9 @@ namespace My
         static void handle_ultrasonic_swipe(void)
         {
             int8_t swipe = Ultrasonic::get_swipe_dir();
-            SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPE_VALUE, My::Infos::input_swipe_value, swipe);
+            SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPE_VALUE, My::Infos::UART::input_swipe_value, swipe);
             if (swipe > 0) {
-                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPED, My::Infos::input_swiped);
+                SharedInstances::serial.serial_debug(My::Config::Debug::UART_ULTRASONIC_SWIPED, My::Infos::UART::input_swiped);
                 SharedInstances::audio.stop();
             }
         }
@@ -204,12 +204,12 @@ namespace My
             TickType_t xLastWake = xTaskGetTickCount();
             TickType_t freq = pdMS_TO_TICKS(10);
 
-            SharedInstances::serial.serial_print(My::Infos::input_dont_panic);
+            SharedInstances::serial.serial_print(My::Infos::UART::input_dont_panic);
             SharedInstances::track_browser.begin();
             if (SharedInstances::track_browser.is_browsing()) {
-                SharedInstances::serial.serial_print(My::Infos::input_select_start);
+                SharedInstances::serial.serial_print(My::Infos::UART::input_select_start);
             } else {
-                SharedInstances::serial.serial_print(My::Infos::input_no_tracks);
+                SharedInstances::serial.serial_print(My::Infos::UART::input_no_tracks);
             }
 
             while (true) {
@@ -226,7 +226,7 @@ namespace My
                 handle_ultrasonic_swipe();
 
                 if (SharedInstances::player.track_finished()) {
-                    SharedInstances::serial.serial_print(My::Infos::input_track_finished);
+                    SharedInstances::serial.serial_print(My::Infos::UART::input_track_finished);
                     SharedInstances::track_browser.move_track(1);
                     play_browser_position();
                 }
