@@ -75,11 +75,16 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace Matrix
-            // Input
+            // Input (4096 → 16384 — play_browser_position() runs the SDMMC+FATFS
+            // track-open chain on this task's stack. Real crash: skip/EOF
+            // auto-advance panicked LoadProhibited @ player.cpp:83 with
+            // EXCVADDR=0 — the open() chain overflowed into the caller's
+            // frame and zeroed the local `path`. Same chain forced Audio to
+            // 16K ("blew the canary even at 8K"), so match it.)
             namespace Input
             {
                 static const char PROCESS_NAME[] = "Input";
-                static const uint32_t US_STACK_DEPTH = 4096;
+                static const uint32_t US_STACK_DEPTH = 16384;
                 static const UBaseType_t TASK_PRIORITY = 2;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Input

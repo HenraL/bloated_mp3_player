@@ -115,13 +115,20 @@ namespace My
                 return;
             }
             // Back over the folder boundary: last track of the previous
-            // folder (wrap around the folder table).
+            // folder (wrap around the folder table). Skip empty folders;
+            // after n probes we are back where we started (all empty).
             uint32_t n = folder_count();
-            _folder_index = (_folder_index + n - 1) % n;
-            fi = SDCard::get_folder(_folder_index);
-            if (fi) {
-                _track_offset = fi->track_count - 1;
+            uint32_t probe = n;
+            while (probe > 0) {
+                _folder_index = (_folder_index + n - 1) % n;
+                fi = SDCard::get_folder(_folder_index);
+                if (fi && fi->track_count > 0) {
+                    _track_offset = fi->track_count - 1;
+                    return;
+                }
+                probe--;
             }
+            _track_offset = 0;
         } else if (offset >= (int32_t)fi->track_count) {
             if (_in_track_stage) {
                 // Clamp at the end of the album while browsing tracks.
