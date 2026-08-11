@@ -88,11 +88,15 @@ namespace My
                 static const UBaseType_t TASK_PRIORITY = 2;
                 static const BaseType_t X_CORE_ID = 0;
             } // namespace Input
-            // Serial
+            // Serial (2048 → 8192 — the BLE bridge mirror runs on this task:
+            // uart_stream() → notify() → esp_ble_gatts_send_indicate() drops
+            // a deep Bluedroid stack chain on top of the vsnprintf formatting,
+            // which blew the canary at 2K — real crash: "A stack overflow in
+            // task SerialOut has been detected")
             namespace Serial
             {
                 static const char PROCESS_NAME[] = "SerialOut";
-                static const uint32_t US_STACK_DEPTH = 2048;
+                static const uint32_t US_STACK_DEPTH = 8192;
                 static const UBaseType_t TASK_PRIORITY = 1;
                 static const BaseType_t X_CORE_ID = 1;
             } // namespace Serial

@@ -55,7 +55,12 @@ namespace My
         static const BakedFonts::FontHandle *const FONT_TITLE = &BakedFonts::tiny5_10pt_handle;
         static const BakedFonts::FontHandle *const FONT_BODY = &BakedFonts::tiny5_8pt_handle;
         static const BakedFonts::FontHandle *const FONT_INFO = &BakedFonts::tiny5_8pt_handle;
-        static const uint8_t DISPLAY_CONTRAST = 255;
+        // ST7565R contrast is only 6 bits (0..63): U8g2 clamps with
+        // value >> 2, so 255 would become 63 = maximum bias voltage and the
+        // screen goes uniformly dark with dots everywhere (data still drawn
+        // underneath, visible only at an angle). 40-ish is the sweet spot
+        // for GMG12864-06D. Range to explore: 30..55.
+        static const uint8_t DISPLAY_CONTRAST = 40;
         static const uint32_t DISPLAY_SPI_CLOCK_HZ = 1000000;
 
         // ─── Matrix Setup ───────────────────────────────────────────────────────
