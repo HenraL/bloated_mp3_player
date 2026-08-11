@@ -61,11 +61,11 @@ namespace My
             uint32_t next_imu_ms = 0;
             uint32_t imu_until_ms = 0;
             uint32_t now_ms = 0;
-            SharedInstances::serial.serial_print(My::Infos::vogon_quote, My::Infos::quote_ships_bricks);
+            SharedInstances::serial.serial_print(My::Infos::UART::vogon_quote, My::Infos::UART::quote_ships_bricks);
             next_imu_ms = millis() + My::Config::vogon_imu_interval_ms;
 
             // Static title; the banner scroll animates on the bottom row.
-            SharedInstances::char_lcd_vogon.print_at(0, 0, "VOGON POETRY");
+            SharedInstances::char_lcd_vogon.print_at(0, 0, My::Infos::LCD::vogon_title);
 
             while (true) {
                 PROFILE_BLOCK("vogon_tick");
@@ -85,19 +85,19 @@ namespace My
                     if (now_ms >= imu_until_ms) {
                         imu_until_ms = 0;
                         next_imu_ms = now_ms + My::Config::vogon_imu_interval_ms;
-                        SharedInstances::char_lcd_vogon.print_at(0, 0, "VOGON POETRY");
+                        SharedInstances::char_lcd_vogon.print_at(0, 0, My::Infos::LCD::vogon_title);
                     } else {
                         SharedInstances::char_lcd_vogon.print_at(
                             0,
                             0,
-                            "Tilt R:%5.1f P:%5.1f",
+                            My::Infos::LCD::vogon_tilt,
                             SharedInstances::imu_orientation.roll,
                             SharedInstances::imu_orientation.pitch
                         );
                         SharedInstances::char_lcd_vogon.print_at(
                             0,
                             1,
-                            "Yaw %5.1f     ",
+                            My::Infos::LCD::vogon_yaw,
                             SharedInstances::imu_orientation.yaw
                         );
                         duration_ms = 100;
@@ -122,8 +122,13 @@ namespace My
                         frame_index = nxt;
                     }
                 } else {
-                    // Show the current banner frame, then advance.
-                    duration_ms = My::Config::vogon_messages[banner_index].steps[frame_index].dwell_ms;
+                    // Show the current banner frame, then advance. The dwell
+                    // comes from the banner's own total duration divided by
+                    // its frame count — the same duration-based pacing as the
+                    // LED morse — so the quote always takes as long as the
+                    // Vogon needs, no matter how many frames it was cut into.
+                    duration_ms = My::Config::vogon_messages[banner_index].duration_ms
+                        / My::Config::vogon_messages[banner_index].length;
                     SharedInstances::char_lcd_vogon.print_at(
                         0,
                         1,
@@ -136,11 +141,11 @@ namespace My
                         in_eom = true; // turn on the interlude for the next stanza
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_VOGON_EOM_ENTER,
-                            My::Infos::vogon_eom_enter
+                            My::Infos::UART::vogon_eom_enter
                         );
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_VOGON_STANZA_SWITCH,
-                            My::Infos::vogon_stanza_switch,
+                            My::Infos::UART::vogon_stanza_switch,
                             banner_index
                         );
                     } else {
@@ -156,7 +161,7 @@ namespace My
                     if (cur_i2c_error != 0) {
                         SharedInstances::serial.serial_debug(
                             My::Config::Debug::UART_VOGON_I2C_ERROR,
-                            My::Infos::vogon_i2c_error,
+                            My::Infos::UART::vogon_i2c_error,
                             cur_i2c_error,
                             (unsigned int)My::Config::CHAR_LCD2_I2C_ADDR
                         );

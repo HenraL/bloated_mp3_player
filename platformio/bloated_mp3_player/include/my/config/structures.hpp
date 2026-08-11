@@ -55,10 +55,16 @@ namespace My
             };
 
             // A message is a run of steps. The message list is terminated
-            // with a {nullptr, 0} entry, same choreography as the LED.
+            // with a {nullptr, 0, 0} entry, same choreography as the LED.
             struct VogonMessage {
                 const VogonStep *steps;
                 const uint16_t    length;
+                // Total time budget for the whole banner (ms). The task
+                // derives the per-frame dwell as duration_ms / length, the
+                // same way the LED morse paces its elements from the
+                // message duration. VogonStep.dwell_ms is then only used by
+                // the end-of-message blip table (vogon_eom).
+                const uint16_t    duration_ms;
             };
         } // namespace Structures
     } // namespace Config

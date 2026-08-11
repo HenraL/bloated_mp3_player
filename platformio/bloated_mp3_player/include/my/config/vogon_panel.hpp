@@ -32,18 +32,15 @@ namespace My
     {
         // ─── Vogon panel (second 1602A) ──────────────────────────────────
 
-        // Comfortable reading pace for a single banner frame.
-        static const My::Config::Structures::duration_ms_t vogon_duration_frame = 400;
-
-        // How long a banner sits still once fully revealed on the panel.
-        static const My::Config::Structures::duration_ms_t vogon_duration_reveal = 1000;
-
-        // Tempo for the scroll animation between frames.
-        static const My::Config::Structures::duration_ms_t vogon_duration_scroll = 240;
+        // Banner pacing comes from each banner's own total duration in
+        // my_config_vogon_panel.cpp (snail's pace: the Vogon needs time to
+        // savour every syllable). The task divides it across the frames,
+        // the same way the LED morse paces elements from the message
+        // duration — so adding or removing frames never changes the pace.
 
         // A "blip" of static shown between two banners. Because even a Vogon
         // deserves a moment of silence.
-        static const My::Config::Structures::duration_ms_t vogon_duration_eom = 400;
+        static const My::Config::Structures::duration_ms_t vogon_duration_eom = 1000;
 
         // Scrolling speed: chars drifted per scroll tick.
         static const uint8_t vogon_scroll_step = 1;
