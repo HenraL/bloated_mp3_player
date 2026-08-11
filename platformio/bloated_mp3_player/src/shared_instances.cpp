@@ -62,4 +62,5 @@ namespace SharedInstances
         8, 256
     );
     Audio::Player player(audio);
+    Bluetooth::Bridge bluetooth;
 }
