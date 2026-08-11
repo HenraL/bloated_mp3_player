@@ -68,6 +68,11 @@ namespace My
         static const uint8_t AUDIO_VOLUME_MIN = 0;
         static const uint8_t AUDIO_VOLUME_DEFAULT = 100;
 
+        // ─── Bluetooth (BLE UART bridge) ─────────────────────────────────
+        // Name the device advertises as. Any phone/PC "BLE serial terminal"
+        // app will list it under this name.
+        static const char BT_DEVICE_NAME[] = "BloatedMP3";
+
         // ─── Character LCD (PCF8574 backpack, HD44780) ─────────────────────────
         // Info panel: 2004A (4 rows x 20 cols). Bridged A0 from the factory
         // state 0x27 down to 0x26 (ties the A0 pad low) so the two panels
