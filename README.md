@@ -12,7 +12,7 @@
 -- PROJECT: Bloated MP3 Player
 -- FILE: README.md
 -- CREATION DATE: 23-07-2026
--- LAST Modified: 18:22:4 09-08-2026
+-- LAST Modified: 14:19:29 01-09-2026
 -- DESCRIPTION:
 -- This is the code in charge of making the bloated player come to life.
 -- /STOP
@@ -50,7 +50,7 @@ It runs on an ESP32-S3 (the electronic equivalent of an Infinite Improbability D
 > *"The ships hung in the sky in much the same way that bricks don't."*
 > — Douglas Adams, *The Hitchhiker's Guide to the Galaxy*
 
-This program is a multithreaded C++ monstrosity for the Real Time Embedded Systems course at **Unimore Enzo Ferrari AI and engeneering department**. It was inspired by *The Hitchhiker's Guide to the Galaxy* not because it does anything particularly galactic, but because the sheer quantity of peripherals tacked onto it would make even a Vogon constructor fleet raise an eyebrow.
+This program is a multithreaded C++ monstrosity for the Real Time Embedded Systems course at **Unimore Enzo Ferrari AI and engineering department**. It was inspired by *The Hitchhiker's Guide to the Galaxy* not because it does anything particularly galactic, but because the sheer quantity of peripherals tacked onto it would make even a Vogon constructor fleet raise an eyebrow.
 
 The core mission: play MP3s from a microSD card while simultaneously monitoring temperature, humidity, air pressure, rotation, acceleration, magnetic fields, and the existential dread of a WS2812B RGB matrix trying to decide what colour to be or where to put the bablefish.
 

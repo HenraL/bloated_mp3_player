@@ -649,7 +649,7 @@
         "uuid": "0f0043d3-9467-400d-886a-57a73f910f34"
       }
     ],
-    "used_designators": "LS1-2,SW1-5,C1-18,#PWR1-42,D1-3,U1-9,Q1-2,POT1-2,DS1-3,L1-6,TP1-6,LCD1,R1-31,LED1,J1-4",
+    "used_designators": "J1-4,TP1-6,#PWR1-42,LS1-2,C1-18,SW1-5,POT1-2,Q1-2,D1-3,U1-9,L1-6,DS1-3,R1-31,LCD1,LED1",
     "variants": [
       {
         "description": "This is t a test variant to understand the feature.",
